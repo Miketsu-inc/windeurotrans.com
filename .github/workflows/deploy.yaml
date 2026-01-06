@@ -31,9 +31,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Tailwind build
-        run: npx @tailwindcss/cli -i ./input.css -o ./output.css --minify
-
       - name: Build
         run: npm run build
 
