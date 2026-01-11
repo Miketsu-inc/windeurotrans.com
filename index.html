@@ -11,27 +11,31 @@
       overflow-x-hidden antialiased"
   >
     <nav
-      class="text-text_color fixed top-5 left-1/2 z-50 flex w-fit
-        -translate-x-1/2 items-center justify-center rounded-3xl border
-        border-stone-500/10 bg-stone-500/10 p-5 shadow-md backdrop-blur-xs
-        transition-all duration-300"
+      class="text-text_color fixed top-5 right-5 left-5 z-50 flex w-auto
+        items-center justify-between rounded-3xl border border-stone-500/10
+        bg-stone-500/10 p-5 shadow-md backdrop-blur-xs transition-all
+        duration-300 md:right-auto md:left-1/2 md:w-fit md:-translate-x-1/2"
     >
       <div
-        class="pr-24 text-2xl font-extrabold tracking-tighter uppercase
-          transition-colors"
+        class="text-xl font-extrabold tracking-tighter uppercase
+          transition-colors md:text-2xl"
       >
         <a href="#">Wind<span class="text-primary">eurotrans</span></a>
       </div>
 
       <ul
         class="hidden gap-10 text-sm font-medium tracking-widest uppercase
-          transition-colors md:flex"
+          transition-colors md:flex md:px-24"
       >
         <li>
-          <a href="#" class="hover:text-primary transition-colors">About</a>
+          <a href="#about" class="hover:text-primary transition-colors"
+            >About</a
+          >
         </li>
         <li>
-          <a href="#" class="hover:text-primary transition-colors">Fleet</a>
+          <a href="#fleet" class="hover:text-primary transition-colors"
+            >Fleet</a
+          >
         </li>
         <li>
           <a href="#services" class="hover:text-primary transition-colors"
@@ -39,15 +43,170 @@
           >
         </li>
         <li>
-          <a href="#" class="hover:text-primary transition-colors"
+          <a href="#certificates" class="hover:text-primary transition-colors"
             >Certificates</a
           >
         </li>
         <li>
-          <a href="#" class="hover:text-primary transition-colors">Contact</a>
+          <a href="#contact" class="hover:text-primary transition-colors"
+            >Contact</a
+          >
         </li>
       </ul>
+
+      <div class="relative hidden md:block">
+        <button
+          id="langButton"
+          class="hover:text-primary flex cursor-pointer items-center gap-2
+            transition-colors"
+          aria-label="Select language"
+        >
+          <span id="currentFlag" class="text-xl">🇭🇺</span>
+          <svg
+            class="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            ></path>
+          </svg>
+        </button>
+        <div
+          id="langDropdown"
+          class="bg-bg_color absolute right-0 mt-2 hidden w-32 overflow-hidden
+            rounded-lg border border-stone-500/10 shadow-md"
+        >
+          <button
+            class="lang-option flex w-full cursor-pointer items-center gap-2
+              px-4 py-2 text-left transition-colors hover:bg-gray-100"
+            data-lang="hu"
+            data-flag="🇭🇺"
+          >
+            <span class="text-xl">🇭🇺</span>
+            <span class="text-sm">Magyar</span>
+          </button>
+          <button
+            class="lang-option flex w-full cursor-pointer items-center gap-2
+              px-4 py-2 text-left transition-colors hover:bg-gray-100"
+            data-lang="en"
+            data-flag="🇬🇧"
+          >
+            <span class="text-xl">🇬🇧</span>
+            <span class="text-sm">English</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Spacer to push menu button to the right on mobile -->
+      <div class="flex-1 md:hidden"></div>
+
+      <button
+        id="mobileMenuBtn"
+        class="relative md:hidden"
+        aria-label="Toggle menu"
+      >
+        <!-- Menu Icon (default) -->
+        <svg
+          id="menuIcon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-6 transition-opacity duration-300"
+        >
+          <path d="M4 5h16" />
+          <path d="M4 12h16" />
+          <path d="M4 19h16" />
+        </svg>
+        <!-- X Icon (hidden by default) -->
+        <svg
+          id="closeIcon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="absolute top-1/2 left-1/2 size-6 -translate-x-1/2
+            -translate-y-1/2 opacity-0 transition-opacity duration-300"
+        >
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
     </nav>
+
+    <div
+      id="mobileMenu"
+      class="mobile-menu fixed inset-0 z-40 bg-white/50 backdrop-blur-md"
+    >
+      <div class="flex h-full flex-col items-center justify-center gap-8 px-8">
+        <!-- Mobile Navigation Links -->
+        <a
+          href="#about"
+          class="mobile-nav-link hover:text-primary text-3xl font-medium
+            tracking-wider uppercase transition-colors"
+          >About</a
+        >
+        <a
+          href="#fleet"
+          class="mobile-nav-link hover:text-primary text-3xl font-medium
+            tracking-wider uppercase transition-colors"
+          >Fleet</a
+        >
+        <a
+          href="#services"
+          class="mobile-nav-link hover:text-primary text-3xl font-medium
+            tracking-wider uppercase transition-colors"
+          >Services</a
+        >
+        <a
+          href="#certificates"
+          class="mobile-nav-link hover:text-primary text-3xl font-medium
+            tracking-wider uppercase transition-colors"
+          >Certificates</a
+        >
+        <a
+          href="#contact"
+          class="mobile-nav-link hover:text-primary text-3xl font-medium
+            tracking-wider uppercase transition-colors"
+          >Contact</a
+        >
+
+        <!-- Mobile Language Selector -->
+        <div class="mt-8 flex gap-4">
+          <button
+            class="mobile-lang-option text-4xl transition-transform
+              hover:scale-110"
+            data-lang="hu"
+            data-flag="🇭🇺"
+          >
+            🇭🇺
+          </button>
+          <button
+            class="mobile-lang-option text-4xl transition-transform
+              hover:scale-110"
+            data-lang="en"
+            data-flag="🇬🇧"
+          >
+            🇬🇧
+          </button>
+        </div>
+      </div>
+    </div>
 
     <header
       class="m-auto flex h-screen w-full max-w-375 items-center overflow-hidden"
@@ -73,7 +232,7 @@
           Get a Quote
         </button>
       </div>
-      <div class="bg-primary size-150"></div>
+      <div class="bg-primary md:size-150"></div>
       <!-- <img
         class="bg-primary size-150 object-scale-down"
         src="https://s1.1zoom.me/b5050/706/DAF_Trucks_Trucks_DAF_XF_503945_1920x1080.jpg"
@@ -81,35 +240,29 @@
     </header>
 
     <section
-      class="bg-brand-dark bg-primary border-b border-white/10 text-black"
+      class="bg-brand-dark border-b border-white/10 bg-teal-800 text-white"
     >
       <div class="grid grid-cols-2 divide-x divide-white/10 md:grid-cols-4">
         <div class="p-8 md:p-12">
-          <span class="text-text_color mb-1 block text-4xl font-bold"
-            >24/7</span
-          >
+          <span class="mb-1 block text-4xl font-bold text-white">24/7</span>
           <span class="text-brand-grey text-xs tracking-widest uppercase"
             >Operations</span
           >
         </div>
         <div class="p-8 delay-100 md:p-12">
-          <span class="text-text_color mb-1 block text-4xl font-bold">15+</span>
+          <span class="mb-1 block text-4xl font-bold text-white">15+</span>
           <span class="text-brand-grey text-xs tracking-widest uppercase"
             >Years Experience</span
           >
         </div>
         <div class="p-8 delay-200 md:p-12">
-          <span class="text-text_color mb-1 block text-4xl font-bold"
-            >EU/HU</span
-          >
+          <span class="mb-1 block text-4xl font-bold text-white">EU/HU</span>
           <span class="text-brand-grey text-xs tracking-widest uppercase"
             >Fully Licensed</span
           >
         </div>
         <div class="p-8 delay-300 md:p-12">
-          <span class="text-text_color mb-1 block text-4xl font-bold"
-            >100%</span
-          >
+          <span class="mb-1 block text-4xl font-bold text-white">100%</span>
           <span class="text-brand-grey text-xs tracking-widest uppercase"
             >Coverage</span
           >
@@ -165,7 +318,7 @@
         </div>
       </div>
     </section>
-    <div id="#certificates" class="flex flex-row justify-evenly py-12">
+    <div id="certificates" class="flex flex-row justify-evenly py-12">
       <p>ISO 9001</p>
       <p>ISO 14001</p>
       <span>
@@ -173,7 +326,7 @@
         <p>GDP</p>
       </span>
     </div>
-    <section id="services" class="bg-gray-50 px-6 py-24 md:px-12 md:py-32">
+    <section id="services" class="px-6 py-24 md:px-12 md:py-32">
       <div class="mx-auto max-w-7xl">
         <div
           class="mb-16 flex flex-col justify-between gap-6 md:flex-row
@@ -235,15 +388,15 @@
         </div>
       </div>
     </section>
-    <div id="#contact">
-      <div class="mx-auto max-w-7xl py-24 md:py-32">
+    <div id="contact">
+      <div class="mx-auto max-w-7xl px-6 py-24 md:px-0 md:py-32">
         <div class="">
           <h2 class="text-brand-dark mb-16 text-4xl font-bold md:text-5xl">
             Get in touch
           </h2>
         </div>
-        <div class="flex flex-row justify-evenly">
-          <div class="flex flex-col justify-evenly">
+        <div class="flex flex-col gap-8 md:flex-row md:justify-evenly md:gap-0">
+          <div class="flex flex-col justify-evenly gap-6 md:gap-0">
             <div class="flex flex-col gap-2">
               <h3 class="pb-4 text-2xl font-semibold">Contact</h3>
               <span class="flex flex-row items-center gap-2">
@@ -264,7 +417,7 @@
                   />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
-                <p>Dunakeszi, Kolozsvár u. 29, 2120</p>
+                <p>2120 Dunakeszi, Kolozsvár u. 6</p>
               </span>
               <span class="flex flex-row items-center gap-2">
                 <svg
@@ -282,7 +435,10 @@
                   <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
                   <rect x="2" y="4" width="20" height="16" rx="2" />
                 </svg>
-                <a href="mailto:gergo.szell@windeurotrans.com"
+                <a
+                  class="underline-primary hover:decoration-primary
+                    cursor-pointer hover:underline"
+                  href="mailto:gergo.szell@windeurotrans.com"
                   >gergo.szell@windeurotrans.com</a
                 >
               </span>
@@ -303,7 +459,33 @@
                     d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"
                   />
                 </svg>
-                <a href="tel:+36205154060">+36 20 515 4060</a>
+                <a
+                  class="underline-primary hover:decoration-primary
+                    cursor-pointer hover:underline"
+                  href="tel:+36205154060"
+                  >+36 20 515 4060</a
+                >
+              </span>
+              <span class="flex flex-row items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="size-4"
+                >
+                  <path
+                    d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+                  />
+                  <path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6" />
+                  <rect x="6" y="14" width="12" height="8" rx="1" />
+                </svg>
+                <p>+36 1 700 2219</p>
               </span>
             </div>
             <div class="flex flex-col gap-2">
@@ -318,15 +500,14 @@
               </p>
             </div>
           </div>
-          <div class="bg-primary h-full">
+          <div class="h-full w-full max-w-160">
             <iframe
-              width="600"
-              height="450"
+              class="h-96 w-full rounded-lg md:h-120"
               style="border: 0"
               loading="lazy"
               allowfullscreen
               referrerpolicy="no-referrer-when-downgrade"
-              src="https://www.google.com/maps?q=Wind Eurotrans Kft.&output=embed"
+              src="https://www.google.com/maps?q=2120 Dunakeszi, Kolozsvár u. 6&output=embed"
             >
             </iframe>
           </div>
@@ -408,5 +589,100 @@
         &copy; 2026 Windeurotrans Kft. All rights reserved.
       </div>
     </footer>
+
+    <script>
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const mobileMenu = document.getElementById("mobileMenu");
+      const mobileNavLinks = document.querySelectorAll(".mobile-nav-link");
+      const menuIcon = document.getElementById("menuIcon");
+      const closeIcon = document.getElementById("closeIcon");
+
+      const langButton = document.getElementById("langButton");
+      const langDropdown = document.getElementById("langDropdown");
+      const currentFlag = document.getElementById("currentFlag");
+      const langOptions = document.querySelectorAll(".lang-option");
+      const mobileLangOptions = document.querySelectorAll(
+        ".mobile-lang-option"
+      );
+
+      // Detect browser language and set initial language
+      let currentLang = "hu"; // default fallback
+      const browserLang = navigator.language || navigator.userLanguage;
+
+      // Check if browser language starts with 'en' (en, en-US, en-GB, etc.)
+      if (browserLang.startsWith("en")) {
+        currentLang = "en";
+      } else if (browserLang.startsWith("hu")) {
+        currentLang = "hu";
+      }
+
+      // Mobile menu toggle
+      mobileMenuBtn.addEventListener("click", () => {
+        const isOpen = mobileMenu.classList.contains("menu-open");
+
+        if (isOpen) {
+          // Close menu
+          mobileMenu.classList.remove("menu-open");
+          menuIcon.style.opacity = "1";
+          closeIcon.style.opacity = "0";
+        } else {
+          // Open menu
+          mobileMenu.classList.add("menu-open");
+          menuIcon.style.opacity = "0";
+          closeIcon.style.opacity = "1";
+        }
+      });
+
+      // Close mobile menu when clicking a link
+      mobileNavLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          mobileMenu.classList.remove("menu-open");
+          menuIcon.style.opacity = "1";
+          closeIcon.style.opacity = "0";
+        });
+      });
+
+      // Desktop language selector
+      langButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        langDropdown.classList.toggle("hidden");
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", () => {
+        langDropdown.classList.add("hidden");
+      });
+
+      // Language selection (desktop)
+      langOptions.forEach((option) => {
+        option.addEventListener("click", (e) => {
+          e.stopPropagation();
+          currentLang = option.dataset.lang;
+          currentFlag.textContent = option.dataset.flag;
+          langDropdown.classList.add("hidden");
+        });
+      });
+
+      // Language selection (mobile)
+      mobileLangOptions.forEach((option) => {
+        option.addEventListener("click", () => {
+          currentLang = option.dataset.lang;
+          currentFlag.textContent = option.dataset.flag;
+
+          // Visual feedback
+          mobileLangOptions.forEach((opt) => (opt.style.opacity = "0.5"));
+          option.style.opacity = "1";
+        });
+      });
+
+      // Set initial language display based on detected language
+      const initialFlag = currentLang === "en" ? "🇬🇧" : "🇭🇺";
+      currentFlag.textContent = initialFlag;
+
+      // Set initial mobile lang state
+      mobileLangOptions.forEach((opt) => {
+        opt.style.opacity = opt.dataset.lang === currentLang ? "1" : "0.5";
+      });
+    </script>
   </body>
 </html>
