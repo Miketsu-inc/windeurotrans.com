@@ -33,18 +33,8 @@
           >
         </li>
         <li>
-          <a href="#fleet" class="hover:text-primary transition-colors"
-            >Fleet</a
-          >
-        </li>
-        <li>
           <a href="#services" class="hover:text-primary transition-colors"
             >Services</a
-          >
-        </li>
-        <li>
-          <a href="#certificates" class="hover:text-primary transition-colors"
-            >Certificates</a
           >
         </li>
         <li>
@@ -162,22 +152,10 @@
           >About</a
         >
         <a
-          href="#fleet"
-          class="mobile-nav-link hover:text-primary text-3xl font-medium
-            tracking-wider uppercase transition-colors"
-          >Fleet</a
-        >
-        <a
           href="#services"
           class="mobile-nav-link hover:text-primary text-3xl font-medium
             tracking-wider uppercase transition-colors"
           >Services</a
-        >
-        <a
-          href="#certificates"
-          class="mobile-nav-link hover:text-primary text-3xl font-medium
-            tracking-wider uppercase transition-colors"
-          >Certificates</a
         >
         <a
           href="#contact"
@@ -209,9 +187,18 @@
     </div>
 
     <header
-      class="m-auto flex h-screen w-full max-w-375 items-center overflow-hidden"
+      class="bg-position[70%_30%] m-auto flex h-screen w-full items-center
+        overflow-hidden bg-[url(/public/hero2.png)] bg-cover bg-center
+        bg-no-repeat"
     >
-      <div class="relative z-10 mx-auto w-full px-6 pb-24 md:px-12 md:pb-32">
+      <div
+        class="absolute inset-0 bg-linear-to-br from-black/60 via-black/30
+          to-transparent"
+      ></div>
+      <div
+        class="relative z-10 mx-auto w-full max-w-375 px-6 pb-24 md:px-12
+          md:pb-32"
+      >
         <span
           class="text-primary mb-4 block text-sm font-bold tracking-[0.2em]
             uppercase md:text-base"
@@ -232,101 +219,209 @@
           Get a Quote
         </button>
       </div>
-      <div class="bg-primary md:size-150"></div>
-      <!-- <img
+      <!-- <div class="bg-primary md:size-150"></div>
+      <img
         class="bg-primary size-150 object-scale-down"
         src="https://s1.1zoom.me/b5050/706/DAF_Trucks_Trucks_DAF_XF_503945_1920x1080.jpg"
       /> -->
     </header>
-
     <section
-      class="bg-brand-dark border-b border-white/10 bg-teal-800 text-white"
+      id="proof"
+      class="relative overflow-hidden px-6 py-24 md:px-12 md:py-32"
     >
-      <div class="grid grid-cols-2 divide-x divide-white/10 md:grid-cols-4">
-        <div class="p-8 md:p-12">
-          <span class="mb-1 block text-4xl font-bold text-white">24/7</span>
-          <span class="text-brand-grey text-xs tracking-widest uppercase"
-            >Operations</span
-          >
-        </div>
-        <div class="p-8 delay-100 md:p-12">
-          <span class="mb-1 block text-4xl font-bold text-white">15+</span>
-          <span class="text-brand-grey text-xs tracking-widest uppercase"
-            >Years Experience</span
-          >
-        </div>
-        <div class="p-8 delay-200 md:p-12">
-          <span class="mb-1 block text-4xl font-bold text-white">EU/HU</span>
-          <span class="text-brand-grey text-xs tracking-widest uppercase"
-            >Fully Licensed</span
-          >
-        </div>
-        <div class="p-8 delay-300 md:p-12">
-          <span class="mb-1 block text-4xl font-bold text-white">100%</span>
-          <span class="text-brand-grey text-xs tracking-widest uppercase"
-            >Coverage</span
-          >
-        </div>
-      </div>
-    </section>
-
-    <section class="mx-auto max-w-7xl px-6 py-24 md:px-12 md:py-32">
       <div
-        class="grid grid-cols-1 items-center gap-16 md:grid-cols-2 md:gap-24"
+        class="absolute top-1/2 left-1/2 -z-10 size-180 -translate-x-1/2
+          -translate-y-1/2 opacity-30 blur-3xl filter"
       >
-        <div>
-          <h2
-            class="text-brand-dark mb-6 text-4xl leading-tight font-bold
-              md:text-5xl"
-          >
-            Driving the future of European transport.
+        <div
+          class="h-full w-full rounded-full bg-linear-to-r from-teal-500
+            to-orange-400"
+        ></div>
+      </div>
+
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-16 md:text-center">
+          <h2 class="text-brand-dark text-4xl font-bold md:text-5xl">
+            Why industry leaders choose us.
           </h2>
-          <p class="text-brand-grey mb-8 text-lg leading-relaxed">
-            Windeurotrans isn't just a trucking company; we are the pulse of
-            supply chains connecting Hungary to the global market. With a modern
-            fleet and English-speaking logistics experts, we simplify the
-            complex.
-          </p>
-          <a
-            href="#"
-            class="text-brand-dark border-primary hover:text-primary
-              inline-block border-b-2 pb-1 font-bold transition-colors"
-          >
-            Read Our Story
-          </a>
         </div>
 
-        <div class="relative delay-200">
-          <!-- <img
-            src="https://s1.1zoom.me/b5050/706/DAF_Trucks_Trucks_DAF_XF_503945_1920x1080.jpg"
-            alt="Modern Truck"
-            class="h-125 w-full rounded-sm object-cover shadow-2xl"
-          /> -->
-          <div class="bg-primary h-125 w-full rounded-sm shadow-2xl"></div>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-3 md:grid-rows-2">
+          <div
+            class="group hover:border-primary/10 relative col-span-1
+              overflow-hidden rounded-3xl border border-white/40 bg-white/40 p-8
+              shadow-md backdrop-blur-xs transition-all duration-500
+              hover:-translate-y-1 hover:bg-white/60 md:col-span-2"
+          >
+            <div
+              class="relative z-10 flex h-full flex-col justify-between gap-8
+                md:flex-row"
+            >
+              <div class="max-w-md space-y-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="flex size-12 items-center justify-center rounded-2xl
+                      bg-linear-to-br from-teal-800 to-teal-600"
+                  >
+                    <svg
+                      class="text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"
+                      ></path>
+                      <path d="m9 12 2 2 4-4"></path>
+                    </svg>
+                  </div>
+                  <h3 class="text-2xl font-bold">Certified Excellence</h3>
+                </div>
+                <p class="leading-relaxed text-gray-600">
+                  We don't just promise quality; we prove it. Our operations are
+                  rigorously audited to meet the highest international safety
+                  and pharmaceutical standards.
+                </p>
+              </div>
+              <img
+                src="./public/combined_certificates.png"
+                alt="ISO 9001 & ISO 14001 & GDP"
+                class="size-48 w-auto object-contain opacity-80 transition-all
+                  duration-300 group-hover:opacity-100 group-hover:grayscale-0
+                  md:grayscale"
+              />
+              <!-- <div class="flex items-center gap-4">
+                <img
+                  src="./public/GDP.png"
+                  alt="GDP"
+                  class="size-21 w-auto object-contain opacity-80 transition-all
+                    duration-300 group-hover:opacity-100 group-hover:grayscale-0
+                    md:grayscale"
+                />
+                <img
+                  src="./public/ISO14001.png"
+                  alt="ISO 14001"
+                  class="size-21 w-auto object-contain opacity-80 transition-all
+                    duration-300 group-hover:opacity-100 group-hover:grayscale-0
+                    md:grayscale"
+                />
+              </div> -->
+            </div>
+          </div>
 
           <div
-            class="border-primary absolute -bottom-6 -left-6 max-w-70 border-l-4
-              bg-white p-8 shadow-2xl md:-left-12"
+            class="group hover:border-primary/10 relative overflow-hidden
+              rounded-3xl border border-white/40 bg-white/40 p-8 shadow-md
+              backdrop-blur-xs transition-all duration-500 hover:-translate-y-1
+              hover:bg-white/60"
           >
-            <strong class="text-brand-dark mb-2 block text-lg"
-              >HQ: Budapest</strong
+            <div
+              class="mb-6 flex size-14 items-center justify-center rounded-2xl
+                bg-linear-to-br from-teal-800 to-teal-600 shadow-lg
+                transition-transform"
             >
-            <span class="text-brand-grey block text-sm leading-tight"
-              >Strategic gateway to Eastern & Western Europe.</span
+              <svg
+                class="size-7 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <h3 class="mb-3 text-xl font-bold">Time-Critical Speed</h3>
+            <p class="text-gray-600">
+              Dual-driver teams mean your cargo never stops moving. We
+              specialize in "just-in-time" deliveries across the continent.
+            </p>
+          </div>
+
+          <div
+            class="group hover:border-primary/10 relative overflow-hidden
+              rounded-3xl border border-white/40 bg-white/40 p-8 shadow-md
+              backdrop-blur-xs transition-all duration-500 hover:-translate-y-1
+              hover:bg-white/60"
+          >
+            <div
+              class="mb-6 flex size-14 items-center justify-center rounded-2xl
+                bg-linear-to-br from-teal-800 to-teal-600 shadow-lg
+                transition-transform"
             >
+              <svg
+                class="size-7 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="mb-3 text-xl font-bold">Budapest Hub</h3>
+            <p class="text-gray-600">
+              Ideally situated to bridge Eastern and Western Europe, offering
+              optimized routes that save fuel and time.
+            </p>
+          </div>
+
+          <div
+            class="group hover:border-primary/10 relative col-span-1
+              overflow-hidden rounded-3xl border border-white/40 bg-white/40 p-8
+              shadow-md backdrop-blur-xs transition-all duration-500
+              hover:-translate-y-1 hover:bg-white/60 md:col-span-2"
+          >
+            <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
+              <div
+                class="mb-2 flex size-14 shrink-0 items-center justify-center
+                  rounded-2xl bg-linear-to-br from-teal-800 to-teal-600
+                  transition-transform"
+              >
+                <svg
+                  class="size-7 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 class="mb-3 text-xl font-bold">
+                  Modern & Sustainable Fleet
+                </h3>
+                <p class="max-w-2xl text-gray-600">
+                  We operate exclusively with Euro 6 compliant vehicles. This
+                  ensures reliability for your schedule and responsibility for
+                  our environment. Our commitment to sustainability reduces your
+                  supply chain's carbon footprint.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
-    <div id="certificates" class="flex flex-row justify-evenly py-12">
-      <p>ISO 9001</p>
-      <p>ISO 14001</p>
-      <span>
-        <img src="./public/GDP.png" alt="GDP certification" class="size-32" />
-        <p>GDP</p>
-      </span>
-    </div>
-    <section id="services" class="px-6 py-24 md:px-12 md:py-32">
+    <!-- <section id="services" class="px-6 py-24 md:px-12 md:py-32">
       <div class="mx-auto max-w-7xl">
         <div
           class="mb-16 flex flex-col justify-between gap-6 md:flex-row
@@ -345,8 +440,7 @@
           >
             <div
               class="bg-primary absolute bottom-0 left-0 h-1 w-full origin-left
-                scale-x-0 transition-transform duration-300
-                group-hover:scale-x-100"
+                scale-x-0 transition-transform duration-300"
             ></div>
             <span
               class="group-hover:text-primary/20 mb-6 block text-5xl
@@ -384,6 +478,54 @@
               Time-critical deliveries handled by dual-driver teams for maximum
               speed.
             </p>
+          </div>
+        </div>
+      </div>
+    </section> -->
+    <section id="about" class="mx-auto max-w-7xl px-6 py-24 md:px-12 md:py-32">
+      <div
+        class="grid grid-cols-1 items-center gap-16 md:grid-cols-2 md:gap-24"
+      >
+        <div>
+          <h2
+            class="text-brand-dark mb-6 text-4xl leading-tight font-bold
+              md:text-5xl"
+          >
+            Driving the future of European transport.
+          </h2>
+          <p class="text-brand-grey mb-8 text-lg leading-relaxed">
+            Windeurotrans isn't just a trucking company; we are the pulse of
+            supply chains connecting Hungary to the global market. With a modern
+            fleet and English-speaking logistics experts, we simplify the
+            complex.
+          </p>
+          <a
+            href="#"
+            class="text-brand-dark border-primary hover:text-primary
+              inline-block border-b-2 pb-1 font-bold transition-colors"
+          >
+            Read Our Story
+          </a>
+        </div>
+
+        <div class="relative delay-200">
+          <img
+            src="./public/portrait.jpg"
+            alt="Modern Truck"
+            class="h-125 w-full rounded-xl object-cover shadow-2xl"
+          />
+
+          <div
+            class="border-primary absolute -bottom-6 -left-2 max-w-70 rounded-lg
+              border-l-4 bg-white/40 p-8 shadow-2xl backdrop-blur-xs
+              md:-left-12"
+          >
+            <strong class="text-brand-dark mb-2 block text-lg"
+              >HQ: Budapest</strong
+            >
+            <span class="text-brand-grey block text-sm leading-tight"
+              >Strategic gateway to Eastern & Western Europe.</span
+            >
           </div>
         </div>
       </div>
@@ -523,16 +665,17 @@
       >
         <div class="md:col-span-1">
           <div class="mb-6 text-xl font-extrabold tracking-tighter uppercase">
-            Wind<span class="text-primary">eurotrans</span>
+            <span class="text-text_color">Wind</span
+            ><span class="text-primary">eurotrans</span>
           </div>
-          <p class="text-sm leading-relaxed text-gray-500">
+          <p class="text-sm leading-relaxed text-gray-200">
             Modern logistics solutions headquartered in Hungary, serving the
             world with precision and care.
           </p>
         </div>
         <div>
           <h4 class="mb-6 text-lg font-bold">Company</h4>
-          <ul class="space-y-4 text-sm text-gray-400">
+          <ul class="space-y-4 text-sm text-gray-200">
             <li>
               <a href="#" class="hover:text-primary transition-all hover:pl-2"
                 >About Us</a
@@ -552,7 +695,7 @@
         </div>
         <div>
           <h4 class="mb-6 text-lg font-bold">Services</h4>
-          <ul class="space-y-4 text-sm text-gray-400">
+          <ul class="space-y-4 text-sm text-gray-200">
             <li>
               <a href="#" class="hover:text-primary transition-all hover:pl-2"
                 >Road Freight</a
@@ -572,7 +715,7 @@
         </div>
         <div>
           <h4 class="mb-6 text-lg font-bold">Contact</h4>
-          <ul class="space-y-4 text-sm text-gray-400">
+          <ul class="space-y-4 text-sm text-gray-200">
             <li>Budapest, Hungary</li>
             <li>
               <a href="mailto:gergo.szell@windeurotrans.com"
@@ -584,7 +727,7 @@
         </div>
       </div>
       <div
-        class="border-t border-white/10 pt-8 text-center text-xs text-gray-600"
+        class="border-t border-white/10 pt-8 text-center text-xs text-gray-200"
       >
         &copy; 2026 Windeurotrans Kft. All rights reserved.
       </div>
