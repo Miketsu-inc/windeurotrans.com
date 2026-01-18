@@ -27,3 +27,42 @@
   visibility: visible;
   pointer-events: auto;
 }
+
+/* Disable scrolling when mobile menu is open */
+body.menu-open {
+  overflow: hidden;
+}
+
+/* Transition for navbar styling */
+nav {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    padding 0.3s ease;
+}
+
+/* Remove navbar styling when menu is open (mobile only) */
+@media (max-width: 767px) {
+  nav.menu-open {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 1.25rem 1.25rem !important;
+  }
+}
+
+/* Hide spacer when menu is open */
+.navbar-spacer {
+  transition:
+    opacity 0.3s ease,
+    max-width 0.3s ease;
+  max-width: 100%;
+}
+
+nav.menu-open .navbar-spacer {
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+}
