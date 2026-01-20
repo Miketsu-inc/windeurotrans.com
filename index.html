@@ -199,7 +199,7 @@
 
     <header
       class="bg-position[70%_30%] m-auto flex h-screen w-full items-center
-        overflow-hidden bg-[url(/public/image_3.png)] bg-cover bg-center
+        overflow-hidden bg-[url(/public/image_4.jpg)] bg-cover bg-center
         bg-no-repeat"
     >
       <div
@@ -680,111 +680,119 @@
         </div>
       </div>
     </section>
-    <div id="contact">
-      <div class="mx-auto max-w-7xl px-6 pt-24 pb-12 md:px-0 md:py-32">
-        <div class="">
-          <h2 class="text-brand-dark mb-16 text-4xl font-bold md:text-5xl">
+    <section id="contact" class="relative px-6 py-24 md:px-12 md:py-32">
+      <div class="absolute top-0 left-0 -z-10 h-full w-full overflow-hidden">
+        <div
+          class="bg-primary/10 absolute top-1/4 left-0 h-96 w-96 rounded-full
+            blur-[100px]"
+        ></div>
+      </div>
+
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-16">
+          <h2 class="text-text_color text-4xl font-bold md:text-5xl">
             Get in touch
           </h2>
         </div>
-        <div
-          class="flex flex-col gap-8 md:flex-row md:justify-between md:gap-0
-            md:px-8"
-        >
-          <div
-            class="flex flex-col justify-between gap-8 rounded-2xl border
-              border-white/40 bg-white/40 p-6 shadow-md backdrop-blur-xs
-              transition-all duration-300 hover:bg-white/60"
-          >
-            <div class="flex flex-col gap-2">
-              <h3 class="pb-6 text-2xl font-semibold">Contact</h3>
-              <span class="flex flex-row items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="size-4"
+
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <div class="grid grid-cols-2 gap-4 lg:col-span-1 lg:flex lg:flex-col">
+            <a
+              href="tel:+36205154060"
+              class="group relative flex flex-col justify-between
+                overflow-hidden rounded-3xl bg-teal-900 p-6 text-white shadow-lg
+                transition-transform duration-300 hover:scale-[1.01] sm:p-8"
+            >
+              <div class="mb-6 flex items-center justify-between">
+                <span
+                  class="rounded-full bg-white/20 p-2 backdrop-blur-md sm:p-3"
                 >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-                  <path d="M2 12h20" />
-                </svg>
-                <p>Hungary</p>
-              </span>
-              <span class="flex flex-row items-center gap-2">
+                  <svg
+                    class="size-5 text-white sm:size-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
+                  </svg>
+                </span>
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
+                  class="hidden size-5 text-white/50 transition-transform
+                    group-hover:translate-x-1 group-hover:-translate-y-1
+                    sm:block"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="size-4"
+                  viewBox="0 0 24 24"
                 >
                   <path
-                    d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                   />
-                  <circle cx="12" cy="10" r="3" />
                 </svg>
-                <p>2120 Dunakeszi, Kolozsvár u. 6</p>
-              </span>
-              <span class="flex flex-row items-center gap-2">
+              </div>
+              <div class="flex flex-col items-start">
+                <p
+                  class="text-[10px] font-bold tracking-widest text-teal-300
+                    uppercase sm:text-xs"
+                >
+                  Call
+                </p>
+                <p class="mt-1 text-sm font-bold sm:mt-2 sm:text-2xl">
+                  +36 20 515 4060
+                </p>
+              </div>
+            </a>
+
+            <a
+              href="mailto:gergo.szell@windeurotrans.com"
+              class="group flex flex-col justify-between rounded-3xl border
+                border-stone-500/10 bg-white/40 p-6 backdrop-blur-md
+                transition-all hover:bg-white/60 sm:p-8"
+            >
+              <div class="mb-4 text-teal-800">
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
+                  class="size-7 sm:size-8"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="size-4"
-                >
-                  <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                </svg>
-                <a
-                  class="underline-primary hover:decoration-primary
-                    cursor-pointer hover:underline"
-                  href="mailto:gergo.szell@windeurotrans.com"
-                  >gergo.szell@windeurotrans.com</a
-                >
-              </span>
-              <span class="flex flex-row items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
                   viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="size-4"
                 >
                   <path
-                    d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
-                <a
-                  class="underline-primary hover:decoration-primary
-                    cursor-pointer hover:underline"
-                  href="tel:+36205154060"
-                  >+36 20 515 4060</a
+              </div>
+              <div>
+                <p
+                  class="text-[10px] font-bold tracking-widest text-gray-400
+                    uppercase sm:text-xs"
                 >
-              </span>
-              <span class="flex flex-row items-center gap-2">
+                  Email
+                </p>
+                <p
+                  class="text-text_color mt-1 text-xs font-semibold break-all
+                    sm:text-base"
+                >
+                  gergo.szell@windeurotrans.com
+                </p>
+              </div>
+            </a>
+
+            <div
+              class="flex flex-col justify-between rounded-3xl border
+                border-stone-500/10 bg-white/40 p-6 backdrop-blur-md
+                transition-all hover:bg-white/60 sm:p-8"
+            >
+              <div class="mb-4 text-teal-800">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -795,7 +803,7 @@
                   stroke-width="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  class="size-4"
+                  class="size-7 sm:size-8"
                 >
                   <path
                     d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
@@ -803,9 +811,29 @@
                   <path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6" />
                   <rect x="6" y="14" width="12" height="8" rx="1" />
                 </svg>
-                <p>+36 1 700 2219</p>
-              </span>
-              <span class="flex flex-row items-center gap-2">
+              </div>
+              <div>
+                <p
+                  class="text-[10px] font-bold tracking-widest text-gray-400
+                    uppercase sm:text-xs"
+                >
+                  Fax
+                </p>
+                <p
+                  class="text-text_color mt-1 text-xs font-semibold
+                    sm:text-base"
+                >
+                  +36 1 700 2219
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="flex flex-col justify-between rounded-3xl border
+                border-stone-500/10 bg-white/40 p-6 backdrop-blur-md
+                transition-all hover:bg-white/60 sm:p-8"
+            >
+              <div class="mb-4 text-teal-800">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -816,40 +844,87 @@
                   stroke-width="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  class="size-4"
+                  class="size-7 sm:size-8"
                 >
-                  <path d="M12 6v6l4 2" />
                   <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
                 </svg>
-                <p>Monday - Friday: 8:00 - 17:00</p>
-              </span>
-            </div>
-            <div class="flex flex-col gap-2">
-              <h3 class="pb-6 text-2xl font-semibold">Company details</h3>
-              <p><b>VAT number:</b> HU25103681</p>
-              <p><b>Company Reg. Number:</b> 09-09-026613</p>
-              <p>
-                <b>Account Number (HUF):</b> HU87 1091 8001 0000 0093 2944 0003
-              </p>
-              <p>
-                <b>Account Number (EUR):</b> HU92 1091 8001 0000 0093 2944 0010
-              </p>
+              </div>
+              <div>
+                <p
+                  class="text-[10px] font-bold tracking-widest text-gray-400
+                    uppercase sm:text-xs"
+                >
+                  Business Hours
+                </p>
+                <p
+                  class="text-text_color mt-1 text-xs font-semibold
+                    sm:text-base"
+                >
+                  Monday - Friday: 8:00 - 17:00
+                </p>
+              </div>
             </div>
           </div>
-          <div class="h-full w-full max-w-148">
-            <iframe
-              class="h-96 w-full rounded-xl md:h-128"
-              style="border: 0"
-              loading="lazy"
-              allowfullscreen
-              referrerpolicy="no-referrer-when-downgrade"
-              src="https://www.google.com/maps?q=2120 Dunakeszi, Kolozsvár u. 6&output=embed"
+
+          <div class="flex flex-col gap-4 lg:col-span-2">
+            <div
+              class="flex flex-col justify-between rounded-3xl border
+                border-stone-500/10 bg-white/40 p-8 backdrop-blur-md
+                transition-all hover:bg-white/60"
             >
-            </iframe>
+              <div class="mb-4 text-teal-800">
+                <svg
+                  class="size-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p
+                  class="text-xs font-bold tracking-widest text-gray-400
+                    uppercase"
+                >
+                  Headquarters Address
+                </p>
+                <p class="text-text_color mt-1 text-xl font-semibold">
+                  2120 Dunakeszi, Kolozsvár u. 6, Hungary
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="relative min-h-87.5 grow overflow-hidden rounded-4xl border
+                border-stone-500/10 shadow-lg lg:min-h-100"
+            >
+              <iframe
+                class="absolute inset-0 h-full w-full grayscale-[0.2]"
+                style="border: 0"
+                loading="lazy"
+                allowfullscreen
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps?q=2120 Dunakeszi, Kolozsvár u. 6&output=embed"
+              >
+              </iframe>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
     <footer
       class="border-t border-white/5 bg-teal-800 px-6 pt-24 pb-12 text-white
         md:px-12"
