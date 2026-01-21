@@ -1,205 +1,18 @@
-<!doctype html>
-<html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Windeurotrans</title>
-    <link rel="stylesheet" href="./src/style.css" />
-  </head>
-  <body
-    class="font-rubik text-text_color bg-bg_color h-full w-full
-      overflow-x-hidden antialiased"
-  >
-    <nav
-      class="text-text_color fixed top-5 right-5 left-5 z-50 flex w-auto
-        items-center justify-between rounded-3xl border border-stone-500/10
-        bg-stone-500/10 p-5 shadow-md backdrop-blur-xs transition-all
-        duration-300 md:right-auto md:left-1/2 md:w-fit md:-translate-x-1/2"
-    >
-      <div
-        class="text-xl font-extrabold tracking-tighter uppercase
-          transition-colors md:text-2xl"
-      >
-        <a href="#">Wind<span class="text-primary">eurotrans</span></a>
-      </div>
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
 
-      <ul
-        class="hidden gap-10 text-sm font-medium tracking-widest uppercase
-          transition-colors md:flex md:px-24"
-      >
-        <li>
-          <a href="#whyus" class="hover:text-primary transition-colors"
-            >Why us?</a
-          >
-        </li>
-        <li>
-          <a href="#services" class="hover:text-primary transition-colors"
-            >Services</a
-          >
-        </li>
-        <li>
-          <a href="#about" class="hover:text-primary transition-colors"
-            >About</a
-          >
-        </li>
-        <li>
-          <a href="#contact" class="hover:text-primary transition-colors"
-            >Contact</a
-          >
-        </li>
-      </ul>
+// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
+// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+---
 
-      <div class="relative hidden md:block">
-        <button
-          id="langButton"
-          class="hover:text-primary flex cursor-pointer items-center gap-2
-            transition-colors"
-          aria-label="Select language"
-        >
-          <span id="currentFlag" class="text-xl">🇭🇺</span>
-          <svg
-            class="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            ></path>
-          </svg>
-        </button>
-        <div
-          id="langDropdown"
-          class="bg-bg_color absolute right-0 mt-2 hidden w-32 overflow-hidden
-            rounded-lg border border-stone-500/10 shadow-md"
-        >
-          <button
-            class="lang-option flex w-full cursor-pointer items-center gap-2
-              px-4 py-2 text-left transition-colors hover:bg-gray-100"
-            data-lang="hu"
-            data-flag="🇭🇺"
-          >
-            <span class="text-xl">🇭🇺</span>
-            <span class="text-sm">Magyar</span>
-          </button>
-          <button
-            class="lang-option flex w-full cursor-pointer items-center gap-2
-              px-4 py-2 text-left transition-colors hover:bg-gray-100"
-            data-lang="en"
-            data-flag="🇬🇧"
-          >
-            <span class="text-xl">🇬🇧</span>
-            <span class="text-sm">English</span>
-          </button>
-        </div>
-      </div>
+<Layout>
+	<Nav lang="en" />
 
-      <!-- Spacer to push menu button to the right on mobile -->
-      <div class="navbar-spacer flex-1 md:hidden"></div>
-
-      <button
-        id="mobileMenuBtn"
-        class="relative md:hidden"
-        aria-label="Toggle menu"
-      >
-        <!-- Menu Icon (default) -->
-        <svg
-          id="menuIcon"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="size-6 transition-opacity duration-300"
-        >
-          <path d="M4 5h16" />
-          <path d="M4 12h16" />
-          <path d="M4 19h16" />
-        </svg>
-        <!-- X Icon (hidden by default) -->
-        <svg
-          id="closeIcon"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="absolute top-1/2 left-1/2 size-6 -translate-x-1/2
-            -translate-y-1/2 opacity-0 transition-opacity duration-300"
-        >
-          <path d="M18 6 6 18" />
-          <path d="m6 6 12 12" />
-        </svg>
-      </button>
-    </nav>
-
-    <div
-      id="mobileMenu"
-      class="mobile-menu fixed inset-0 z-40 bg-white/50 backdrop-blur-md"
-    >
-      <div class="flex h-full flex-col items-center justify-center gap-8 px-8">
-        <!-- Mobile Navigation Links -->
-        <a
-          href="#whyus"
-          class="mobile-nav-link hover:text-primary text-3xl font-medium
-            tracking-wider uppercase transition-colors"
-          >Why us?</a
-        >
-        <a
-          href="#services"
-          class="mobile-nav-link hover:text-primary text-3xl font-medium
-            tracking-wider uppercase transition-colors"
-          >Services</a
-        >
-        <a
-          href="#about"
-          class="mobile-nav-link hover:text-primary text-3xl font-medium
-            tracking-wider uppercase transition-colors"
-          >About</a
-        >
-        <a
-          href="#contact"
-          class="mobile-nav-link hover:text-primary text-3xl font-medium
-            tracking-wider uppercase transition-colors"
-          >Contact</a
-        >
-
-        <!-- Mobile Language Selector -->
-        <div class="mt-8 flex gap-4">
-          <button
-            class="mobile-lang-option text-4xl transition-transform
-              hover:scale-110"
-            data-lang="hu"
-            data-flag="🇭🇺"
-          >
-            🇭🇺
-          </button>
-          <button
-            class="mobile-lang-option text-4xl transition-transform
-              hover:scale-110"
-            data-lang="en"
-            data-flag="🇬🇧"
-          >
-            🇬🇧
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <header
+	<header
       class="bg-position[70%_30%] m-auto flex h-screen w-full items-center
-        overflow-hidden bg-[url(/public/image_4.jpg)] bg-cover bg-center
+        overflow-hidden bg-[url(/image_4.jpg)] bg-cover bg-center
         bg-no-repeat"
     >
       <div
@@ -294,7 +107,7 @@
                 </div>
               </div>
               <img
-                src="./public/combined_certificates.png"
+                src="combined_certificates.png"
                 alt="ISO 9001 & ISO 14001 & GDP"
                 class="size-48 w-auto object-contain opacity-80 transition-all
                   duration-300 group-hover:opacity-100 group-hover:grayscale-0
@@ -660,7 +473,7 @@
 
         <div class="relative delay-200">
           <img
-            src="./public/portrait.jpg"
+            src="portrait.jpg"
             alt="Modern Truck"
             class="h-125 w-full rounded-xl object-cover shadow-2xl"
           />
@@ -925,181 +738,6 @@
         </div>
       </div>
     </section>
-    <footer
-      class="border-t border-white/5 bg-teal-800 px-6 pt-24 pb-12 text-white
-        md:px-12"
-    >
-      <div
-        class="mx-auto mb-16 grid max-w-7xl grid-cols-1 gap-12 md:grid-cols-4"
-      >
-        <div class="md:col-span-1">
-          <div class="mb-6 text-xl font-extrabold tracking-tighter uppercase">
-            <span class="text-text_color">Wind</span
-            ><span class="text-primary">eurotrans</span>
-          </div>
-          <p class="text-sm leading-relaxed text-gray-200">
-            Modern logistics solutions headquartered in Hungary, serving the
-            world with precision and care.
-          </p>
-        </div>
-        <div>
-          <h4 class="mb-6 text-lg font-bold">Company</h4>
-          <ul class="space-y-4 text-sm text-gray-200">
-            <li>
-              <a href="#" class="hover:text-primary transition-all hover:pl-2"
-                >About Us</a
-              >
-            </li>
-            <li>
-              <a href="#" class="hover:text-primary transition-all hover:pl-2"
-                >Careers</a
-              >
-            </li>
-            <li>
-              <a href="#" class="hover:text-primary transition-all hover:pl-2"
-                >Sustainability</a
-              >
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="mb-6 text-lg font-bold">Services</h4>
-          <ul class="space-y-4 text-sm text-gray-200">
-            <li>
-              <a href="#" class="hover:text-primary transition-all hover:pl-2"
-                >Road Freight</a
-              >
-            </li>
-            <li>
-              <a href="#" class="hover:text-primary transition-all hover:pl-2"
-                >Warehousing</a
-              >
-            </li>
-            <li>
-              <a href="#" class="hover:text-primary transition-all hover:pl-2"
-                >Customs</a
-              >
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="mb-6 text-lg font-bold">Contact</h4>
-          <ul class="space-y-4 text-sm text-gray-200">
-            <li>Budapest, Hungary</li>
-            <li>
-              <a href="mailto:gergo.szell@windeurotrans.com"
-                >gergo.szell@windeurotrans.com</a
-              >
-            </li>
-            <li><a href="tel:+36205154060">+36 20 515 4060</a></li>
-          </ul>
-        </div>
-      </div>
-      <div
-        class="border-t border-white/10 pt-8 text-center text-xs text-gray-200"
-      >
-        &copy; 2026 Windeurotrans Kft. All rights reserved.
-      </div>
-    </footer>
 
-    <script>
-      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-      const mobileMenu = document.getElementById("mobileMenu");
-      const mobileNavLinks = document.querySelectorAll(".mobile-nav-link");
-      const menuIcon = document.getElementById("menuIcon");
-      const closeIcon = document.getElementById("closeIcon");
-      const langButton = document.getElementById("langButton");
-      const langDropdown = document.getElementById("langDropdown");
-      const currentFlag = document.getElementById("currentFlag");
-      const langOptions = document.querySelectorAll(".lang-option");
-      const mobileLangOptions = document.querySelectorAll(
-        ".mobile-lang-option"
-      );
-      const navbar = document.querySelector("nav");
-
-      // Detect browser language and set initial language
-      let currentLang = "hu"; // default fallback
-      const browserLang = navigator.language || navigator.userLanguage;
-
-      // Check if browser language starts with 'en' (en, en-US, en-GB, etc.)
-      if (browserLang.startsWith("en")) {
-        currentLang = "en";
-      } else if (browserLang.startsWith("hu")) {
-        currentLang = "hu";
-      }
-
-      // Mobile menu toggle
-      mobileMenuBtn.addEventListener("click", () => {
-        const isOpen = mobileMenu.classList.contains("menu-open");
-
-        if (isOpen) {
-          // Close menu
-          mobileMenu.classList.remove("menu-open");
-          navbar.classList.remove("menu-open");
-          document.body.classList.remove("menu-open");
-          menuIcon.style.opacity = "1";
-          closeIcon.style.opacity = "0";
-        } else {
-          // Open menu
-          mobileMenu.classList.add("menu-open");
-          navbar.classList.add("menu-open");
-          document.body.classList.add("menu-open");
-          menuIcon.style.opacity = "0";
-          closeIcon.style.opacity = "1";
-        }
-      });
-
-      // Close mobile menu when clicking a link
-      mobileNavLinks.forEach((link) => {
-        link.addEventListener("click", () => {
-          mobileMenu.classList.remove("menu-open");
-          navbar.classList.remove("menu-open");
-          document.body.classList.remove("menu-open");
-          menuIcon.style.opacity = "1";
-          closeIcon.style.opacity = "0";
-        });
-      });
-
-      // Desktop language selector
-      langButton.addEventListener("click", (e) => {
-        e.stopPropagation();
-        langDropdown.classList.toggle("hidden");
-      });
-
-      // Close dropdown when clicking outside
-      document.addEventListener("click", () => {
-        langDropdown.classList.add("hidden");
-      });
-
-      // Language selection (desktop)
-      langOptions.forEach((option) => {
-        option.addEventListener("click", (e) => {
-          e.stopPropagation();
-          currentLang = option.dataset.lang;
-          currentFlag.textContent = option.dataset.flag;
-          langDropdown.classList.add("hidden");
-        });
-      });
-
-      // Language selection (mobile)
-      mobileLangOptions.forEach((option) => {
-        option.addEventListener("click", () => {
-          currentLang = option.dataset.lang;
-          currentFlag.textContent = option.dataset.flag;
-          // Visual feedback
-          mobileLangOptions.forEach((opt) => (opt.style.opacity = "0.5"));
-          option.style.opacity = "1";
-        });
-      });
-
-      // Set initial language display based on detected language
-      const initialFlag = currentLang === "en" ? "🇬🇧" : "🇭🇺";
-      currentFlag.textContent = initialFlag;
-
-      // Set initial mobile lang state
-      mobileLangOptions.forEach((opt) => {
-        opt.style.opacity = opt.dataset.lang === currentLang ? "1" : "0.5";
-      });
-    </script>
-  </body>
-</html>
+	<Footer lang="en" />
+</Layout>
