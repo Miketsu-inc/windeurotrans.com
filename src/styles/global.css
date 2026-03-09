@@ -4,8 +4,8 @@
 @theme {
   --font-rubik: "Rubik", sans-serif;
 
-  --color-primary: oklch(75% 0.183 55.934);
-  --color-secondary: oklch(52.7% 0.154 150.069);
+  --color-primary: oklch(75% 0.183 55.934); /* orange-400 */
+  --color-secondary: oklch(38.6% 0.063 188.416); /* teal-900 */
 
   --color-bg_color: #fbf7f4;
   --color-text_color: oklch(12.9% 0.042 264.695);
