@@ -1,0 +1,144 @@
+---
+import type { GetStaticPaths } from "astro";
+import { locales, useTranslation, type Locale } from "../../i18n/utils";
+
+import Layout from "../../layouts/Layout.astro";
+import Nav from "../../components/Nav.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+
+export const getStaticPaths = (() => {
+  return locales.map((locale) => ({
+    params: { locale },
+  }));
+}) satisfies GetStaticPaths;
+
+const locale = Astro.params.locale as Locale;
+---
+
+<Layout>
+  <Nav locale={locale} />
+  <Header title="Adatkezelési tájekoztató" />
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="max-w-3xl leading-relaxed flex flex-col gap-8">
+      <div>
+        <h2 class="font-bold text-xl pb-4">Adatvédelmi tájekoztató célja</h2>
+        <p>
+          A jelen adatvédelmi tájékoztató célja, hogy a WIND EUROTRANS Kft.,
+          mint adatkezelő tájékoztassa a szerződött partnereit az általa
+          alkalmazott adatkezelési tevékenységéről, illetve információt nyújtson
+          leendő partnerei számára az adatkezelési tevékenységéről.
+        </p>
+      </div>
+      <div>
+        <h2 class="font-bold text-xl pb-4">Adatkezelésének alapja</h2>
+        <p>
+          Adatkezelésének alapja az Európai Parlament és a Tanács 2016/679 számú
+          rendelkezése személyes adatok védelméről és az ilyen adatok szabad
+          áramlásáról, valamint a 2011. évi CXII. törvény az információs
+          önrendelkezési jogról és az információszabadságról.
+        </p>
+      </div>
+      <div class="flex flex-col gap-2">
+        <h2 class="font-bold text-xl pb-4">Adatkezelő</h2>
+        <p>WIND EUROTRANS Kft.</p>
+        <p>székhelye: 2120 Dunakeszi Kolozsvár u. 6.</p>
+        <p>cégjegyzékszáma: 13 09 139341</p>
+        <p>e-mail: gergo.szell@windeurotrans.com</p>
+        <p>képviseli: Széll Gergő ügyvezető</p>
+        <p>
+          Mint Adatkezelő gyakorolja a személyes adatok feletti ellenőrzést,
+          határozza meg a személyes adatok kezelésének céljait és eszközeit.
+        </p>
+      </div>
+      <div class="flex flex-col gap-4">
+        <h2 class="font-bold text-xl pb-4">Adatfeldolgozók</h2>
+        <p>A WIND EUROTRANS Kft. alkalmazásában álló fuvarszervezők</p>
+        <p>
+          A WIND EUROTRANS Kft. fuvarozási és szállítmányozási tevékenysége
+          során ügyfél adatokat fogad, tárol, őriz és továbbít.
+        </p>
+      </div>
+      <div>
+        <h2 class="font-bold text-xl pb-4">A kezelt adatok köre</h2>
+        <ul class="list-disc list-inside">
+          <li>név</li>
+          <li>telefonszám</li>
+          <li>email</li>
+          <li>cím</li>
+        </ul>
+      </div>
+      <div class="flex flex-col gap-4">
+        <h2 class="font-bold text-xl pb-4">A kezelt adatok jogalapja</h2>
+        <p>
+          Cégünk személyes adatot csak meghatározott célból, megbízás
+          teljesítése érdekében kezel. A teljesítést követően az ügyfél adat a
+          levelező- illetve szállítmányozási szoftverünkben megőrzésre kerül a
+          további kapcsolatápolás érdekében. Ugyanúgy megőrizzük a személyes
+          adatokat akkor is, ha az ajánlatkérést követő ajánlatunk nem került
+          elfogadásra. Amennyiben egy év alatt sem kapcsolattartásra, sem
+          további megállapodásra nem kerül sor, úgy kérjük partnerünk
+          hozzájárulását adatainak további egy évre történő megőrzéséhez.
+        </p>
+        <p>
+          A WIND-EUROTRANS Kft. jogos érdeke, hogy kapcsolattartás, közvetlen
+          üzletszerzés érdekében partnerei kapcsolattartóinak személyes adatait
+          őrizze. Partnereink jogosultak arra, hogy az e célból tárolt személyes
+          adataik kezelése ellen tiltakozzanak. Ebben az esetben a személyes
+          adataikat a továbbiakban nem kezeljük.
+        </p>
+        <p>
+          Cégünk minden munkatársa köteles gondoskodni arról, hogy munkája során
+          jogosulatlan személyek ne tekinthessenek be személyes adatokba,
+          valamint arról, hogy az adatok tárolása, elhelyezése úgy kerüljön
+          kialakításra, hogy a jogosulatlan személyek számára ne legyen
+          hozzáférhető, megismerhető, megváltoztatható és megsemmisíthető.
+        </p>
+        <p>
+          A megbízás teljesítése keretében és azon túl is, őrzött ügyfél
+          személyes adatot harmadik személy vagy cég felé, az érintett
+          megkérdezése nélkül nem továbbítunk.
+        </p>
+        <p>
+          A rendszereinkben lévő adatállomány védelmét Cégünk számára
+          megengedhető legmagasabb szintű technikai megoldásokkal biztosítjuk.
+        </p>
+        <p>
+          Készek vagyunk arra, hogy a személyes adatok kezelésével kapcsolatban
+          mindenkor tájékoztassuk az érintetteket, és intézkedést hozzunk az
+          adatkezeléssel kapcsolatos jogaik érvényesítése érdekében
+          (hozzáféréshez, helyesbítéshez, törléshez, az adatkezelés
+          korlátozásához, az adathordozhatósághoz, a hozzájárulás
+          visszavonásához, valamint a jogorvoslathoz való jog).
+        </p>
+      </div>
+      <div>
+        <h2 class="font-bold text-xl pb-4">
+          Az Adatvédelmi tájékoztatónk frissítései
+        </h2>
+        <p>
+          Készek vagyunk arra, hogy a személyes adatok kezelésével kapcsolatban
+          mindenkor tájékoztassuk az érintetteket, és intézkedést hozzunk az
+          adatkezeléssel kapcsolatos jogaik érvényesítése érdekében
+          (hozzáféréshez, helyesbítéshez, törléshez, az adatkezelés
+          korlátozásához, az adathordozhatósághoz, a hozzájárulás
+          visszavonásához, valamint a jogorvoslathoz való jog).
+        </p>
+      </div>
+      <div>
+        <h2 class="font-bold text-xl pb-4">
+          Hogyan léphet velünk kapcsolatba?
+        </h2>
+        <p>
+          Készek vagyunk arra, hogy a személyes adatok kezelésével kapcsolatban
+          mindenkor tájékoztassuk az érintetteket, és intézkedést hozzunk az
+          adatkezeléssel kapcsolatos jogaik érvényesítése érdekében
+          (hozzáféréshez, helyesbítéshez, törléshez, az adatkezelés
+          korlátozásához, az adathordozhatósághoz, a hozzájárulás
+          visszavonásához, valamint a jogorvoslathoz való jog).
+        </p>
+      </div>
+    </div>
+  </section>
+  <Footer locale={locale} />
+</Layout>

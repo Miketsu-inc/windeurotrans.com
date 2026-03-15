@@ -1,9 +1,12 @@
 ---
+import { getRelativeLocaleUrl } from "astro:i18n";
 import { useTranslation } from "../i18n/utils";
 
 const { locale } = Astro.props;
 
 const year = new Date().getFullYear();
+
+const privacyPolicyUrl = getRelativeLocaleUrl(locale, "privacy-policy");
 
 const t = useTranslation(locale);
 ---
@@ -12,7 +15,7 @@ const t = useTranslation(locale);
   class="border-t border-white/5 bg-secondary px-6 pt-24 pb-8 text-white
         md:px-12"
 >
-  <div class="mx-auto mb-16 grid max-w-7xl grid-cols-1 gap-12 md:grid-cols-4">
+  <div class="mx-auto mb-16 grid max-w-7xl grid-cols-1 gap-12 md:grid-cols-5">
     <div class="md:col-span-1">
       <img
         src={`${import.meta.env.BASE_URL}/logo.png`}
@@ -74,6 +77,19 @@ const t = useTranslation(locale);
           >
         </li>
         <li><a href="tel:+36205154060">+36 20 515 4060</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="mb-6 text-lg font-bold">{t("footer.legal.name")}</h4>
+      <ul class="space-y-4 text-sm text-gray-200">
+        <li>
+          <a
+            href={privacyPolicyUrl}
+            class="hover:text-primary transition-all hover:pl-2"
+          >
+            {t("footer.legal.privacypolicy")}
+          </a>
+        </li>
       </ul>
     </div>
   </div>

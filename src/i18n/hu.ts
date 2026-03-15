@@ -23,7 +23,7 @@ export default {
     },
     services: {
       name: "Szolgáltatások",
-      shipping: "Szallitas",
+      shipping: "Rakomány szállítás",
       dispatch: "Diszpécserszolgálat",
       forwarding: "Szállítmány továbbítás",
       customs: "Vámügyintézés",
@@ -31,6 +31,10 @@ export default {
     contact: {
       name: "Kapcsolat",
       country: "",
+    },
+    legal: {
+      name: "Jogi információk",
+      privacypolicy: "Adatkezelési tájekoztató",
     },
     copyright: "Minden jog fenntartva",
   },

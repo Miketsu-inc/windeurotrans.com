@@ -28,6 +28,11 @@
   pointer-events: auto;
 }
 
+/* Prevent layout shift from dissapearing scrollbar */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Disable scrolling when mobile menu is open */
 body.menu-open {
   overflow: hidden;

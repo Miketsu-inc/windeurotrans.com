@@ -20,61 +20,123 @@ const t = useTranslation(locale);
 const landingUrl = getRelativeLocaleUrl(locale);
 ---
 
-<nav
-  class="text-text_color fixed top-5 right-5 left-5 z-50 flex w-auto
-        items-center justify-between rounded-3xl border border-stone-500/10
-        bg-stone-500/10 p-5 shadow-md backdrop-blur-xs transition-all
-        duration-300 md:right-auto md:left-1/2 md:w-fit md:-translate-x-1/2"
+<!--
+  Sentinel: invisible element at the very top.
+  When it leaves the viewport, we activate the floating nav.
+-->
+<div
+  id="navSentinel"
+  class="relative top-0 left-0 h-px w-full pointer-events-none"
+  aria-hidden="true"
 >
-  <!-- <div
-    class="text-xl font-extrabold tracking-tighter uppercase
-          transition-colors md:text-2xl"
-  >
-    <a href={landingUrl}>Wind<span class="text-primary">eurotrans</span></a>
-  </div> -->
-  <a href={landingUrl}>
-    <img
-      src={`${import.meta.env.BASE_URL}/logo.png`}
-      alt="Windeurotrans logo"
-      class="w-full size-8 object-scale shrink-0"
-    />
-  </a>
+</div>
 
-  <ul
-    class="hidden gap-10 text-sm font-medium tracking-widest uppercase
-          transition-colors md:flex md:px-24"
+<!-- Static nav (absolutely positioned, overlays the header — no background of its own) -->
+<div
+  id="navStaticWrapper"
+  class="absolute top-0 left-0 right-0 z-50 flex justify-center transition-opacity duration-300"
+>
+  <nav
+    id="navStatic"
+    class="text-text_color flex w-full max-w-4xl items-center justify-between p-5"
   >
-    <li>
-      <a href="#whyus" class="hover:text-primary transition-colors"
-        >{t("nav.whyus")}</a
-      >
-    </li>
-    <li>
-      <a href="#services" class="hover:text-primary transition-colors"
-        >{t("nav.services")}</a
-      >
-    </li>
-    <li>
-      <a href="#about" class="hover:text-primary transition-colors"
-        >{t("nav.about")}</a
-      >
-    </li>
-    <li>
-      <a href="#contact" class="hover:text-primary transition-colors"
-        >{t("nav.contact")}</a
-      >
-    </li>
-  </ul>
+    <a href={landingUrl}>
+      <img
+        src={`${import.meta.env.BASE_URL}/logo.png`}
+        alt="Windeurotrans logo"
+        class="w-full size-8 object-contain shrink-0"
+      />
+    </a>
 
-  <div class="relative hidden md:block">
+    <ul
+      class="hidden gap-10 text-sm font-medium tracking-widest uppercase
+            transition-colors md:flex md:px-24"
+    >
+      <li>
+        <a href="#whyus" class="hover:text-primary transition-colors"
+          >{t("nav.whyus")}</a
+        >
+      </li>
+      <li>
+        <a href="#services" class="hover:text-primary transition-colors"
+          >{t("nav.services")}</a
+        >
+      </li>
+      <li>
+        <a href="#about" class="hover:text-primary transition-colors"
+          >{t("nav.about")}</a
+        >
+      </li>
+      <li>
+        <a href="#contact" class="hover:text-primary transition-colors"
+          >{t("nav.contact")}</a
+        >
+      </li>
+    </ul>
+
+    <div class="relative hidden md:block">
+      <button
+        id="langButtonStatic"
+        class="hover:text-primary flex cursor-pointer items-center gap-1 transition-colors"
+        aria-label="Select language"
+      >
+        <svg
+          class="size-5"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+          <path d="M2 12h20"></path>
+        </svg>
+        <svg
+          class="size-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      <div
+        id="langDropdownStatic"
+        class="bg-bg_color absolute right-0 mt-2 hidden w-fit overflow-hidden rounded-lg border border-stone-500/10 shadow-md"
+      >
+        {
+          langUrls.map((lang) => (
+            <a
+              href={lang.url}
+              class={`block w-full cursor-pointer px-4 py-2 text-sm transition-colors hover:bg-gray-100 ${
+                lang.code === locale ? "text-primary font-semibold" : ""
+              }`}
+            >
+              {lang.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="navbar-spacer flex-1 md:hidden"></div>
+
     <button
-      id="langButton"
-      class="hover:text-primary flex cursor-pointer items-center gap-1
-            transition-colors"
-      aria-label="Select language"
+      id="mobileMenuBtnStatic"
+      class="relative md:hidden"
+      aria-label="Toggle menu"
     >
       <svg
-        class="size-5"
+        id="menuIconStatic"
         xmlns="http://www.w3.org/2000/svg"
         width="24"
         height="24"
@@ -84,118 +146,210 @@ const landingUrl = getRelativeLocaleUrl(locale);
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
-        class="lucide lucide-globe-icon lucide-globe"
-        ><circle cx="12" cy="12" r="10"></circle><path
-          d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path
-          d="M2 12h20"></path></svg
+        class="size-6"
       >
-      <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M19 9l-7 7-7-7"></path>
+        <path d="M4 5h16"></path>
+        <path d="M4 12h16"></path>
+        <path d="M4 19h16"></path>
       </svg>
     </button>
-    <div
-      id="langDropdown"
-      class="bg-bg_color absolute right-0 mt-2 hidden w-fit overflow-hidden rounded-lg border border-stone-500/10 shadow-md"
-    >
-      {
-        langUrls.map((lang) => (
-          <a
-            href={lang.url}
-            class={`block w-full cursor-pointer px-4 py-2 text-sm transition-colors hover:bg-gray-100 ${
-              lang.code === locale ? "text-primary font-semibold" : ""
-            }`}
-          >
-            {lang.label}
-          </a>
-        ))
-      }
-    </div>
-  </div>
+  </nav>
+</div>
 
-  <!-- Spacer to push menu button to the right on mobile -->
-  <div class="navbar-spacer flex-1 md:hidden"></div>
-
-  <button
-    id="mobileMenuBtn"
-    class="relative md:hidden"
-    aria-label="Toggle menu"
+<!-- Floating nav wrapper: fixed, full-width, pointer-events none by default -->
+<div
+  id="navFloatingWrapper"
+  class="fixed top-0 left-0 right-0 z-50 flex justify-center px-5 pt-5 pointer-events-none"
+  style="transform: translateY(-110%); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);"
+>
+  <nav
+    id="navFloating"
+    class="text-text_color flex w-full max-w-4xl items-center justify-between
+          rounded-3xl border border-stone-500/10 bg-stone-500/10 p-5 shadow-md
+          backdrop-blur-xs pointer-events-auto"
   >
-    <!-- Menu Icon (default) -->
-    <svg
-      id="menuIcon"
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="size-6 transition-opacity duration-300"
-    >
-      <path d="M4 5h16"></path>
-      <path d="M4 12h16"></path>
-      <path d="M4 19h16"></path>
-    </svg>
-    <!-- X Icon (hidden by default) -->
-    <svg
-      id="closeIcon"
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="absolute top-1/2 left-1/2 size-6 -translate-x-1/2
-            -translate-y-1/2 opacity-0 transition-opacity duration-300"
-    >
-      <path d="M18 6 6 18"></path>
-      <path d="m6 6 12 12"></path>
-    </svg>
-  </button>
-</nav>
+    <a href={landingUrl}>
+      <img
+        src={`${import.meta.env.BASE_URL}/logo.png`}
+        alt="Windeurotrans logo"
+        class="w-full size-8 object-contain shrink-0"
+      />
+    </a>
 
+    <ul
+      class="hidden gap-10 text-sm font-medium tracking-widest uppercase
+            transition-colors md:flex md:px-24"
+    >
+      <li>
+        <a href="#whyus" class="hover:text-primary transition-colors"
+          >{t("nav.whyus")}</a
+        >
+      </li>
+      <li>
+        <a href="#services" class="hover:text-primary transition-colors"
+          >{t("nav.services")}</a
+        >
+      </li>
+      <li>
+        <a href="#about" class="hover:text-primary transition-colors"
+          >{t("nav.about")}</a
+        >
+      </li>
+      <li>
+        <a href="#contact" class="hover:text-primary transition-colors"
+          >{t("nav.contact")}</a
+        >
+      </li>
+    </ul>
+
+    <div class="relative hidden md:block">
+      <button
+        id="langButtonFloating"
+        class="hover:text-primary flex cursor-pointer items-center gap-1 transition-colors"
+        aria-label="Select language"
+      >
+        <svg
+          class="size-5"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+          <path d="M2 12h20"></path>
+        </svg>
+        <svg
+          class="size-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      <div
+        id="langDropdownFloating"
+        class="bg-bg_color absolute right-0 mt-2 hidden w-fit overflow-hidden rounded-lg border border-stone-500/10 shadow-md"
+      >
+        {
+          langUrls.map((lang) => (
+            <a
+              href={lang.url}
+              class={`block w-full cursor-pointer px-4 py-2 text-sm transition-colors hover:bg-gray-100 ${
+                lang.code === locale ? "text-primary font-semibold" : ""
+              }`}
+            >
+              {lang.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="navbar-spacer flex-1 md:hidden"></div>
+
+    <button
+      id="mobileMenuBtnFloating"
+      class="relative md:hidden"
+      aria-label="Toggle menu"
+    >
+      <svg
+        id="menuIconFloating"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="size-6"
+      >
+        <path d="M4 5h16"></path>
+        <path d="M4 12h16"></path>
+        <path d="M4 19h16"></path>
+      </svg>
+    </button>
+  </nav>
+</div>
+
+<!--
+  Mobile menu overlay.
+  z-60 so it sits above the floating nav wrapper (z-50).
+  Contains its own logo + close button so they're always visible over the overlay.
+-->
 <div
   id="mobileMenu"
-  class="mobile-menu fixed inset-0 z-40 bg-white/50 backdrop-blur-md"
+  class="mobile-menu fixed inset-0 z-60 bg-white/50 backdrop-blur-md"
 >
-  <div class="flex h-full flex-col items-center justify-center gap-8 px-8">
-    <!-- Mobile Navigation Links -->
+  <!-- Top bar: padding set by JS to match whichever nav triggered the open -->
+  <div
+    id="mobileMenuTopBar"
+    class="flex w-full items-center justify-between p-5"
+  >
+    <a href={landingUrl}>
+      <img
+        src={`${import.meta.env.BASE_URL}/logo.png`}
+        alt="Windeurotrans logo"
+        class="w-full size-8 object-contain shrink-0"
+      />
+    </a>
+    <div class="flex-1"></div>
+    <button id="mobileMenuClose" class="relative" aria-label="Close menu">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="size-6"
+      >
+        <path d="M18 6 6 18"></path>
+        <path d="m6 6 12 12"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Nav links centred in remaining space -->
+  <div
+    class="flex h-[calc(100%-4.5rem)] flex-col items-center justify-center gap-8 px-8"
+  >
     <a
       href="#whyus"
-      class="mobile-nav-link hover:text-primary text-3xl font-medium
-            tracking-wider uppercase transition-colors"
+      class="mobile-nav-link hover:text-primary text-3xl font-medium tracking-wider uppercase transition-colors"
       >{t("nav.whyus")}</a
     >
     <a
       href="#services"
-      class="mobile-nav-link hover:text-primary text-3xl font-medium
-            tracking-wider uppercase transition-colors"
+      class="mobile-nav-link hover:text-primary text-3xl font-medium tracking-wider uppercase transition-colors"
       >{t("nav.services")}</a
     >
     <a
       href="#about"
-      class="mobile-nav-link hover:text-primary text-3xl font-medium
-            tracking-wider uppercase transition-colors"
+      class="mobile-nav-link hover:text-primary text-3xl font-medium tracking-wider uppercase transition-colors"
       >{t("nav.about")}</a
     >
     <a
       href="#contact"
-      class="mobile-nav-link hover:text-primary text-3xl font-medium
-            tracking-wider uppercase transition-colors"
+      class="mobile-nav-link hover:text-primary text-3xl font-medium tracking-wider uppercase transition-colors"
       >{t("nav.contact")}</a
     >
-
-    <!-- Mobile Language Selector -->
-    <div class="mt-24 flex gap-4">
+    <div class="mt-8 flex gap-4">
       {
         langUrls.map((lang) => (
           <a
@@ -213,56 +367,97 @@ const landingUrl = getRelativeLocaleUrl(locale);
 </div>
 
 <script>
-  const mobileMenuBtn = document.getElementById("mobileMenuBtn")!;
-  const mobileMenu = document.getElementById("mobileMenu")!;
-  const mobileNavLinks = document.querySelectorAll(".mobile-nav-link")!;
-  const menuIcon = document.getElementById("menuIcon")!;
-  const closeIcon = document.getElementById("closeIcon")!;
-  const langButton = document.getElementById("langButton")!;
-  const langDropdown = document.getElementById("langDropdown")!;
+  // ─── Floating nav scroll logic ───────────────────────────────────────────────
+  const sentinel = document.getElementById("navSentinel")!;
+  const navFloatingWrapper = document.getElementById("navFloatingWrapper")!;
+  const navStaticWrapper = document.getElementById("navStaticWrapper")!;
 
-  const navbar = document.querySelector("nav")!;
+  let showTimeout: ReturnType<typeof setTimeout> | null = null;
+  let isFloating = false;
 
-  // Mobile menu toggle
-  mobileMenuBtn.addEventListener("click", () => {
-    const isOpen = mobileMenu.classList.contains("menu-open");
+  function showFloating() {
+    if (showTimeout) clearTimeout(showTimeout);
+    showTimeout = setTimeout(() => {
+      navFloatingWrapper.style.transform = "translateY(0)";
+      navFloatingWrapper.style.pointerEvents = "auto"; // wrapper itself isn't needed but nav inside has pointer-events-auto
+      isFloating = true;
+    }, 150);
+  }
 
-    if (isOpen) {
-      // Close menu
-      mobileMenu.classList.remove("menu-open");
-      navbar.classList.remove("menu-open");
-      document.body.classList.remove("menu-open");
-      menuIcon.style.opacity = "1";
-      closeIcon.style.opacity = "0";
-    } else {
-      // Open menu
-      mobileMenu.classList.add("menu-open");
-      navbar.classList.add("menu-open");
-      document.body.classList.add("menu-open");
-      menuIcon.style.opacity = "0";
-      closeIcon.style.opacity = "1";
+  function hideFloating() {
+    if (showTimeout) {
+      clearTimeout(showTimeout);
+      showTimeout = null;
     }
-  });
+    navFloatingWrapper.style.transform = "translateY(-110%)";
+    isFloating = false;
+  }
 
-  // Close mobile menu when clicking a link
-  mobileNavLinks.forEach((link) => {
-    link.addEventListener("click", () => {
-      mobileMenu.classList.remove("menu-open");
-      navbar.classList.remove("menu-open");
-      document.body.classList.remove("menu-open");
-      menuIcon.style.opacity = "1";
-      closeIcon.style.opacity = "0";
+  const observer = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        hideFloating();
+        navStaticWrapper.style.opacity = "1";
+        navStaticWrapper.style.pointerEvents = "auto";
+      } else {
+        showFloating();
+        navStaticWrapper.style.opacity = "0";
+        navStaticWrapper.style.pointerEvents = "none";
+      }
+    },
+    { threshold: 0 },
+  );
+
+  observer.observe(sentinel);
+
+  // ─── Mobile menu toggle ───────────────────────────────────────────────────────
+  const mobileMenu = document.getElementById("mobileMenu")!;
+  const mobileMenuTopBar = document.getElementById("mobileMenuTopBar")!;
+  const mobileNavLinks = document.querySelectorAll(".mobile-nav-link");
+
+  function openMenu(fromFloating: boolean) {
+    document.body.style.overflow = "hidden";
+
+    // Match overlay top bar padding to whichever nav triggered the open:
+    // Static nav: p-5 (20px all sides)
+    // Floating nav: wrapper has pt-5 px-5, inner nav has p-5 → logo is at top: 20+20=40px, left: 20+20=40px
+    if (fromFloating) {
+      mobileMenuTopBar.style.padding = "40px 40px 20px 40px";
+    } else {
+      mobileMenuTopBar.style.padding = "20px";
+    }
+
+    mobileMenu.classList.add("menu-open");
+  }
+
+  function closeMenu() {
+    mobileMenu.classList.remove("menu-open");
+    document.body.style.overflow = "";
+    document.body.style.paddingRight = "";
+  }
+
+  document
+    .getElementById("mobileMenuBtnStatic")!
+    .addEventListener("click", () => openMenu(false));
+  document
+    .getElementById("mobileMenuBtnFloating")!
+    .addEventListener("click", () => openMenu(true));
+  document
+    .getElementById("mobileMenuClose")!
+    .addEventListener("click", closeMenu);
+  mobileNavLinks.forEach((link) => link.addEventListener("click", closeMenu));
+
+  // ─── Desktop language dropdowns ──────────────────────────────────────────────
+  function setupDropdown(btnId: string, dropdownId: string) {
+    const btn = document.getElementById(btnId)!;
+    const dropdown = document.getElementById(dropdownId)!;
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle("hidden");
     });
-  });
+    document.addEventListener("click", () => dropdown.classList.add("hidden"));
+  }
 
-  // Desktop language selector
-  langButton.addEventListener("click", (e) => {
-    e.stopPropagation();
-    langDropdown.classList.toggle("hidden");
-  });
-
-  // Close dropdown when clicking outside
-  document.addEventListener("click", () => {
-    langDropdown.classList.add("hidden");
-  });
+  setupDropdown("langButtonStatic", "langDropdownStatic");
+  setupDropdown("langButtonFloating", "langDropdownFloating");
 </script>
