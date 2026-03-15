@@ -1,5 +1,6 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
+import { useTranslation } from "../i18n/utils";
 
 const { locale } = Astro.props;
 const path = Astro.url.pathname;
@@ -14,13 +15,7 @@ const langUrls = languages.map((l) => ({
   url: getRelativeLocaleUrl(l.code, path),
 }));
 
-const text = {
-  en: {
-    whyus: "Why us?",
-  },
-  hu: {},
-  it: {},
-};
+const t = useTranslation(locale);
 
 const landingUrl = getRelativeLocaleUrl(locale);
 ---
@@ -31,30 +26,42 @@ const landingUrl = getRelativeLocaleUrl(locale);
         bg-stone-500/10 p-5 shadow-md backdrop-blur-xs transition-all
         duration-300 md:right-auto md:left-1/2 md:w-fit md:-translate-x-1/2"
 >
-  <div
+  <!-- <div
     class="text-xl font-extrabold tracking-tighter uppercase
           transition-colors md:text-2xl"
   >
     <a href={landingUrl}>Wind<span class="text-primary">eurotrans</span></a>
-  </div>
+  </div> -->
+  <a href={landingUrl}>
+    <img
+      src={`${import.meta.env.BASE_URL}/logo.png`}
+      alt="Windeurotrans logo"
+      class="w-full size-8 object-scale shrink-0"
+    />
+  </a>
 
   <ul
     class="hidden gap-10 text-sm font-medium tracking-widest uppercase
           transition-colors md:flex md:px-24"
   >
     <li>
-      <a href="#whyus" class="hover:text-primary transition-colors">Why us?</a>
-    </li>
-    <li>
-      <a href="#services" class="hover:text-primary transition-colors"
-        >Services</a
+      <a href="#whyus" class="hover:text-primary transition-colors"
+        >{t("nav.whyus")}</a
       >
     </li>
     <li>
-      <a href="#about" class="hover:text-primary transition-colors">About</a>
+      <a href="#services" class="hover:text-primary transition-colors"
+        >{t("nav.services")}</a
+      >
     </li>
     <li>
-      <a href="#contact" class="hover:text-primary transition-colors">Contact</a
+      <a href="#about" class="hover:text-primary transition-colors"
+        >{t("nav.about")}</a
+      >
+    </li>
+    <li>
+      <a href="#contact" class="hover:text-primary transition-colors"
+        >{t("nav.contact")}</a
       >
     </li>
   </ul>
@@ -98,7 +105,9 @@ const landingUrl = getRelativeLocaleUrl(locale);
         langUrls.map((lang) => (
           <a
             href={lang.url}
-            class="block w-full cursor-pointer px-4 py-2 text-sm transition-colors hover:bg-gray-100"
+            class={`block w-full cursor-pointer px-4 py-2 text-sm transition-colors hover:bg-gray-100 ${
+              lang.code === locale ? "text-primary font-semibold" : ""
+            }`}
           >
             {lang.label}
           </a>
@@ -164,25 +173,25 @@ const landingUrl = getRelativeLocaleUrl(locale);
       href="#whyus"
       class="mobile-nav-link hover:text-primary text-3xl font-medium
             tracking-wider uppercase transition-colors"
-      >Why us?</a
+      >{t("nav.whyus")}</a
     >
     <a
       href="#services"
       class="mobile-nav-link hover:text-primary text-3xl font-medium
             tracking-wider uppercase transition-colors"
-      >Services</a
+      >{t("nav.services")}</a
     >
     <a
       href="#about"
       class="mobile-nav-link hover:text-primary text-3xl font-medium
             tracking-wider uppercase transition-colors"
-      >About</a
+      >{t("nav.about")}</a
     >
     <a
       href="#contact"
       class="mobile-nav-link hover:text-primary text-3xl font-medium
             tracking-wider uppercase transition-colors"
-      >Contact</a
+      >{t("nav.contact")}</a
     >
 
     <!-- Mobile Language Selector -->

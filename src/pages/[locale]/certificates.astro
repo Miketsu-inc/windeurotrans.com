@@ -1,0 +1,289 @@
+---
+import type { GetStaticPaths } from "astro";
+import { locales, useTranslation, type Locale } from "../../i18n/utils";
+
+import Layout from "../../layouts/Layout.astro";
+import Nav from "../../components/Nav.astro";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+
+export const getStaticPaths = (() => {
+  return locales.map((locale) => ({
+    params: { locale },
+  }));
+}) satisfies GetStaticPaths;
+
+const locale = Astro.params.locale as Locale;
+
+const t = useTranslation(locale);
+
+let gdp_img_path = "gdp_en.jpg";
+let iso_img_path = "iso9001_en.jpg";
+
+if (locale == "hu") {
+  gdp_img_path = "gdp_hu.jpg";
+  iso_img_path = "iso9001_hu.jpg";
+}
+
+const CERTIFICATES = [
+  {
+    id: "gdp",
+    label: "GDP",
+    title: "GDP Certificate",
+    certifiedSince: "12 March 2021",
+    issuingBody: "OGYÉI / HPRA",
+    description:
+      "GDP certification confirms that our pharmaceutical and temperature-sensitive cargo operations fully comply with EU guidelines for the proper distribution of medicinal products. Every link in our cold-chain is monitored, documented, and audited end-to-end.",
+    image: `${import.meta.env.BASE_URL}/${gdp_img_path}`,
+  },
+  {
+    id: "iso",
+    label: "ISO 9001:2015",
+    title: "ISO 9001:2015",
+    certifiedSince: "7 June 2019",
+    issuingBody: "TÜV Rheinland",
+    description:
+      "ISO 9001:2015 certification demonstrates our commitment to a robust quality management system. From driver training to fleet maintenance, every process is standardised, measured, and continuously improved to exceed customer expectations.",
+    image: `${import.meta.env.BASE_URL}/${iso_img_path}`,
+  },
+];
+---
+
+<Layout>
+  <Nav locale={locale} />
+  <Header title="Certificates" />
+  <section class="px-6 py-24">
+
+  <!-- ── Section header ─────────────────────────────────── -->
+  <div class="mx-auto mb-16 max-w-2xl text-center">
+    <h1 class="text-6xl font-extrabold leading-[1.1] tracking-tight text-text_color">
+      Our Certifications
+    </h1>
+    <p class="mt-5 text-base leading-relaxed text-text_color/60">
+      We hold ourselves to the highest international standards — ensuring
+      every shipment is handled with precision, safety, and accountability.
+    </p>
+  </div>
+
+  <!-- ── Toggle group ───────────────────────────────────── -->
+  <div class="mb-14 flex justify-center">
+    <div
+      class="toggle-track rounded-full"
+      role="tablist"
+      aria-label="Certificate selector"
+      data-active-index="0"
+      style={`--btn-count: ${CERTIFICATES.length};`}
+    >
+      <!-- Pill moves purely via CSS using --active-index set by JS -->
+      <span class="toggle-pill" aria-hidden="true"></span>
+
+      {CERTIFICATES.map((cert, i) => (
+        <button
+          class:list={["toggle-btn", { active: i === 0 }]}
+          role="tab"
+          aria-selected={i === 0 ? "true" : "false"}
+          aria-controls={`panel-${cert.id}`}
+          id={`btn-${cert.id}`}
+          data-target={cert.id}
+          data-index={i}
+        >
+          {cert.label}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- ── Certificate panels ─────────────────────────────── -->
+  <div class="mx-auto max-w-5xl">
+    {CERTIFICATES.map((cert, i) => (
+      <div
+        class="cert-panel"
+        id={`panel-${cert.id}`}
+        role="tabpanel"
+        aria-labelledby={`btn-${cert.id}`}
+        hidden={i !== 0 || undefined}
+      >
+        <!-- Glass card -->
+        <div class="glass-card grid grid-cols-1 gap-10 rounded-[28px] p-8 md:grid-cols-2 md:items-center md:gap-16 md:p-14">
+
+          <!-- ── Info column ── -->
+          <div class="flex flex-col">
+            <h2 class="text-[clamp(1.8rem,3.5vw,2.5rem)] font-extrabold leading-tight tracking-tight text-text_color">
+              {cert.title}
+            </h2>
+
+            <p class="mt-4 text-[0.95rem] leading-[1.8] text-text_color/60">
+              {cert.description}
+            </p>
+
+            <!-- Meta -->
+            <div class="mt-7 flex flex-wrap gap-x-8 gap-y-4 rounded-xl px-6 py-5 bg-black/5 border border-black/10">
+              <div class="flex flex-col gap-1">
+                <span class="text-[0.62rem] font-bold uppercase tracking-widest text-text_color/45">
+                  Certified Since
+                </span>
+                <span class="text-[0.9rem] font-semibold text-text_color">
+                  {cert.certifiedSince}
+                </span>
+              </div>
+              <div class="flex flex-col gap-1">
+                <span class="text-[0.62rem] font-bold uppercase tracking-widest text-text_color/45">
+                  Issuing Body
+                </span>
+                <span class="text-[0.9rem] font-semibold text-text_color">
+                  {cert.issuingBody}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Image column (stacks below on mobile) ── -->
+          <div class="order-last flex items-center justify-center md:order-0">
+            <div class="relative w-full max-w-sm overflow-hidden rounded-2xl border border-black/10 shadow-lg ">
+              <img
+                src={cert.image}
+                alt={`${cert.title} certificate`}
+                class="block h-auto w-full rounded-[inherit] object-contain"
+                loading="lazy"
+              />
+              <!-- Glass sheen -->
+              <div
+                class="pointer-events-none absolute inset-0 rounded-[inherit] bg-linear-to-br from-white/25 via-transparent to-white/5"
+                aria-hidden="true"
+              ></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    ))}
+  </div>
+
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────────────
+     Styles — only what Tailwind cannot express:
+     backdrop-filter compositions, keyframes, sliding pill transitions
+     ───────────────────────────────────────────────────────────────────────── -->
+<style>
+  /* ── Toggle track — CSS grid so every cell is equal width ── */
+  .toggle-track {
+    --pad: 5px;
+    --active-index: 0;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--btn-count), 1fr);
+    padding: var(--pad);
+    background: oklch(100% 0 0 / 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid oklch(0% 0 0 / 0.1);
+    box-shadow: 0 2px 12px oklch(0% 0 0 / 0.06);
+  }
+
+  /* ── Sliding pill — purely CSS, zero JS pixel math ── */
+  .toggle-pill {
+    position: absolute;
+    top: var(--pad);
+    left: var(--pad);
+    width: calc((100% - var(--pad) * 2) / var(--btn-count));
+    height: calc(100% - var(--pad) * 2);
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, oklch(68% 0.19 55.934) 100%);
+    box-shadow: 0 2px 10px oklch(75% 0.183 55.934 / 0.35);
+    transform: translateX(calc(var(--active-index) * 100%));
+    transition: transform 0.22s ease;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  /* ── Toggle buttons ── */
+  .toggle-btn {
+    position: relative;
+    z-index: 1;
+    padding: 0.6rem 1.55rem;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    font-family: var(--font-rubik, sans-serif);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: oklch(12.9% 0.042 264.695 / 0.5);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.18s ease;
+    text-align: center;
+  }
+  .toggle-btn.active { color: #fff; }
+
+  /* ── Panel entrance animation ── */
+  .cert-panel {
+    animation: panelIn 0.22s ease both;
+    will-change: opacity, transform;
+  }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Glass card ── */
+  .glass-card {
+    background: oklch(100% 0 0 / 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid oklch(0% 0 0 / 0.08);
+    box-shadow:
+      0 4px 6px oklch(0% 0 0 / 0.04),
+      0 10px 40px oklch(0% 0 0 / 0.08);
+  }
+</style>
+
+<!-- ─────────────────────────────────────────────────────────────────────────
+     Toggle script
+     ───────────────────────────────────────────────────────────────────────── -->
+<script>
+  (function () {
+    const track  = document.querySelector<HTMLElement>(".toggle-track");
+    const btns   = Array.from(track?.querySelectorAll<HTMLButtonElement>(".toggle-btn") ?? []);
+    const panels = Array.from(document.querySelectorAll<HTMLElement>(".cert-panel"));
+
+    function activeBtn(): HTMLButtonElement | undefined {
+      return btns.find((b) => b.classList.contains("active"));
+    }
+
+    function activate(targetId: string): void {
+      // Do nothing if already on this certificate
+      if (activeBtn()?.dataset.target === targetId) return;
+
+      btns.forEach((b) => {
+        const on = b.dataset.target === targetId;
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-selected", String(on));
+        if (on && track) {
+          // Move pill by updating the CSS custom property — no pixel math
+          track.style.setProperty("--active-index", b.dataset.index ?? "0");
+        }
+      });
+
+      panels.forEach((p) => {
+        if (p.id === "panel-" + targetId) {
+          p.removeAttribute("hidden");
+          p.classList.remove("cert-panel");
+          void p.offsetWidth;
+          p.classList.add("cert-panel");
+        } else {
+          p.setAttribute("hidden", "");
+        }
+      });
+    }
+
+    btns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.target;
+        if (id) activate(id);
+      });
+    });
+  })();
+</script>
+  <Footer locale={locale} />
+</Layout>
