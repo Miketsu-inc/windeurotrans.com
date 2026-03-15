@@ -3,13 +3,28 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import { useTranslation } from "../i18n/utils";
 
 const { locale } = Astro.props;
-const path = Astro.url.pathname;
 
 const languages = [
   { code: "hu", label: "Magyar" },
   { code: "en", label: "English" },
   { code: "it", label: "Italiano" },
 ];
+
+const base = import.meta.env.BASE_URL;
+let path = Astro.url.pathname;
+
+// remove base
+if (path.startsWith(base)) {
+  path = path.slice(base.length);
+}
+
+// remove current locale prefix
+const parts = path.split("/");
+if (languages.some((l) => l.code === parts[1])) {
+  parts.splice(1, 1);
+}
+path = parts.join("/") || "/";
+
 const langUrls = languages.map((l) => ({
   ...l,
   url: getRelativeLocaleUrl(l.code, path),
@@ -373,14 +388,12 @@ const landingUrl = getRelativeLocaleUrl(locale);
   const navStaticWrapper = document.getElementById("navStaticWrapper")!;
 
   let showTimeout: ReturnType<typeof setTimeout> | null = null;
-  let isFloating = false;
 
   function showFloating() {
     if (showTimeout) clearTimeout(showTimeout);
     showTimeout = setTimeout(() => {
       navFloatingWrapper.style.transform = "translateY(0)";
       navFloatingWrapper.style.pointerEvents = "auto"; // wrapper itself isn't needed but nav inside has pointer-events-auto
-      isFloating = true;
     }, 150);
   }
 
@@ -390,7 +403,6 @@ const landingUrl = getRelativeLocaleUrl(locale);
       showTimeout = null;
     }
     navFloatingWrapper.style.transform = "translateY(-110%)";
-    isFloating = false;
   }
 
   const observer = new IntersectionObserver(
@@ -433,7 +445,6 @@ const landingUrl = getRelativeLocaleUrl(locale);
   function closeMenu() {
     mobileMenu.classList.remove("menu-open");
     document.body.style.overflow = "";
-    document.body.style.paddingRight = "";
   }
 
   document

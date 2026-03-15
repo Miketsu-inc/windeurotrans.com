@@ -4,7 +4,8 @@ import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
-  base: "/windeurotrans.com/",
+  base: "/windeurotrans.com",
+  site: "https://miketsu-inc.github.io/windeurotrans.com",
   i18n: {
     locales: ["en", "hu", "it"],
     defaultLocale: "hu",
@@ -13,6 +14,7 @@ export default defineConfig({
     },
     routing: {
       prefixDefaultLocale: true,
+      redirectToDefaultLocale: false,
     },
   },
   vite: {

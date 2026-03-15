@@ -7,6 +7,17 @@ export default {
       title3: "számíthat.",
       button: "Ajánlatkérés",
     },
+    contact: {
+      heading: "Vegyük fel a kapcsolatot",
+      call: "telefonszám",
+      email: "email",
+      businesshours: {
+        name: "nyitvatartás",
+        start: "Hétfő",
+        end: "Péntek",
+      },
+      address: "cím",
+    },
   },
   nav: {
     whyus: "Miért mi?",
