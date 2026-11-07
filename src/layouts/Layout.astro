@@ -1,9 +1,11 @@
 ---
 import "../styles/global.css";
+
+const { locale = "hu" } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="hu" class="scroll-smooth">
+<html lang={locale} class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

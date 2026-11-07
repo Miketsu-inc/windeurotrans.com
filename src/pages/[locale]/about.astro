@@ -16,7 +16,7 @@ export const getStaticPaths = (() => {
 const locale = Astro.params.locale as Locale;
 ---
 
-<Layout>
+<Layout locale={locale}>
   <Nav locale={locale} />
   <Header title="Rólunk" />
 

@@ -33,6 +33,14 @@ const langUrls = languages.map((l) => ({
 const t = useTranslation(locale);
 
 const landingUrl = getRelativeLocaleUrl(locale);
+const isLanding = path === "/";
+
+// On the landing page the logo only scrolls to the top instead of reloading
+const logoUrl = isLanding ? "#" : landingUrl;
+
+// Prefix section anchors with the landing url so they also work from subpages
+const sectionUrl = (id: string) =>
+  isLanding ? `#${id}` : `${landingUrl}#${id}`;
 ---
 
 <!--
@@ -55,7 +63,7 @@ const landingUrl = getRelativeLocaleUrl(locale);
     id="navStatic"
     class="text-text_color flex w-full max-w-4xl items-center justify-between p-5"
   >
-    <a href={landingUrl}>
+    <a href={logoUrl}>
       <img
         src={`${import.meta.env.BASE_URL}/logo.png`}
         alt="Windeurotrans logo"
@@ -68,22 +76,17 @@ const landingUrl = getRelativeLocaleUrl(locale);
             transition-colors md:flex md:px-24"
     >
       <li>
-        <a href="#whyus" class="hover:text-primary transition-colors"
-          >{t("nav.whyus")}</a
-        >
-      </li>
-      <li>
-        <a href="#services" class="hover:text-primary transition-colors"
+        <a href={sectionUrl("services")} class="hover:text-primary transition-colors"
           >{t("nav.services")}</a
         >
       </li>
       <li>
-        <a href="#about" class="hover:text-primary transition-colors"
+        <a href={sectionUrl("about")} class="hover:text-primary transition-colors"
           >{t("nav.about")}</a
         >
       </li>
       <li>
-        <a href="#contact" class="hover:text-primary transition-colors"
+        <a href={sectionUrl("contact")} class="hover:text-primary transition-colors"
           >{t("nav.contact")}</a
         >
       </li>
@@ -183,7 +186,7 @@ const landingUrl = getRelativeLocaleUrl(locale);
           rounded-3xl border border-stone-500/10 bg-stone-500/10 p-5 shadow-md
           backdrop-blur-xs pointer-events-auto"
   >
-    <a href={landingUrl}>
+    <a href={logoUrl}>
       <img
         src={`${import.meta.env.BASE_URL}/logo.png`}
         alt="Windeurotrans logo"
@@ -196,22 +199,17 @@ const landingUrl = getRelativeLocaleUrl(locale);
             transition-colors md:flex md:px-24"
     >
       <li>
-        <a href="#whyus" class="hover:text-primary transition-colors"
-          >{t("nav.whyus")}</a
-        >
-      </li>
-      <li>
-        <a href="#services" class="hover:text-primary transition-colors"
+        <a href={sectionUrl("services")} class="hover:text-primary transition-colors"
           >{t("nav.services")}</a
         >
       </li>
       <li>
-        <a href="#about" class="hover:text-primary transition-colors"
+        <a href={sectionUrl("about")} class="hover:text-primary transition-colors"
           >{t("nav.about")}</a
         >
       </li>
       <li>
-        <a href="#contact" class="hover:text-primary transition-colors"
+        <a href={sectionUrl("contact")} class="hover:text-primary transition-colors"
           >{t("nav.contact")}</a
         >
       </li>
@@ -313,7 +311,7 @@ const landingUrl = getRelativeLocaleUrl(locale);
     id="mobileMenuTopBar"
     class="flex w-full items-center justify-between p-5"
   >
-    <a href={landingUrl}>
+    <a href={logoUrl}>
       <img
         src={`${import.meta.env.BASE_URL}/logo.png`}
         alt="Windeurotrans logo"
@@ -345,22 +343,17 @@ const landingUrl = getRelativeLocaleUrl(locale);
     class="flex h-[calc(100%-4.5rem)] flex-col items-center justify-center gap-8 px-8"
   >
     <a
-      href="#whyus"
-      class="mobile-nav-link hover:text-primary text-3xl font-medium tracking-wider uppercase transition-colors"
-      >{t("nav.whyus")}</a
-    >
-    <a
-      href="#services"
+      href={sectionUrl("services")}
       class="mobile-nav-link hover:text-primary text-3xl font-medium tracking-wider uppercase transition-colors"
       >{t("nav.services")}</a
     >
     <a
-      href="#about"
+      href={sectionUrl("about")}
       class="mobile-nav-link hover:text-primary text-3xl font-medium tracking-wider uppercase transition-colors"
       >{t("nav.about")}</a
     >
     <a
-      href="#contact"
+      href={sectionUrl("contact")}
       class="mobile-nav-link hover:text-primary text-3xl font-medium tracking-wider uppercase transition-colors"
       >{t("nav.contact")}</a
     >

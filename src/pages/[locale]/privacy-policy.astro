@@ -16,7 +16,7 @@ export const getStaticPaths = (() => {
 const locale = Astro.params.locale as Locale;
 ---
 
-<Layout>
+<Layout locale={locale}>
   <Nav locale={locale} />
   <Header title="Adatkezelési tájekoztató" />
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
