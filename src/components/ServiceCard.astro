@@ -1,0 +1,57 @@
+---
+/*
+  A service as a clickable card: photo, name, one line and its temperature range.
+  The compact version (photo and name only) previews other services under an article.
+*/
+import RangeBar from "./RangeBar.astro";
+import type { Service } from "../data/services";
+import { formatRange } from "../data/temperature";
+import { asset, pageUrl } from "../data/site";
+
+interface Props {
+  service: Service;
+  locale: string;
+  /** Load the photo straight away (cards in the first screen). */
+  eager?: boolean;
+  /** Photo and name only, with an h3 title. */
+  compact?: boolean;
+}
+
+const { service: s, locale, eager = false, compact = false } = Astro.props;
+const Heading = compact ? "h3" : "h2";
+---
+
+<a
+  href={pageUrl(locale, `services/${s.slug}`)}
+  class="group border-line hover:border-navy-900 flex h-full flex-col overflow-hidden rounded-2xl border bg-white transition-colors"
+>
+  <img
+    src={asset(s.image.src)}
+    alt={s.image.alt}
+    loading={eager ? "eager" : "lazy"}
+    class="aspect-[3/2] w-full object-cover"
+  />
+  <div class:list={["flex grow flex-col", compact ? "p-5" : "p-6 md:p-7"]}>
+    <Heading
+      class:list={[
+        "decoration-signal leading-snug decoration-2 underline-offset-4 group-hover:underline",
+        compact ? "text-lg" : "text-xl md:text-[1.375rem]",
+      ]}
+    >
+      {s.name}
+    </Heading>
+    {!compact && <p class="text-muted mt-2">{s.short}</p>}
+    {
+      !compact && s.ranges.length > 0 && (
+        <div class="mt-5">
+          <RangeBar ranges={s.ranges} />
+          <p class="tnum text-muted mt-2 text-sm">{s.ranges.map(formatRange).join(", ")}</p>
+        </div>
+      )
+    }
+    <span class:list={["text-navy-900 mt-auto inline-flex items-center gap-2 font-medium", compact ? "pt-4" : "pt-6"]}>
+      Read more
+      <span class="text-signal transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
+    </span>
+  </div>
+</a>

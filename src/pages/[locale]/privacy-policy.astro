@@ -36,11 +36,11 @@ const toc = [
   <div class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-20">
     <nav aria-label="On this page" class="lg:sticky lg:top-28 lg:self-start">
       <p class="mb-3 font-medium">On this page</p>
-      <ol class="border-line space-y-2 border-l-2 pl-4 text-[0.9375rem]">
+      <ol class="border-line border-l-2 text-[0.9375rem]">
         {
           toc.map((t) => (
             <li>
-              <a href={`#${t.id}`} class="text-muted hover:text-ink">
+              <a href={`#${t.id}`} class="toc-link text-muted hover:text-ink -ml-0.5 block border-l-2 border-transparent py-1 pl-4" data-toc={t.id}>
                 {t.label}
               </a>
             </li>
@@ -134,3 +134,49 @@ const toc = [
     </article>
   </div>
 </Layout>
+
+<style>
+  .toc-link {
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .toc-link.is-active {
+    border-color: var(--color-signal);
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+</style>
+
+<script>
+  // Scrollspy: highlight the section whose heading last passed the upper part of the screen
+  const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-toc]")];
+  const headings = links.map((a) => document.getElementById(a.dataset.toc!)!);
+  let ticking = false;
+
+  function update() {
+    ticking = false;
+    const line = window.innerHeight * 0.3;
+    let current = 0;
+    headings.forEach((h, i) => {
+      if (h.getBoundingClientRect().top <= line) current = i;
+    });
+    // At the very bottom the last sections can't reach the line, so pick the last one
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) current = headings.length - 1;
+    links.forEach((a, i) => {
+      a.classList.toggle("is-active", i === current);
+      if (i === current) a.setAttribute("aria-current", "true");
+      else a.removeAttribute("aria-current");
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (!ticking) requestAnimationFrame(update);
+      ticking = true;
+    },
+    { passive: true },
+  );
+  update();
+</script>

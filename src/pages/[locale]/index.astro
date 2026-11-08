@@ -4,13 +4,10 @@ import { locales, type Locale } from "../../i18n/utils";
 
 import Layout from "../../layouts/Layout.astro";
 import Icon from "../../components/Icon.astro";
-import TempRange from "../../components/TempRange.astro";
 import HeroMap from "../../components/HeroMap.astro";
-import RangeBar from "../../components/RangeBar.astro";
+import ServiceScroller from "../../components/ServiceScroller.astro";
 import CtaPanel from "../../components/CtaPanel.astro";
-import { services } from "../../data/services";
 import { certificates } from "../../data/certificates";
-import { formatRange } from "../../data/temperature";
 import { site, asset, pageUrl } from "../../data/site";
 
 export const getStaticPaths = (() => {
@@ -25,31 +22,6 @@ const proof = [
   { icon: "dispatch", title: "24/7 dispatch", text: "Someone answers while your load is moving" },
   { icon: "road", title: "On the road since 2010", text: "Based in Dunakeszi, next to Budapest" },
 ] as const;
-
-const keySpec: Record<string, string> = {
-  "road-freight": "1 kg to 24 tonnes",
-  "dangerous-goods": "ADR",
-  customs: "Export and import",
-};
-
-const steps = [
-  {
-    title: "Call or email us",
-    text: "Tell us the pickup, delivery, cargo and date. A two-minute call is usually enough.",
-  },
-  {
-    title: "Get a price",
-    text: "A fixed price and transit time, usually within one working day.",
-  },
-  {
-    title: "We collect",
-    text: "The truck arrives in the agreed slot, already at the agreed temperature. Dispatch follows it day and night.",
-  },
-  {
-    title: "Delivered with paperwork",
-    text: "Signed CMR on delivery and, for temperature-controlled loads, the temperature record.",
-  },
-];
 
 const faqs = [
   {
@@ -96,18 +68,18 @@ const faqs = [
         <HeroMap />
       </div>
       <div class="relative z-10 mt-4 flex flex-wrap gap-3 lg:col-start-1 lg:row-start-3 lg:mt-8">
-        <a href={pageUrl(locale, "contact")} class="btn btn-signal">Contact us</a>
+        <a href={pageUrl(locale, "contact")} class="btn btn-signal">Get in touch</a>
         <a href={pageUrl(locale, "services")} class="btn btn-outline-light">Our services</a>
       </div>
     </div>
   </section>
 
   <!-- Proof -->
-  <section aria-label="Why shippers trust us" class="wrap py-14 md:py-20">
-    <ul class="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+  <section aria-label="Why shippers trust us" class="border-line border-b bg-white">
+    <ul class="wrap grid gap-x-8 gap-y-8 py-12 sm:grid-cols-2 md:py-16 lg:grid-cols-4">
       {
         proof.map((p) => (
-          <li class="border-line flex gap-4 border-l-2 pl-5">
+          <li class="border-line flex gap-4 border-l-2 pl-5 sm:border-l-0 sm:pl-0 sm:even:border-l-2 sm:even:pl-5 lg:[&:not(:first-child)]:border-l-2 lg:[&:not(:first-child)]:pl-5">
             <Icon name={p.icon} class="text-navy-700 mt-0.5 size-6 shrink-0" />
             <div>
               <p class="font-semibold">{p.title}</p>
@@ -119,47 +91,7 @@ const faqs = [
     </ul>
   </section>
 
-  <TempRange locale={locale} />
-
-  <!-- Services -->
-  <section class="wrap grid gap-12 py-20 md:py-28 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
-    <div class="lg:sticky lg:top-28 lg:self-start">
-      <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">What we move</h2>
-      <p class="text-muted mt-4 max-w-sm text-lg">
-        Everything your load needs on the road, from the first price to the signed delivery note.
-      </p>
-      <a href={pageUrl(locale, "services")} class="link mt-6 inline-block">Compare all services</a>
-    </div>
-    <ul class="border-line border-t">
-      {
-        services.map((s) => (
-          <li class="border-line border-b">
-            <a
-              href={pageUrl(locale, `services/${s.slug}`)}
-              class="group grid gap-4 py-7 sm:grid-cols-[minmax(0,1fr)_11rem] sm:items-center sm:gap-10"
-            >
-              <div>
-                <h3 class="decoration-signal text-xl leading-snug decoration-2 underline-offset-4 group-hover:underline md:text-[1.375rem]">
-                  {s.name}
-                </h3>
-                <p class="text-muted mt-1.5 max-w-lg">{s.short}</p>
-              </div>
-              <div class="text-sm">
-                {s.ranges.length > 0 ? (
-                  <>
-                    <RangeBar ranges={s.ranges} />
-                    <p class="tnum text-muted mt-2">{s.ranges.map(formatRange).join(", ")}</p>
-                  </>
-                ) : (
-                  <p class="text-muted">{keySpec[s.slug]}</p>
-                )}
-              </div>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
+  <ServiceScroller locale={locale} />
 
   <!-- Promise -->
   <section class="bg-white">
@@ -196,29 +128,8 @@ const faqs = [
     </div>
   </section>
 
-  <!-- Process -->
-  <section class="wrap py-20 md:py-28">
-    <h2 class="max-w-2xl text-[2rem] leading-tight md:text-[2.75rem]">How a load moves with us</h2>
-    <ol class="mt-12 grid gap-10 md:mt-16 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-      {
-        steps.map((step, i) => (
-          <li class="relative">
-            <div class="flex items-center gap-4" aria-hidden="true">
-              <span class="bg-navy-900 tnum flex size-11 shrink-0 items-center justify-center rounded-full text-lg font-semibold text-white">
-                {i + 1}
-              </span>
-              {i < steps.length - 1 && <span class="bg-line hidden h-0.5 grow lg:block" />}
-            </div>
-            <h3 class="mt-5 text-xl">{step.title}</h3>
-            <p class="text-muted mt-2 max-w-xs">{step.text}</p>
-          </li>
-        ))
-      }
-    </ol>
-  </section>
-
   <!-- Certificates -->
-  <section class="border-line border-y bg-white">
+  <section>
     <div class="wrap grid gap-12 py-20 md:py-28 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-20">
       <div>
         <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Checked by independent auditors</h2>
@@ -252,25 +163,29 @@ const faqs = [
   </section>
 
   <!-- FAQ -->
-  <section class="wrap grid gap-10 py-20 md:py-28 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
+  <section class="bg-white">
+    <div class="wrap grid gap-10 py-20 md:py-28 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
     <div>
       <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Questions shippers ask us</h2>
       <p class="text-muted mt-4 max-w-sm text-lg">
         Something else on your mind? Call us on <a href={site.phoneHref} class="link tnum">{site.phone}</a>.
       </p>
     </div>
-    <div class="border-line border-t">
+    <div>
       {
         faqs.map((f) => (
-          <details class="faq border-line group border-b">
+          <details class="faq border-line border-b last:border-b-0" data-faq>
             <summary class="flex cursor-pointer list-none items-start justify-between gap-6 py-6 text-lg font-medium">
               {f.q}
-              <Icon name="chevron" class="text-navy-700 mt-1 size-5 shrink-0 transition-transform group-open:rotate-180" />
+              <Icon name="chevron" class="faq__chevron text-navy-700 mt-1 size-5 shrink-0" />
             </summary>
-            <p class="text-muted max-w-2xl pb-7">{f.a}</p>
+            <div class="faq__answer">
+              <p class="text-muted max-w-2xl pb-7">{f.a}</p>
+            </div>
           </details>
         ))
       }
+    </div>
     </div>
   </section>
 
@@ -281,4 +196,57 @@ const faqs = [
   .faq summary::-webkit-details-marker {
     display: none;
   }
+  .faq:first-child summary {
+    padding-top: 0.25rem;
+  }
+  .faq__answer {
+    overflow: hidden;
+  }
+  .faq :global(.faq__chevron) {
+    transition: transform 0.3s ease;
+  }
+  .faq.is-open :global(.faq__chevron) {
+    transform: rotate(180deg);
+  }
 </style>
+
+<script>
+  // Open and close the answers with a height animation instead of a jump
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  document.querySelectorAll<HTMLDetailsElement>("[data-faq]").forEach((faq) => {
+    const summary = faq.querySelector("summary")!;
+    const answer = faq.querySelector<HTMLElement>(".faq__answer")!;
+    let anim: Animation | null = null;
+
+    faq.classList.toggle("is-open", faq.open);
+    faq.addEventListener("toggle", () => {
+      if (!anim) faq.classList.toggle("is-open", faq.open);
+    });
+
+    summary.addEventListener("click", (e) => {
+      if (reduce.matches) return;
+      e.preventDefault();
+
+      const opening = !faq.classList.contains("is-open");
+      const from = anim ? answer.getBoundingClientRect().height : opening ? 0 : answer.scrollHeight;
+      anim?.cancel();
+
+      faq.classList.toggle("is-open", opening);
+      if (opening) faq.open = true;
+      const to = opening ? answer.scrollHeight : 0;
+
+      anim = answer.animate(
+        [
+          { height: `${from}px`, opacity: opening ? 0 : 1 },
+          { height: `${to}px`, opacity: opening ? 1 : 0 },
+        ],
+        { duration: 220, easing: "cubic-bezier(0.3, 0, 0.2, 1)" },
+      );
+      anim.onfinish = () => {
+        anim = null;
+        if (!opening) faq.open = false;
+      };
+    });
+  });
+</script>

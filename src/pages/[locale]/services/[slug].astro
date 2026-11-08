@@ -5,6 +5,7 @@ import { locales, type Locale } from "../../../i18n/utils";
 import Layout from "../../../layouts/Layout.astro";
 import PageHero from "../../../components/PageHero.astro";
 import RangeBar from "../../../components/RangeBar.astro";
+import ServiceCard from "../../../components/ServiceCard.astro";
 import CtaPanel from "../../../components/CtaPanel.astro";
 import ContactButtons from "../../../components/ContactButtons.astro";
 import { services, type Service } from "../../../data/services";
@@ -94,25 +95,21 @@ const others = services.filter((s) => s.slug !== service.slug);
     </aside>
   </div>
 
-  <section class="border-line border-t bg-white">
-    <div class="wrap py-16 md:py-20">
+  <!-- Other services on a white band, set apart from the article -->
+  <div class="border-line border-t bg-white">
+    <section class="wrap py-16 md:py-20">
       <h2 class="text-2xl md:text-[1.75rem]">Other services</h2>
-      <ul class="mt-8 grid gap-x-8 sm:grid-cols-2">
+      <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {
           others.map((s) => (
-            <li class="border-line border-t">
-              <a href={pageUrl(locale, `services/${s.slug}`)} class="group block py-5">
-                <span class="decoration-signal block text-lg font-medium decoration-2 underline-offset-4 group-hover:underline">
-                  {s.name}
-                </span>
-                <span class="text-muted mt-1 block">{s.short}</span>
-              </a>
+            <li>
+              <ServiceCard service={s} locale={locale} compact />
             </li>
           ))
         }
       </ul>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <CtaPanel topic={service.name} />
 </Layout>

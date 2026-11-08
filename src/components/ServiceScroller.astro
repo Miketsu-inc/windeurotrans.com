@@ -1,0 +1,47 @@
+---
+/* Homepage services: the list scrolls on the right while the intro stays put on the left. */
+import { services } from "../data/services";
+import { pageUrl } from "../data/site";
+
+interface Props {
+  locale: string;
+}
+
+const { locale } = Astro.props;
+---
+
+<section class="wrap grid gap-8 py-20 md:py-28 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+  <div class="lg:sticky lg:top-28 lg:self-start">
+    <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">What we move</h2>
+    <p class="text-muted mt-4 max-w-sm text-lg">
+      Five services, one team. Most loads combine two or three of them, and you deal with us for all of it.
+    </p>
+    <a href={pageUrl(locale, "services")} class="link mt-6 inline-block">See all services</a>
+  </div>
+
+  <ul>
+    {
+      services.map((s) => (
+        <li class="border-line border-b last:border-b-0 [&:first-child>a]:pt-1 [&:last-child>a]:pb-0">
+          <a
+            href={pageUrl(locale, `services/${s.slug}`)}
+            class="group flex items-start justify-between gap-6 py-7 md:py-8"
+          >
+            <div>
+              <h3 class="decoration-signal text-xl leading-snug decoration-2 underline-offset-4 group-hover:underline md:text-2xl">
+                {s.name}
+              </h3>
+              <p class="text-muted mt-2 max-w-xl">{s.short}</p>
+            </div>
+            <span
+              class="text-signal mt-1 text-xl transition-transform group-hover:translate-x-1"
+              aria-hidden="true"
+            >
+              →
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

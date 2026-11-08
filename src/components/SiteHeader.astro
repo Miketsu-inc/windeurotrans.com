@@ -44,47 +44,50 @@ const isServices = currentPath.startsWith("services");
 
     <nav aria-label="Main" class="hidden lg:block">
       <ul class="flex items-center gap-1">
+        <!-- "Services" goes to the services page; hovering it (or the chevron button) lists the services -->
         <li class="relative" data-dropdown>
-          <button
-            type="button"
-            class:list={[
-              "flex items-center gap-1 rounded-md px-3 py-2 hover:bg-white/8",
-              isServices && "text-signal",
-            ]}
-            aria-expanded="false"
-            aria-controls="services-menu"
-            data-dropdown-trigger
-          >
-            Services
-            <Icon name="chevron" class="size-4 transition-transform" />
-          </button>
-          <div
-            id="services-menu"
-            class="text-ink invisible absolute top-full left-0 mt-2 w-[30rem] rounded-xl bg-white p-2 opacity-0 shadow-[0_18px_40px_-12px_rgb(7_23_41/0.45)] transition-[opacity,visibility] duration-150"
-            data-dropdown-panel
-          >
-            <ul>
-              {
-                services.map((s) => (
-                  <li>
-                    <a
-                      href={pageUrl(locale, `services/${s.slug}`)}
-                      class="hover:bg-paper block rounded-lg px-4 py-3"
-                    >
-                      <span class="block font-medium">{s.name}</span>
-                      <span class="text-muted block text-sm leading-snug">{s.short}</span>
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
+          <div class="flex items-center rounded-md hover:bg-white/8">
             <a
               href={pageUrl(locale, "services")}
-              class="border-line hover:bg-paper mt-1 block rounded-lg border-t px-4 py-3 text-sm font-medium"
+              class:list={["py-2 pl-3", isServices && "text-signal"]}
+              aria-current={currentPath === "services" ? "page" : undefined}
             >
-              Compare all services
+              Services
             </a>
+            <button
+              type="button"
+              class="py-2 pr-2.5 pl-1"
+              aria-label="Show services"
+              aria-expanded="false"
+              aria-controls="services-menu"
+              data-dropdown-trigger
+            >
+              <Icon name="chevron" class:list={["size-4 transition-transform", isServices && "text-signal"]} />
+            </button>
           </div>
+          <ul
+            id="services-menu"
+            class="text-ink invisible absolute top-full left-0 mt-2 w-[22rem] rounded-xl bg-white p-1.5 opacity-0 shadow-[0_18px_40px_-12px_rgb(7_23_41/0.45)] transition-[opacity,visibility] duration-150"
+            data-dropdown-panel
+          >
+            {
+              services.map((s) => (
+                <li>
+                  <a
+                    href={pageUrl(locale, `services/${s.slug}`)}
+                    class:list={[
+                      "hover:bg-paper block rounded-lg px-3 py-2.5",
+                      currentPath === `services/${s.slug}` && "bg-paper",
+                    ]}
+                    aria-current={currentPath === `services/${s.slug}` ? "page" : undefined}
+                  >
+                    <span class="block font-semibold">{s.name}</span>
+                    <span class="text-muted block text-sm">{s.tagline}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
         </li>
         {
           nav.filter((item) => item.match !== "contact").map((item) => (
@@ -178,19 +181,19 @@ const isServices = currentPath.startsWith("services");
       </button>
     </div>
     <nav aria-label="Mobile" class="wrap flex grow flex-col pt-4 pb-8">
-      <p class="text-navy-300 mb-2 text-sm">Services</p>
-      <ul class="border-b border-white/15 pb-5">
+      <a href={pageUrl(locale, "services")} class="block py-2 text-2xl font-medium">Services</a>
+      <ul class="pb-3">
         {
           services.map((s) => (
             <li>
-              <a href={pageUrl(locale, `services/${s.slug}`)} class="block py-2 text-lg">
+              <a href={pageUrl(locale, `services/${s.slug}`)} class="text-navy-200 block py-1.5 pl-4 text-lg">
                 {s.name}
               </a>
             </li>
           ))
         }
       </ul>
-      <ul class="py-5">
+      <ul class="pb-8">
         {
           nav.map((item) => (
             <li>

@@ -1,6 +1,5 @@
 ---
 import ContactButtons from "./ContactButtons.astro";
-import { mailto, emailParts } from "../data/site";
 
 interface Props {
   title?: string;
@@ -11,24 +10,19 @@ interface Props {
 
 const {
   title = "Tell us what needs to move.",
-  text = "Call or email us with the pickup, delivery and cargo. You get a price and a transit time, usually within one working day.",
+  text = "Send us the pickup, delivery and cargo. You get a price and a transit time, usually within one working day.",
   topic,
 } = Astro.props;
 ---
 
-<section class="wrap py-16 md:py-24">
-  <div class="sign-panel px-7 py-12 sm:px-12 md:px-16 md:py-16">
-    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-      <div class="max-w-2xl">
-        <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">{title}</h2>
-        <p class="text-navy-200 mt-4 text-lg">{text}</p>
+<section class="wrap py-12 md:py-16">
+  <div class="sign-panel px-7 py-10 sm:px-10 md:px-14 md:py-12">
+    <div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
+      <div class="max-w-xl">
+        <h2 class="text-[1.75rem] leading-tight md:text-[2.25rem]">{title}</h2>
+        <p class="text-navy-200 mt-3 text-lg">{text}</p>
       </div>
-      <div>
-        <ContactButtons topic={topic} class="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row" />
-        <p class="text-navy-300 mt-4 text-sm">
-          Or write to <a href={mailto(topic)} class="text-white underline underline-offset-4">{emailParts[0]}<wbr />{emailParts[1]}</a>
-        </p>
-      </div>
+      <ContactButtons topic={topic} class="flex shrink-0 flex-col gap-3 sm:flex-row" />
     </div>
   </div>
 </section>

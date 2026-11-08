@@ -157,8 +157,14 @@
     text-decoration-thickness: 2px;
     text-underline-offset: 0.3em;
   }
-  .link:hover {
-    text-decoration-color: currentColor;
+  /* Hover: the text takes the underline's orange (the darker shade, so it stays readable) */
+  .link,
+  .prose-page a {
+    transition: color 0.15s ease;
+  }
+  .link:hover,
+  .prose-page a:hover {
+    color: var(--color-signal-600);
   }
 
   /*
