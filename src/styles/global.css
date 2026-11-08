@@ -7,16 +7,13 @@
   /* Brand */
   --color-navy-950: #071729;
   --color-navy-900: #0c2340;
-  --color-navy-800: #13325a;
   --color-navy-700: #1e4573;
   --color-navy-300: #9fb3cc;
   --color-navy-200: #c5d3e4;
   --color-signal: #ff6a13;
   --color-signal-600: #e85707;
-  --color-signal-100: #ffe6d6;
 
-  /* Temperature scale: cold end to warm end */
-  --color-cold: #2f6fd6;
+  /* Cool accent (hero map roads) */
   --color-ice: #a9d0f5;
 
   /* Neutrals */
