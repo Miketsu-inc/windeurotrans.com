@@ -10,7 +10,8 @@ import CtaPanel from "../../../components/CtaPanel.astro";
 import ContactButtons from "../../../components/ContactButtons.astro";
 import { services, type Service } from "../../../data/services";
 import { formatTemp, SCALE_MIN, SCALE_MAX } from "../../../data/temperature";
-import { asset, pageUrl, site } from "../../../data/site";
+import { pageUrl, site } from "../../../data/site";
+import { photoSrc, photoSrcset } from "../../../data/fleet";
 
 export const getStaticPaths = (() => {
   return locales.flatMap((locale) =>
@@ -37,9 +38,14 @@ const others = services.filter((s) => s.slug !== service.slug);
   <div class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-20">
     <article>
       <img
-        src={asset(service.image.src)}
+        src={photoSrc(service.image.photo, 1600)}
+        srcset={photoSrcset(service.image.photo)}
+        sizes="(min-width: 1280px) 760px, (min-width: 1024px) 60vw, 100vw"
         alt={service.image.alt}
+        width="1600"
+        height="900"
         class="mb-14 aspect-[16/9] w-full rounded-2xl object-cover"
+        style={service.image.position && `object-position: ${service.image.position}`}
       />
       <div class="prose-page">
         {
@@ -63,7 +69,7 @@ const others = services.filter((s) => s.slug !== service.slug);
     </article>
 
     <aside class="lg:sticky lg:top-28 lg:self-start">
-      <div class="border-line rounded-2xl border bg-white p-6 md:p-7">
+      <div class="card p-6 md:p-7">
         <h2 class="text-lg">At a glance</h2>
         {
           service.ranges.length > 0 && (
@@ -96,7 +102,7 @@ const others = services.filter((s) => s.slug !== service.slug);
   </div>
 
   <!-- Other services on a white band, set apart from the article -->
-  <div class="border-line border-t bg-white">
+  <div class="border-line bg-frost border-t">
     <section class="wrap py-16 md:py-20">
       <h2 class="text-2xl md:text-[1.75rem]">Other services</h2>
       <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

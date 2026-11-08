@@ -1,6 +1,6 @@
 ---
 /*
-  Masthead shared by every subpage: continues the navy header band,
+  Masthead shared by every subpage: a night band under the white header,
   with breadcrumbs, the page title and an optional intro and actions.
 */
 import { pageUrl } from "../data/site";
@@ -16,10 +16,10 @@ const { locale, title, lead, crumbs = [] } = Astro.props;
 const trail = [{ label: "Home", href: pageUrl(locale) }, ...crumbs];
 ---
 
-<section class="bg-navy-900 text-white">
+<section class="band-night">
   <div class="wrap pt-8 pb-14 md:pt-10 md:pb-20">
     <nav aria-label="Breadcrumb">
-      <ol class="text-navy-300 flex flex-wrap items-center gap-x-2 text-sm">
+      <ol class="text-blue-300 flex flex-wrap items-center gap-x-2 text-sm">
         {
           trail.map((c, i) => (
             <li class="flex items-center gap-2">
@@ -29,7 +29,7 @@ const trail = [{ label: "Home", href: pageUrl(locale) }, ...crumbs];
                   {c.label}
                 </a>
               ) : (
-                <span aria-current="page" class="text-navy-200">{c.label}</span>
+                <span aria-current="page" class="text-blue-200">{c.label}</span>
               )}
             </li>
           ))
@@ -40,7 +40,7 @@ const trail = [{ label: "Home", href: pageUrl(locale) }, ...crumbs];
     <div class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
       <div class="max-w-3xl">
         <h1 class="text-[2.5rem] leading-[1.05] md:text-[3.5rem]">{title}</h1>
-        {lead && <p class="text-navy-200 mt-5 max-w-2xl text-lg md:text-xl md:leading-relaxed">{lead}</p>}
+        {lead && <p class="text-blue-200 mt-5 max-w-2xl text-lg md:text-xl md:leading-relaxed">{lead}</p>}
       </div>
       <slot />
     </div>

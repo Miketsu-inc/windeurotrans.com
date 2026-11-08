@@ -11,7 +11,8 @@ export type Service = {
   lead: string;
   /** Temperature ranges shown on the range bar. Empty when temperature doesn't apply. */
   ranges: Range[];
-  image: { src: string; alt: string };
+  /** A photo from src/data/fleet.ts, by name. `position` is a CSS object-position for the crop. */
+  image: { photo: string; alt: string; position?: string };
   specs: { label: string; value: string }[];
   sections: { heading: string; paragraphs: string[]; list?: string[] }[];
 };
@@ -25,8 +26,8 @@ export const services: Service[] = [
     lead: "Whether you fill a whole trailer or send a few pallets, we plan the route, collect on time and deliver to the agreed slot.",
     ranges: [],
     image: {
-      src: "img/road-rear-1800.webp",
-      alt: "Orange curtain-sided truck on a motorway",
+      photo: "truck-side",
+      alt: "Orange Scania tractor unit with a white refrigerated trailer",
     },
     specs: [
       { label: "Load size", value: "1 kg to 24 tonnes" },
@@ -63,8 +64,8 @@ export const services: Service[] = [
     lead: "Frozen, chilled, fresh or frost-sensitive: you set the temperature, and we hold it from loading to unloading.",
     ranges: [[-25, 30]],
     image: {
-      src: "img/hero-alps-1536.webp",
-      alt: "Orange truck with a white refrigerated trailer on a mountain road",
+      photo: "trailer-rear",
+      alt: "Rear corner of a white refrigerated trailer behind an orange Scania",
     },
     specs: [
       { label: "Temperature range", value: "−25 °C to +30 °C" },
@@ -107,8 +108,9 @@ export const services: Service[] = [
       [15, 25],
     ],
     image: {
-      src: "img/hero-alps-1536.webp",
-      alt: "Orange truck with a white refrigerated trailer on a mountain road",
+      photo: "trailer-open",
+      alt: "Open doors of a clean, empty refrigerated body",
+      position: "center 60%",
     },
     specs: [
       { label: "Temperature range", value: "+2 °C to +8 °C, +15 °C to +25 °C" },
@@ -144,8 +146,8 @@ export const services: Service[] = [
     lead: "Dangerous goods need the right vehicle equipment, the right documents and a driver trained to handle them. We take care of all three.",
     ranges: [],
     image: {
-      src: "img/road-front-1376.webp",
-      alt: "Orange truck driving on an open road",
+      photo: "fleet-close",
+      alt: "Orange Scania trucks in a row, with orange hazard plates on the front",
     },
     specs: [
       { label: "Regulation", value: "ADR (European agreement on dangerous goods by road)" },
@@ -177,8 +179,8 @@ export const services: Service[] = [
     lead: "When a load leaves or enters the EU, we prepare and handle the customs formalities so it keeps moving.",
     ranges: [],
     image: {
-      src: "img/road-rear-1800.webp",
-      alt: "Orange curtain-sided truck on a motorway",
+      photo: "fleet-front-low",
+      alt: "Five orange Scania trucks parked side by side",
     },
     specs: [
       { label: "Covers", value: "Export and import" },

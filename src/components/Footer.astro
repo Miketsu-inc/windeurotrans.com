@@ -10,12 +10,13 @@ const { locale } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
-<footer class="bg-navy-950 text-navy-200">
+<footer class="bg-night text-blue-200">
   <div class="wrap grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:py-20">
     <div>
-      <a href={pageUrl(locale)} class="flex items-center gap-2.5 text-white">
-        <span class="bg-signal block h-7 w-2 rounded-sm" aria-hidden="true"></span>
-        <span class="text-xl leading-none font-semibold tracking-tight">Wind Eurotrans</span>
+      <!-- The name in text: the logo only works on light backgrounds, and the header already carries it.
+           The tight line height puts its baseline on the column headings. -->
+      <a href={pageUrl(locale)} class="font-display block text-2xl leading-[1.25rem] font-semibold text-white">
+        {site.name}
       </a>
       <p class="mt-5 max-w-xs text-[0.9375rem] leading-relaxed">
         Road freight and forwarding from Dunakeszi, Hungary. GDP certified and ISO 9001:2015 certified.
@@ -41,6 +42,7 @@ const year = new Date().getFullYear();
       <h2 class="mb-4 text-base font-medium text-white">Company</h2>
       <ul class="space-y-2.5 text-[0.9375rem]">
         <li><a href={pageUrl(locale, "about")} class="hover:text-white">About us</a></li>
+        <li><a href={pageUrl(locale, "fleet")} class="hover:text-white">Our fleet</a></li>
         <li><a href={pageUrl(locale, "certificates")} class="hover:text-white">Certificates</a></li>
         <li><a href={pageUrl(locale, "contact")} class="hover:text-white">Contact</a></li>
         <li><a href={pageUrl(locale, "privacy-policy")} class="hover:text-white">Privacy policy</a></li>

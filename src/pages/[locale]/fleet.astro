@@ -1,0 +1,199 @@
+---
+import type { GetStaticPaths } from "astro";
+import { locales, type Locale } from "../../i18n/utils";
+
+import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
+import CtaPanel from "../../components/CtaPanel.astro";
+import Icon from "../../components/Icon.astro";
+import { photos, photoSrc, photoSrcset } from "../../data/fleet";
+
+export const getStaticPaths = (() => {
+  return locales.map((locale) => ({ params: { locale } }));
+}) satisfies GetStaticPaths;
+
+const locale = Astro.params.locale as Locale;
+---
+
+<Layout
+  locale={locale}
+  title="Our fleet"
+  description="Photos of the Wind Eurotrans fleet: Scania tractor units and refrigerated trailers."
+>
+  <PageHero
+    locale={locale}
+    title="Our fleet"
+    lead="These are the Scania trucks and refrigerated trailers that carry your loads. Real photos, not a catalogue."
+    crumbs={[{ label: "Our fleet" }]}
+  />
+
+  <!-- Gallery: the first photo is wide; any photo opens full size -->
+  <div class="border-line bg-frost border-b">
+    <section aria-label="Photos" class="wrap py-16 md:py-20">
+      <ul class="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
+        {
+          photos.map((p, i) => (
+            <li class:list={[i === 0 && "sm:col-span-2"]}>
+              <button
+                type="button"
+                class="group relative block h-full w-full cursor-zoom-in overflow-hidden rounded-xl"
+                data-photo={i}
+                aria-label={`Open photo: ${p.alt}`}
+              >
+                <img
+                  src={photoSrc(p.name)}
+                  srcset={photoSrcset(p.name)}
+                  sizes={i === 0 ? "(min-width: 1280px) 800px, (min-width: 640px) 66vw, 100vw" : "(min-width: 1280px) 400px, (min-width: 640px) 50vw, 100vw"}
+                  alt={p.alt}
+                  width={p.width}
+                  height={p.height}
+                  loading={i < 3 ? "eager" : "lazy"}
+                  class:list={[
+                    "w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]",
+                    // The wide photo takes the height of its row, set by the photo next to it
+                    i === 0 ? "aspect-[4/3] sm:aspect-[16/9] lg:absolute lg:inset-0 lg:aspect-auto lg:h-full" : "aspect-[4/3]",
+                  ]}
+                />
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+
+  <CtaPanel />
+
+  <!-- Full-size viewer -->
+  <dialog id="lightbox" class="lightbox" aria-label="Photo viewer">
+    <div class="flex h-full flex-col">
+      <div class="flex items-center justify-between px-4 py-3 text-white md:px-6">
+        <p class="tnum text-sm text-white/70" data-counter></p>
+        <button type="button" class="-mr-2 rounded-md p-2 hover:bg-white/10" aria-label="Close" data-close>
+          <Icon name="close" class="size-7" />
+        </button>
+      </div>
+      <figure class="flex min-h-0 grow flex-col items-center justify-center px-4 pb-4 md:px-20">
+        <img alt="" class="min-h-0 max-w-full rounded-lg object-contain" data-image />
+      </figure>
+      <div class="flex justify-center gap-3 py-5 md:pointer-events-none md:absolute md:inset-x-4 md:top-1/2 md:-translate-y-1/2 md:justify-between md:py-0">
+        <button type="button" class="lightbox__nav" aria-label="Previous photo" data-prev>
+          <Icon name="chevron" class="size-6 rotate-90" />
+        </button>
+        <button type="button" class="lightbox__nav" aria-label="Next photo" data-next>
+          <Icon name="chevron" class="size-6 -rotate-90" />
+        </button>
+      </div>
+    </div>
+  </dialog>
+</Layout>
+
+<script define:vars={{ photos: photos.map((p) => ({ src: photoSrc(p.name, 1600), alt: p.alt })) }}>
+  const dialog = document.getElementById("lightbox");
+  const image = dialog.querySelector("[data-image]");
+  const counter = dialog.querySelector("[data-counter]");
+  let current = 0;
+  let opener = null;
+
+  const thumbs = [...document.querySelectorAll("[data-photo] img")];
+
+  function show(i) {
+    const index = (i + photos.length) % photos.length;
+    current = index;
+    image.alt = photos[index].alt;
+    counter.textContent = `${index + 1} / ${photos.length}`;
+
+    // Show the grid's copy straight away (it is already loaded), so the previous photo never lingers.
+    // If that copy isn't loaded yet, hide the image until the large one is ready.
+    const thumb = thumbs[index];
+    if (thumb.complete && thumb.naturalWidth) {
+      image.src = thumb.currentSrc;
+      image.style.visibility = "";
+    } else {
+      image.style.visibility = "hidden";
+    }
+
+    // Then swap in the large version once it has decoded
+    const full = new Image();
+    full.src = photos[index].src;
+    full
+      .decode()
+      .catch(() => {})
+      .then(() => {
+        if (current !== index) return;
+        image.src = full.src;
+        image.style.visibility = "";
+      });
+  }
+
+  document.querySelectorAll("[data-photo]").forEach((button) => {
+    button.addEventListener("click", () => {
+      opener = button;
+      show(Number(button.dataset.photo));
+      dialog.showModal();
+      document.body.style.overflow = "hidden";
+    });
+  });
+
+  dialog.addEventListener("close", () => {
+    document.body.style.overflow = "";
+    opener?.focus();
+  });
+  dialog.querySelector("[data-close]").addEventListener("click", () => dialog.close());
+  dialog.querySelector("[data-prev]").addEventListener("click", () => show(current - 1));
+  dialog.querySelector("[data-next]").addEventListener("click", () => show(current + 1));
+
+  // Clicking the dark area around the photo closes the viewer
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog || e.target.tagName === "FIGURE") dialog.close();
+  });
+
+  dialog.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") show(current - 1);
+    if (e.key === "ArrowRight") show(current + 1);
+  });
+
+  // Swipe on touch screens
+  let startX = null;
+  dialog.addEventListener("touchstart", (e) => (startX = e.touches[0].clientX), { passive: true });
+  dialog.addEventListener("touchend", (e) => {
+    if (startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+    startX = null;
+  });
+</script>
+
+<style>
+  .lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(0 18 48 / 0.97);
+  }
+  .lightbox::backdrop {
+    background: transparent;
+  }
+  .lightbox [data-image] {
+    max-height: calc(100dvh - 9rem);
+  }
+  .lightbox__nav {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.12);
+    color: #fff;
+    transition: background-color 0.15s ease;
+  }
+  .lightbox__nav:hover {
+    background: rgb(255 255 255 / 0.22);
+  }
+</style>

@@ -6,6 +6,7 @@ import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
 import CtaPanel from "../../components/CtaPanel.astro";
 import { asset, site, fullAddress, pageUrl } from "../../data/site";
+import { photoSrc, photoSrcset } from "../../data/fleet";
 
 export const getStaticPaths = (() => {
   return locales.map((locale) => ({ params: { locale } }));
@@ -67,18 +68,18 @@ const timeline = [
       </div>
     </div>
     <img
-      src={asset("img/road-front-1376.webp")}
-      srcset={`${asset("img/road-front-800.webp")} 800w, ${asset("img/road-front-1376.webp")} 1376w`}
+      src={photoSrc("fleet-angle")}
+      srcset={photoSrcset("fleet-angle")}
       sizes="(min-width: 1024px) 40vw, 100vw"
-      alt="Orange truck on an open road"
-      width="1376"
-      height="768"
+      alt="A row of orange Wind Eurotrans Scania trucks"
+      width="1600"
+      height="1200"
       class="aspect-[4/3] w-full rounded-2xl object-cover"
     />
   </section>
 
   <!-- Principles -->
-  <section class="border-line border-y bg-white">
+  <section class="border-line bg-frost border-y">
     <div class="wrap py-16 md:py-24">
       <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">What you can expect from us</h2>
       <ul class="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
@@ -101,7 +102,7 @@ const timeline = [
       {
         timeline.map((t) => (
           <li class="relative pb-10 last:pb-0">
-            <span class="bg-signal ring-paper absolute top-1.5 -left-[2.4rem] size-3.5 rounded-full ring-4" aria-hidden="true" />
+            <span class="bg-signal ring-ice absolute top-1.5 -left-[2.4rem] size-3.5 rounded-full ring-4" aria-hidden="true" />
             <p class="tnum text-2xl font-semibold">{t.year}</p>
             <p class="text-muted mt-1 max-w-lg text-lg">{t.text}</p>
           </li>
@@ -111,14 +112,14 @@ const timeline = [
   </section>
 
   <!-- People -->
-  <section class="bg-white">
+  <section class="bg-frost">
     <div class="wrap py-16 md:py-24">
       <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">The people behind your loads</h2>
       <div class="mt-12 grid gap-12 md:grid-cols-2 md:gap-14">
         <figure>
-          <div class="bg-navy-900 flex aspect-[3/2] w-full items-center justify-center rounded-2xl">
+          <div class="band-night flex aspect-[3/2] w-full items-center justify-center rounded-2xl">
             <!-- Replace with a photo of the founder -->
-            <span class="text-navy-300 text-6xl font-semibold tracking-tight">SG</span>
+            <span class="text-blue-300 text-6xl font-semibold tracking-tight">SG</span>
           </div>
           <figcaption class="mt-5">
             <p class="text-xl font-semibold">{site.founder.name}</p>
@@ -161,9 +162,9 @@ const timeline = [
     </div>
     <div class="flex flex-wrap gap-3 md:justify-end">
       <a href={site.mapsLink} class="btn btn-outline" target="_blank" rel="noopener">Open in Google Maps</a>
-      <a href={pageUrl(locale, "contact")} class="btn btn-navy">Contact us</a>
+      <a href={pageUrl(locale, "contact")} class="btn btn-blue">Contact us</a>
     </div>
   </section>
 
-  <CtaPanel />
+  <CtaPanel surface="frost" />
 </Layout>

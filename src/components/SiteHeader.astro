@@ -1,7 +1,7 @@
 ---
 import Icon from "./Icon.astro";
 import { services } from "../data/services";
-import { site, pageUrl, mailto } from "../data/site";
+import { site, asset, pageUrl, mailto } from "../data/site";
 
 interface Props {
   locale: string;
@@ -26,6 +26,7 @@ const currentPath = parts.join("/");
 const langUrls = languages.map((l) => ({ ...l, url: pageUrl(l.code, currentPath) }));
 
 const nav = [
+  { label: "Fleet", href: pageUrl(locale, "fleet"), match: "fleet" },
   { label: "Certificates", href: pageUrl(locale, "certificates"), match: "certificates" },
   { label: "About us", href: pageUrl(locale, "about"), match: "about" },
   { label: "Contact", href: pageUrl(locale, "contact"), match: "contact" },
@@ -34,22 +35,20 @@ const nav = [
 const isServices = currentPath.startsWith("services");
 ---
 
-<header id="site-header" class="bg-navy-900 sticky top-0 z-50 text-white">
-  <div class="wrap flex h-[4.5rem] items-center gap-6">
-    <a href={pageUrl(locale)} class="mr-auto flex items-center gap-2.5 lg:mr-4" aria-label={`${site.name} home`}>
-      <!-- Placeholder wordmark until the new logo arrives -->
-      <span class="bg-signal block h-7 w-2 rounded-sm" aria-hidden="true"></span>
-      <span class="text-xl leading-none font-semibold tracking-tight">Wind Eurotrans</span>
+<header id="site-header" class="text-ink sticky top-0 z-50 bg-frost border-b border-transparent transition-colors">
+  <div class="wrap flex h-[5rem] items-center gap-6">
+    <a href={pageUrl(locale)} class="mr-auto shrink-0 lg:mr-4" aria-label={`${site.name} home`}>
+      <img src={asset("logo.svg")} alt="" width="1711" height="740" class="h-14 w-auto" />
     </a>
 
-    <nav aria-label="Main" class="hidden lg:block">
+    <nav aria-label="Main" class="hidden font-medium lg:block">
       <ul class="flex items-center gap-1">
         <!-- "Services" goes to the services page; hovering it (or the chevron button) lists the services -->
         <li class="relative" data-dropdown>
-          <div class="flex items-center rounded-md hover:bg-white/8">
+          <div class="hover:bg-ice flex items-center rounded-md">
             <a
               href={pageUrl(locale, "services")}
-              class:list={["py-2 pl-3", isServices && "text-signal"]}
+              class:list={["py-2 pl-3", isServices && "nav-current"]}
               aria-current={currentPath === "services" ? "page" : undefined}
             >
               Services
@@ -62,12 +61,12 @@ const isServices = currentPath.startsWith("services");
               aria-controls="services-menu"
               data-dropdown-trigger
             >
-              <Icon name="chevron" class:list={["size-4 transition-transform", isServices && "text-signal"]} />
+              <Icon name="chevron" class="size-4 transition-transform" />
             </button>
           </div>
           <ul
             id="services-menu"
-            class="text-ink invisible absolute top-full left-0 mt-2 w-[22rem] rounded-xl bg-white p-1.5 opacity-0 shadow-[0_18px_40px_-12px_rgb(7_23_41/0.45)] transition-[opacity,visibility] duration-150"
+            class="text-ink invisible absolute top-full left-0 mt-2 w-[22rem] border-line rounded-xl border bg-white p-1.5 opacity-0 shadow-[0_18px_40px_-16px_rgb(0_36_97/0.25)] transition-[opacity,visibility] duration-150"
             data-dropdown-panel
           >
             {
@@ -76,8 +75,8 @@ const isServices = currentPath.startsWith("services");
                   <a
                     href={pageUrl(locale, `services/${s.slug}`)}
                     class:list={[
-                      "hover:bg-paper block rounded-lg px-3 py-2.5",
-                      currentPath === `services/${s.slug}` && "bg-paper",
+                      "hover:bg-ice block rounded-lg px-3 py-2.5",
+                      currentPath === `services/${s.slug}` && "bg-ice",
                     ]}
                     aria-current={currentPath === `services/${s.slug}` ? "page" : undefined}
                   >
@@ -95,8 +94,8 @@ const isServices = currentPath.startsWith("services");
               <a
                 href={item.href}
                 class:list={[
-                  "block rounded-md px-3 py-2 hover:bg-white/8",
-                  currentPath.startsWith(item.match) && "text-signal",
+                  "hover:bg-ice block rounded-md px-3 py-2",
+                  currentPath.startsWith(item.match) && "nav-current",
                 ]}
                 aria-current={currentPath.startsWith(item.match) ? "page" : undefined}
               >
@@ -108,8 +107,8 @@ const isServices = currentPath.startsWith("services");
       </ul>
     </nav>
 
-    <div class="ml-auto hidden items-center gap-2 lg:flex">
-      <a href={site.phoneHref} class="tnum flex items-center gap-2 rounded-md px-3 py-2 hover:bg-white/8">
+    <div class="ml-auto hidden items-center gap-2 font-medium lg:flex">
+      <a href={site.phoneHref} class="tnum hover:bg-ice flex items-center gap-2 rounded-md px-3 py-2">
         <Icon name="phone" class="text-signal size-4.5" />
         {site.phone}
       </a>
@@ -117,7 +116,7 @@ const isServices = currentPath.startsWith("services");
       <div class="relative" data-dropdown>
         <button
           type="button"
-          class="flex items-center gap-1.5 rounded-md px-3 py-2 hover:bg-white/8"
+          class="hover:bg-ice flex items-center gap-1.5 rounded-md px-3 py-2"
           aria-expanded="false"
           aria-controls="lang-menu"
           aria-label="Change language"
@@ -128,7 +127,7 @@ const isServices = currentPath.startsWith("services");
         </button>
         <ul
           id="lang-menu"
-          class="text-ink invisible absolute top-full right-0 mt-2 w-40 rounded-xl bg-white p-1.5 opacity-0 shadow-[0_18px_40px_-12px_rgb(7_23_41/0.45)] transition-[opacity,visibility] duration-150"
+          class="text-ink invisible absolute top-full right-0 mt-2 w-40 border-line rounded-xl border bg-white p-1.5 opacity-0 shadow-[0_18px_40px_-16px_rgb(0_36_97/0.25)] transition-[opacity,visibility] duration-150"
           data-dropdown-panel
         >
           {
@@ -137,7 +136,7 @@ const isServices = currentPath.startsWith("services");
                 <a
                   href={l.url}
                   lang={l.code}
-                  class:list={["hover:bg-paper block rounded-lg px-3 py-2", l.code === locale && "font-semibold"]}
+                  class:list={["hover:bg-ice block rounded-lg px-3 py-2", l.code === locale && "font-semibold"]}
                   aria-current={l.code === locale ? "true" : undefined}
                 >
                   {l.label}
@@ -166,27 +165,24 @@ const isServices = currentPath.startsWith("services");
   <!-- Mobile menu -->
   <div
     id="mobile-menu"
-    class="bg-navy-900 fixed inset-0 z-50 hidden flex-col overflow-y-auto lg:hidden"
+    class="text-ink bg-frost fixed inset-0 z-50 hidden flex-col overflow-y-auto lg:hidden"
     role="dialog"
     aria-modal="true"
     aria-label="Menu"
   >
-    <div class="wrap flex h-[4.5rem] shrink-0 items-center justify-between">
-      <span class="flex items-center gap-2.5">
-        <span class="bg-signal block h-7 w-2 rounded-sm" aria-hidden="true"></span>
-        <span class="text-xl leading-none font-semibold tracking-tight">Wind Eurotrans</span>
-      </span>
+    <div class="wrap border-line flex h-[5rem] shrink-0 items-center justify-between border-b">
+      <img src={asset("logo.svg")} alt={site.name} width="1711" height="740" class="h-14 w-auto" />
       <button type="button" id="menu-close" class="-mr-2 rounded-md p-2" aria-label="Close menu">
         <Icon name="close" class="size-7" />
       </button>
     </div>
     <nav aria-label="Mobile" class="wrap flex grow flex-col pt-4 pb-8">
-      <a href={pageUrl(locale, "services")} class="block py-2 text-2xl font-medium">Services</a>
+      <a href={pageUrl(locale, "services")} class="font-display block py-2 text-2xl font-semibold">Services</a>
       <ul class="pb-3">
         {
           services.map((s) => (
             <li>
-              <a href={pageUrl(locale, `services/${s.slug}`)} class="text-navy-200 block py-1.5 pl-4 text-lg">
+              <a href={pageUrl(locale, `services/${s.slug}`)} class="text-muted block py-1.5 pl-4 text-lg">
                 {s.name}
               </a>
             </li>
@@ -197,7 +193,7 @@ const isServices = currentPath.startsWith("services");
         {
           nav.map((item) => (
             <li>
-              <a href={item.href} class="block py-2 text-2xl font-medium">
+              <a href={item.href} class="font-display block py-2 text-2xl font-semibold">
                 {item.label}
               </a>
             </li>
@@ -209,7 +205,7 @@ const isServices = currentPath.startsWith("services");
           <Icon name="phone" class="size-4.5" />
           Call {site.phone}
         </a>
-        <a href={mailto()} class="btn btn-outline-light">
+        <a href={mailto()} class="btn btn-outline">
           <Icon name="mail" class="size-4.5" />
           Email us
         </a>
@@ -221,7 +217,7 @@ const isServices = currentPath.startsWith("services");
                 lang={l.code}
                 class:list={[
                   "rounded-md border px-3 py-1.5 text-sm",
-                  l.code === locale ? "border-white" : "border-white/25 text-navy-200",
+                  l.code === locale ? "border-blue-900 text-blue-900" : "border-line text-muted",
                 ]}
                 aria-current={l.code === locale ? "true" : undefined}
               >
@@ -236,6 +232,17 @@ const isServices = currentPath.startsWith("services");
 </header>
 
 <style>
+  /* Current page: orange underline (orange text on white is too faint to read) */
+  .nav-current {
+    text-decoration: underline;
+    text-decoration-color: var(--color-signal);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.45em;
+  }
+  /* No line under the header at the top of the page, so it runs into the white hero; it appears once you scroll */
+  #site-header.is-scrolled {
+    border-color: var(--color-line);
+  }
   [data-dropdown].is-open [data-dropdown-panel] {
     visibility: visible;
     opacity: 1;
@@ -296,6 +303,12 @@ const isServices = currentPath.startsWith("services");
     });
     if (menu.classList.contains("is-open")) closeMenu();
   });
+
+  // Header line: only once the page has scrolled
+  const header = document.getElementById("site-header")!;
+  const updateHeader = () => header.classList.toggle("is-scrolled", window.scrollY > 4);
+  updateHeader();
+  window.addEventListener("scroll", updateHeader, { passive: true });
 
   // Mobile menu
   const menu = document.getElementById("mobile-menu")!;

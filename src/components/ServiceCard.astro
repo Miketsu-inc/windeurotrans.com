@@ -6,7 +6,8 @@
 import RangeBar from "./RangeBar.astro";
 import type { Service } from "../data/services";
 import { formatRange } from "../data/temperature";
-import { asset, pageUrl } from "../data/site";
+import { pageUrl } from "../data/site";
+import { photoSrc, photoSrcset } from "../data/fleet";
 
 interface Props {
   service: Service;
@@ -23,13 +24,18 @@ const Heading = compact ? "h3" : "h2";
 
 <a
   href={pageUrl(locale, `services/${s.slug}`)}
-  class="group border-line hover:border-navy-900 flex h-full flex-col overflow-hidden rounded-2xl border bg-white transition-colors"
+  class="card group flex h-full flex-col overflow-hidden"
 >
   <img
-    src={asset(s.image.src)}
+    src={photoSrc(s.image.photo)}
+    srcset={photoSrcset(s.image.photo)}
+    sizes={compact ? "(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw" : "(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"}
     alt={s.image.alt}
+    width="800"
+    height="533"
     loading={eager ? "eager" : "lazy"}
     class="aspect-[3/2] w-full object-cover"
+    style={s.image.position && `object-position: ${s.image.position}`}
   />
   <div class:list={["flex grow flex-col", compact ? "p-5" : "p-6 md:p-7"]}>
     <Heading
@@ -49,7 +55,7 @@ const Heading = compact ? "h3" : "h2";
         </div>
       )
     }
-    <span class:list={["text-navy-900 mt-auto inline-flex items-center gap-2 font-medium", compact ? "pt-4" : "pt-6"]}>
+    <span class:list={["text-blue-900 mt-auto inline-flex items-center gap-2 font-medium", compact ? "pt-4" : "pt-6"]}>
       Read more
       <span class="text-signal transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
     </span>

@@ -47,7 +47,7 @@ const included = [
       <!-- Fills the sixth slot of the grid -->
       <li class="sign-panel flex flex-col p-8 md:p-9">
         <h2 class="text-xl leading-snug md:text-[1.375rem]">Not sure which one you need?</h2>
-        <p class="text-navy-200 mt-2 mb-6">Tell us what you are shipping and we'll tell you how we would move it.</p>
+        <p class="text-blue-200 mt-2 mb-6">Tell us what you are shipping and we'll tell you how we would move it.</p>
         <div class="mt-auto flex flex-col gap-3">
           <a href={site.phoneHref} class="btn btn-signal tnum">
             <Icon name="phone" class="size-4.5" />
@@ -62,14 +62,14 @@ const included = [
     </ul>
   </section>
 
-  <section class="border-line border-y bg-white">
+  <section class="border-line bg-frost border-y">
     <div class="wrap py-16 md:py-24">
     <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Included with every load</h2>
     <ul class="mt-10 grid gap-8 md:grid-cols-3">
       {
         included.map((item) => (
           <li class="border-line border-l-2 pl-5 md:[&:first-child]:border-l-0 md:[&:first-child]:pl-0">
-            <Icon name={item.icon} class="text-navy-700 size-6" />
+            <Icon name={item.icon} class="text-blue-900 size-6" />
             <h3 class="mt-3 text-lg">{item.title}</h3>
             <p class="text-muted mt-1">{item.text}</p>
           </li>

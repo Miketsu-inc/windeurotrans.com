@@ -86,19 +86,19 @@ const list = Object.values(routes).map((r) => {
 <style>
   .hero-map__land {
     fill: none;
-    stroke: #2b5283;
+    stroke: #cbd7e8;
     stroke-width: 4.8;
     stroke-linecap: round;
   }
   .hero-map__land--lit {
-    stroke: #3a6799;
+    stroke: #a8bddb;
   }
   .hero-map__borders {
     fill: none;
-    stroke: #3a6396;
+    stroke: #b4c5dd;
     stroke-width: 0.8;
     stroke-linejoin: round;
-    opacity: 0.55;
+    opacity: 0.8;
   }
   .hero-map__hu {
     fill: none;
@@ -107,7 +107,7 @@ const list = Object.values(routes).map((r) => {
     stroke-linecap: round;
   }
   .hero-map__hu-outline {
-    fill: rgb(255 106 19 / 0.08);
+    fill: rgb(253 74 1 / 0.1);
     stroke: var(--color-signal);
     stroke-width: 1.2;
     stroke-linejoin: round;
@@ -122,23 +122,23 @@ const list = Object.values(routes).map((r) => {
     stroke-linejoin: round;
   }
   .hero-map__network {
-    stroke: var(--color-ice);
+    stroke: var(--color-blue-900);
     stroke-width: 1.6;
-    stroke-opacity: 0.55;
+    stroke-opacity: 0.35;
     opacity: 0;
     animation: hm-in 1.2s ease 0.2s forwards;
     transition: stroke-opacity 0.3s ease;
   }
   /* Per-route copy, only visible when its destination is hovered */
   .hero-map__road {
-    stroke: var(--color-ice);
+    stroke: var(--color-blue-900);
     stroke-width: 2;
     stroke-opacity: 0;
     transition: stroke-opacity 0.3s ease;
   }
   /* A single dot travelling slowly along each road */
   .hero-map__truck {
-    stroke: #fff;
+    stroke: var(--color-signal);
     stroke-width: 4.5;
     stroke-dasharray: 0 100;
     opacity: 0;
@@ -148,8 +148,8 @@ const list = Object.values(routes).map((r) => {
     animation-delay: calc(1.4s + var(--i) * 0.9s);
   }
   .hero-map__stop {
-    fill: #fff;
-    stroke: var(--color-navy-900);
+    fill: var(--color-blue-900);
+    stroke: var(--color-frost);
     stroke-width: 2.5;
     opacity: 0;
     animation: hm-in 0.4s ease forwards;
@@ -157,13 +157,13 @@ const list = Object.values(routes).map((r) => {
     transition: fill 0.3s ease;
   }
   .hero-map__name {
-    fill: #fff;
-    fill-opacity: 0.75;
+    fill: var(--color-ink);
+    fill-opacity: 0.8;
     font-size: 23px;
     font-weight: 500;
     opacity: 0;
     paint-order: stroke;
-    stroke: var(--color-navy-900);
+    stroke: var(--color-frost);
     stroke-width: 8px;
     stroke-linejoin: round;
     animation: hm-in 0.5s ease forwards;
@@ -176,7 +176,7 @@ const list = Object.values(routes).map((r) => {
 
   /* Hover: the chosen road brightens a little, the rest of the network steps back a little */
   .hero-map.has-active .hero-map__network {
-    stroke-opacity: 0.3;
+    stroke-opacity: 0.2;
   }
   .hero-map__route.is-active .hero-map__road {
     stroke-opacity: 1;
@@ -190,14 +190,14 @@ const list = Object.values(routes).map((r) => {
 
   /* Hub */
   .hero-map__hub {
-    fill: #fff;
+    fill: var(--color-blue-900);
   }
   .hero-map__hub-label {
-    fill: #fff;
+    fill: var(--color-ink);
     font-size: 25px;
     font-weight: 600;
     paint-order: stroke;
-    stroke: var(--color-navy-900);
+    stroke: var(--color-frost);
     stroke-width: 6px;
     stroke-linejoin: round;
   }

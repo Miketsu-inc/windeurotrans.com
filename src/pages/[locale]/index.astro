@@ -8,6 +8,7 @@ import HeroMap from "../../components/HeroMap.astro";
 import ServiceScroller from "../../components/ServiceScroller.astro";
 import CtaPanel from "../../components/CtaPanel.astro";
 import { certificates } from "../../data/certificates";
+import { photos, photoSrc, photoSrcset } from "../../data/fleet";
 import { site, asset, pageUrl } from "../../data/site";
 
 export const getStaticPaths = (() => {
@@ -22,6 +23,8 @@ const proof = [
   { icon: "dispatch", title: "24/7 dispatch", text: "Someone answers while your load is moving" },
   { icon: "road", title: "On the road since 2010", text: "Based in Dunakeszi, next to Budapest" },
 ] as const;
+
+const fleetPreview = ["fleet-angle-near", "truck-side", "trailer-rear"];
 
 const faqs = [
   {
@@ -52,14 +55,14 @@ const faqs = [
 ---
 
 <Layout locale={locale}>
-  <!-- Hero: headline beside an animated route map. On phones the buttons follow the map. -->
-  <section class="bg-navy-900 overflow-hidden text-white">
+  <!-- Hero: on white, so it runs on from the header. Headline beside an animated route map; on phones the buttons follow the map. -->
+  <section class="bg-frost overflow-hidden bg-[radial-gradient(50%_60%_at_78%_48%,#e3edfb_0%,transparent_75%)]">
     <div class="wrap grid pt-12 pb-12 md:pt-16 md:pb-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[1fr_auto_auto_1fr] lg:gap-x-6 lg:pt-10 lg:pb-10">
       <div class="relative z-10 lg:col-start-1 lg:row-start-2">
-        <h1 class="text-[2.75rem] leading-[0.98] tracking-[-0.035em] sm:text-[4rem] xl:text-[5rem]">
+        <h1 class="text-[2.75rem] leading-[1] font-bold tracking-[-0.035em] sm:text-[4rem] xl:text-[4.75rem]">
           Reliability you can count on.
         </h1>
-        <p class="text-navy-200 mt-6 max-w-lg text-lg md:text-xl md:leading-relaxed">
+        <p class="text-muted mt-6 max-w-lg text-lg md:text-xl md:leading-relaxed">
           Refrigerated, pharmaceutical and dangerous goods by road, from Hungary to anywhere in Europe. At the
           temperature and on the day we agreed with you.
         </p>
@@ -69,21 +72,21 @@ const faqs = [
       </div>
       <div class="relative z-10 mt-4 flex flex-wrap gap-3 lg:col-start-1 lg:row-start-3 lg:mt-8">
         <a href={pageUrl(locale, "contact")} class="btn btn-signal">Get in touch</a>
-        <a href={pageUrl(locale, "services")} class="btn btn-outline-light">Our services</a>
+        <a href={pageUrl(locale, "services")} class="btn btn-outline">Our services</a>
       </div>
     </div>
   </section>
 
-  <!-- Proof -->
-  <section aria-label="Why shippers trust us" class="border-line border-b bg-white">
+  <!-- Proof: the blue band that follows the white hero -->
+  <section aria-label="Why shippers trust us" class="band-night">
     <ul class="wrap grid gap-x-8 gap-y-8 py-12 sm:grid-cols-2 md:py-16 lg:grid-cols-4">
       {
         proof.map((p) => (
-          <li class="border-line flex gap-4 border-l-2 pl-5 sm:border-l-0 sm:pl-0 sm:even:border-l-2 sm:even:pl-5 lg:[&:not(:first-child)]:border-l-2 lg:[&:not(:first-child)]:pl-5">
-            <Icon name={p.icon} class="text-navy-700 mt-0.5 size-6 shrink-0" />
+          <li class="flex gap-4 border-l-2 border-white/20 pl-5 sm:border-l-0 sm:pl-0 sm:even:border-l-2 sm:even:pl-5 lg:[&:not(:first-child)]:border-l-2 lg:[&:not(:first-child)]:pl-5">
+            <Icon name={p.icon} class="text-signal mt-0.5 size-6 shrink-0" />
             <div>
               <p class="font-semibold">{p.title}</p>
-              <p class="text-muted text-[0.9375rem] leading-snug">{p.text}</p>
+              <p class="text-blue-200 text-[0.9375rem] leading-snug">{p.text}</p>
             </div>
           </li>
         ))
@@ -91,10 +94,54 @@ const faqs = [
     </ul>
   </section>
 
-  <ServiceScroller locale={locale} />
+  <div class="bg-frost">
+    <ServiceScroller locale={locale} />
+  </div>
+
+  <!-- Fleet: three photos linking to the full gallery -->
+  <section class="bg-sky">
+    <div class="wrap py-20 md:py-28">
+      <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div class="max-w-xl">
+          <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Our fleet</h2>
+          <p class="text-muted mt-4 text-lg">
+            Scania trucks and refrigerated trailers, kept clean and in good repair. These are the trucks that carry
+            your loads.
+          </p>
+        </div>
+        <a href={pageUrl(locale, "fleet")} class="link shrink-0">See the whole fleet</a>
+      </div>
+      <ul class="mt-10 grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-3 lg:grid-rows-2">
+        {
+          fleetPreview.map((name, i) => {
+            const p = photos.find((photo) => photo.name === name)!;
+            return (
+              <li class:list={[i === 0 && "col-span-2 lg:row-span-2"]}>
+                <a href={pageUrl(locale, "fleet")} class="group relative block h-full overflow-hidden rounded-xl" tabindex="-1">
+                  <img
+                    src={photoSrc(p.name)}
+                    srcset={photoSrcset(p.name)}
+                    sizes={i === 0 ? "(min-width: 1280px) 800px, 100vw" : "(min-width: 1280px) 400px, 50vw"}
+                    alt={p.alt}
+                    width={p.width}
+                    height={p.height}
+                    loading="lazy"
+                    class:list={[
+                      "w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]",
+                      i === 0 ? "aspect-[16/9] lg:absolute lg:inset-0 lg:aspect-auto lg:h-full" : "aspect-[4/3]",
+                    ]}
+                  />
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </section>
 
   <!-- Promise -->
-  <section class="bg-white">
+  <section class="bg-frost">
     <div class="wrap grid gap-12 py-20 md:py-28 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-center lg:gap-20">
       <div>
         <p class="text-muted max-w-xl text-lg">
@@ -129,15 +176,15 @@ const faqs = [
   </section>
 
   <!-- Certificates -->
-  <section>
+  <section class="band-night">
     <div class="wrap grid gap-12 py-20 md:py-28 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-20">
       <div>
         <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Checked by independent auditors</h2>
-        <p class="text-muted mt-4 max-w-md text-lg">
+        <p class="text-blue-200 mt-4 max-w-md text-lg">
           Our quality management and our handling of medicines are certified by outside bodies, so you don't have to
           take our word for it.
         </p>
-        <a href={pageUrl(locale, "certificates")} class="link mt-6 inline-block">View the certificates</a>
+        <a href={pageUrl(locale, "certificates")} class="link link-light mt-6 inline-block">View the certificates</a>
       </div>
       <ul class="grid grid-cols-2 gap-5 sm:gap-8">
         {
@@ -150,10 +197,10 @@ const faqs = [
                   width="480"
                   height="679"
                   loading="lazy"
-                  class="border-line w-full rounded-md border shadow-[0_24px_40px_-24px_rgb(7_23_41/0.4)] transition-transform duration-200 group-hover:-translate-y-1"
+                  class="w-full rounded-md shadow-[0_30px_50px_-22px_rgb(0_0_0/0.6)] transition-transform duration-200 group-hover:-translate-y-1"
                 />
                 <p class="mt-4 font-semibold">{c.name}</p>
-                <p class="text-muted text-[0.9375rem]">Valid until {c.validUntil}</p>
+                <p class="text-blue-200 text-[0.9375rem]">Valid until {c.validUntil}</p>
               </a>
             </li>
           ))
@@ -163,7 +210,7 @@ const faqs = [
   </section>
 
   <!-- FAQ -->
-  <section class="bg-white">
+  <section class="bg-ice">
     <div class="wrap grid gap-10 py-20 md:py-28 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
     <div>
       <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Questions shippers ask us</h2>
@@ -177,7 +224,7 @@ const faqs = [
           <details class="faq border-line border-b last:border-b-0" data-faq>
             <summary class="flex cursor-pointer list-none items-start justify-between gap-6 py-6 text-lg font-medium">
               {f.q}
-              <Icon name="chevron" class="faq__chevron text-navy-700 mt-1 size-5 shrink-0" />
+              <Icon name="chevron" class="faq__chevron text-blue-900 mt-1 size-5 shrink-0" />
             </summary>
             <div class="faq__answer">
               <p class="text-muted max-w-2xl pb-7">{f.a}</p>
@@ -189,7 +236,7 @@ const faqs = [
     </div>
   </section>
 
-  <CtaPanel />
+  <CtaPanel surface="frost" />
 </Layout>
 
 <style>
