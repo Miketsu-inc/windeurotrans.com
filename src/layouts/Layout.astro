@@ -1,25 +1,50 @@
 ---
 import "../styles/global.css";
+import SiteHeader from "../components/SiteHeader.astro";
+import Footer from "../components/Footer.astro";
+import { site } from "../data/site";
 
-const { locale = "hu" } = Astro.props;
+interface Props {
+  locale: string;
+  title?: string;
+  description?: string;
+}
+
+const {
+  locale,
+  title,
+  description = "Temperature-controlled, pharmaceutical (GDP) and ADR road freight from Hungary across Europe. Full and part loads from 1 kg to 24 tonnes, 24/7 dispatch.",
+} = Astro.props;
+
+const pageTitle = title ? `${title} | ${site.name}` : `${site.name} | Road freight you can count on`;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
 <!doctype html>
-<html lang={locale} class="scroll-smooth">
+<html lang={locale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
-    <link rel="alternate" hreflang="hu" href="/hu/" />
-    <link rel="alternate" hreflang="en" href="/en/" />
-    <link rel="alternate" hreflang="it" href="/it/" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0c2340" />
+    <link rel="alternate" hreflang="hu" href={`${base}/hu/`} />
+    <link rel="alternate" hreflang="en" href={`${base}/en/`} />
+    <link rel="alternate" hreflang="it" href={`${base}/it/`} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
     <meta name="generator" content={Astro.generator} />
-    <title>Windeurotrans</title>
   </head>
-  <body
-    class="font-rubik text-text_color bg-bg_color h-full w-full
-      overflow-x-hidden antialiased scroll"
-  >
-    <slot />
+  <body class="min-h-screen antialiased">
+    <a
+      href="#main"
+      class="bg-signal text-navy-950 fixed top-3 left-3 z-[100] -translate-y-20 rounded-md px-4 py-2 font-medium focus:translate-y-0"
+      >Skip to content</a
+    >
+    <SiteHeader locale={locale} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer locale={locale} />
   </body>
 </html>

@@ -1,722 +1,284 @@
 ---
 import type { GetStaticPaths } from "astro";
-import { getRelativeLocaleUrl } from "astro:i18n";
-import { locales, useTranslation, type Locale } from "../../i18n/utils";
+import { locales, type Locale } from "../../i18n/utils";
 
 import Layout from "../../layouts/Layout.astro";
-import Nav from "../../components/Nav.astro";
-import Footer from "../../components/Footer.astro";
+import Icon from "../../components/Icon.astro";
+import TempRange from "../../components/TempRange.astro";
+import HeroMap from "../../components/HeroMap.astro";
+import RangeBar from "../../components/RangeBar.astro";
+import CtaPanel from "../../components/CtaPanel.astro";
+import { services } from "../../data/services";
+import { certificates } from "../../data/certificates";
+import { formatRange } from "../../data/temperature";
+import { site, asset, pageUrl } from "../../data/site";
 
 export const getStaticPaths = (() => {
-  return locales.map((locale) => ({
-    params: { locale },
-  }));
+  return locales.map((locale) => ({ params: { locale } }));
 }) satisfies GetStaticPaths;
 
 const locale = Astro.params.locale as Locale;
 
-const t = useTranslation(locale);
+const proof = [
+  { icon: "shield", title: "GDP certified", text: "Medicines by road, audited by URS" },
+  { icon: "badge", title: "ISO 9001:2015", text: "Quality management, audited by DNV" },
+  { icon: "dispatch", title: "24/7 dispatch", text: "Someone answers while your load is moving" },
+  { icon: "road", title: "On the road since 2010", text: "Based in Dunakeszi, next to Budapest" },
+] as const;
 
-const aboutUrl = getRelativeLocaleUrl(locale, "about");
+const keySpec: Record<string, string> = {
+  "road-freight": "1 kg to 24 tonnes",
+  "dangerous-goods": "ADR",
+  customs: "Export and import",
+};
+
+const steps = [
+  {
+    title: "Call or email us",
+    text: "Tell us the pickup, delivery, cargo and date. A two-minute call is usually enough.",
+  },
+  {
+    title: "Get a price",
+    text: "A fixed price and transit time, usually within one working day.",
+  },
+  {
+    title: "We collect",
+    text: "The truck arrives in the agreed slot, already at the agreed temperature. Dispatch follows it day and night.",
+  },
+  {
+    title: "Delivered with paperwork",
+    text: "Signed CMR on delivery and, for temperature-controlled loads, the temperature record.",
+  },
+];
+
+const faqs = [
+  {
+    q: "Do you take part loads, or only full trucks?",
+    a: "Both. A full truckload goes straight from pickup to delivery. A part load shares the trailer with other loads going the same way, so it costs less and takes a little longer.",
+  },
+  {
+    q: "What is the smallest and largest load you carry?",
+    a: "Anything from 1 kg up to 24 tonnes.",
+  },
+  {
+    q: "Which countries do you deliver to?",
+    a: "We drive in Hungary and across Europe. Tell us the pickup and delivery address and we confirm the route and transit time with the price.",
+  },
+  {
+    q: "Can you carry medicines at +2 °C to +8 °C?",
+    a: "Yes. We are GDP certified for road transport of medicinal products, and we carry them at +2 °C to +8 °C or +15 °C to +25 °C with a temperature record for every load.",
+  },
+  {
+    q: "Do you handle customs?",
+    a: "Yes. We handle export and import customs clearance, so the truck and the documents are ready at the same time.",
+  },
+  {
+    q: "What happens if something goes wrong on the road?",
+    a: "Our dispatch team works around the clock. If a delay or a problem comes up, we call you straight away with the facts and the fix, so you never have to chase us for news.",
+  },
+];
 ---
 
 <Layout locale={locale}>
-  <Nav locale={locale} />
-
-  <header
-    class="bg-position[70%_30%] m-auto flex h-screen w-full items-center
-        overflow-hidden bg-[url(/windeurotrans.com/image_4.jpg)] bg-cover bg-center
-        bg-no-repeat"
-  >
-    <div
-      class="relative z-10 mx-auto w-full max-w-375 px-6 pb-24 md:px-12
-          md:pb-32"
-    >
-      <span
-        class="text-primary mb-4 block text-sm font-bold tracking-[0.2em]
-            uppercase md:text-base"
-      >
-        {t("index.hero.beforetitle")}
-      </span>
-      <h1
-        class="mb-8 max-w-4xl text-5xl leading-none font-bold md:text-7xl
-            lg:text-8xl"
-      >
-        {t("index.hero.title1")}<br />{t("index.hero.title2")}<br />{
-          t("index.hero.title3")
-        }
-      </h1>
-      <button
-        class="group bg-primary relative cursor-pointer overflow-hidden
-            rounded-lg px-8 py-4 text-sm font-semibold tracking-wider text-white
-            uppercase transition-all hover:bg-[#e04d0b]"
-      >
-        {t("index.hero.button")}
-      </button>
-    </div>
-  </header>
-  <!-- <section id="whyus" class="relative px-6 pt-24 pb-12 md:px-12 md:py-32">
-    <div
-      class="absolute right-1/2 bottom-0 left-1/2 -z-10 hidden size-200
-          opacity-30 blur-3xl filter md:block"
-    >
-      <div
-        class="from-primary h-full w-full rounded-full bg-linear-to-tr
-            to-teal-500"
-      >
+  <!-- Hero: headline beside an animated route map. On phones the buttons follow the map. -->
+  <section class="bg-navy-900 overflow-hidden text-white">
+    <div class="wrap grid pt-12 pb-12 md:pt-16 md:pb-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[1fr_auto_auto_1fr] lg:gap-x-6 lg:pt-10 lg:pb-10">
+      <div class="relative z-10 lg:col-start-1 lg:row-start-2">
+        <h1 class="text-[2.75rem] leading-[0.98] tracking-[-0.035em] sm:text-[4rem] xl:text-[5rem]">
+          Reliability you can count on.
+        </h1>
+        <p class="text-navy-200 mt-6 max-w-lg text-lg md:text-xl md:leading-relaxed">
+          Refrigerated, pharmaceutical and dangerous goods by road, from Hungary to anywhere in Europe. At the
+          temperature and on the day we agreed with you.
+        </p>
+      </div>
+      <div class="mx-auto mt-6 w-full max-w-[22rem] sm:max-w-[26rem] lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:-my-6 lg:mr-0 lg:max-w-[44rem] xl:max-w-[48rem] min-[1400px]:-mr-14">
+        <HeroMap />
+      </div>
+      <div class="relative z-10 mt-4 flex flex-wrap gap-3 lg:col-start-1 lg:row-start-3 lg:mt-8">
+        <a href={pageUrl(locale, "contact")} class="btn btn-signal">Contact us</a>
+        <a href={pageUrl(locale, "services")} class="btn btn-outline-light">Our services</a>
       </div>
     </div>
+  </section>
 
-    <div class="mx-auto max-w-7xl">
-      <div class="mb-16 md:text-center">
-        <h2 class="text-text_color text-4xl font-bold md:text-5xl">
-          Why industry leaders choose us.
-        </h2>
-      </div>
+  <!-- Proof -->
+  <section aria-label="Why shippers trust us" class="wrap py-14 md:py-20">
+    <ul class="grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        proof.map((p) => (
+          <li class="border-line flex gap-4 border-l-2 pl-5">
+            <Icon name={p.icon} class="text-navy-700 mt-0.5 size-6 shrink-0" />
+            <div>
+              <p class="font-semibold">{p.title}</p>
+              <p class="text-muted text-[0.9375rem] leading-snug">{p.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
 
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-3 md:grid-rows-2">
-        <div
-          class="group hover:border-primary/10 relative col-span-1
-              overflow-hidden rounded-3xl border border-white/40 bg-white/40 p-8
-              shadow-md backdrop-blur-xs transition-all duration-500
-              hover:-translate-y-1 hover:bg-white/60 md:col-span-2"
-        >
-          <div
-            class="relative z-10 flex h-full flex-col justify-between gap-8
-                md:flex-row"
-          >
-            <div class="max-w-md space-y-4">
-              <div class="flex flex-col gap-6 md:flex-row">
-                <div
-                  class="flex size-14 shrink-0 items-center justify-center
-                      rounded-2xl bg-secondary/10 text-secondary transition-colors
-                      duration-300 group-hover:bg-secondary
-                      group-hover:text-white"
-                >
-                  <svg
-                    class="size-7"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
-                    <path d="m9 12 2 2 4-4"></path>
-                  </svg>
-                </div>
-                <div class="flex flex-col items-start gap-3">
-                  <h3 class="text-2xl font-bold">Certified Excellence</h3>
-                  <p class="leading-relaxed text-gray-600">
-                    We don't just promise quality; we prove it. Our operations
-                    are rigorously audited to meet the highest international
-                    safety and pharmaceutical standards.
-                  </p>
-                  <a class="cursor-pointer underline">View certificates</a>
-                </div>
+  <TempRange locale={locale} />
+
+  <!-- Services -->
+  <section class="wrap grid gap-12 py-20 md:py-28 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
+    <div class="lg:sticky lg:top-28 lg:self-start">
+      <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">What we move</h2>
+      <p class="text-muted mt-4 max-w-sm text-lg">
+        Everything your load needs on the road, from the first price to the signed delivery note.
+      </p>
+      <a href={pageUrl(locale, "services")} class="link mt-6 inline-block">Compare all services</a>
+    </div>
+    <ul class="border-line border-t">
+      {
+        services.map((s) => (
+          <li class="border-line border-b">
+            <a
+              href={pageUrl(locale, `services/${s.slug}`)}
+              class="group grid gap-4 py-7 sm:grid-cols-[minmax(0,1fr)_11rem] sm:items-center sm:gap-10"
+            >
+              <div>
+                <h3 class="decoration-signal text-xl leading-snug decoration-2 underline-offset-4 group-hover:underline md:text-[1.375rem]">
+                  {s.name}
+                </h3>
+                <p class="text-muted mt-1.5 max-w-lg">{s.short}</p>
               </div>
-            </div>
-            <img
-              src="combined_certificates.png"
-              alt="ISO 9001 & ISO 14001 & GDP"
-              class="size-48 w-auto object-contain opacity-80 transition-all
-                  duration-300 group-hover:opacity-100 group-hover:grayscale-0
-                  md:grayscale"
-            />
-          </div>
-        </div>
-
-        <div
-          class="group hover:border-primary/10 relative overflow-hidden
-              rounded-3xl border border-white/40 bg-white/40 p-8 shadow-md
-              backdrop-blur-xs transition-all duration-500 hover:-translate-y-1
-              hover:bg-white/60"
-        >
-          <div
-            class="mb-6 flex size-14 items-center justify-center rounded-2xl
-                bg-secondary/10 text-secondary transition-colors duration-300
-                group-hover:bg-secondary group-hover:text-white"
-          >
-            <svg
-              class="size-7"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-            </svg>
-          </div>
-          <h3 class="mb-3 text-xl font-bold">Time-Critical Speed</h3>
-          <p class="text-gray-600">
-            Dual-driver teams mean your cargo never stops moving. We specialize
-            in "just-in-time" deliveries across the continent.
-          </p>
-        </div>
-
-        <div
-          class="group hover:border-primary/10 relative overflow-hidden
-              rounded-3xl border border-white/40 bg-white/40 p-8 shadow-md
-              backdrop-blur-xs transition-all duration-500 hover:-translate-y-1
-              hover:bg-white/60"
-        >
-          <div
-            class="mb-6 flex size-14 items-center justify-center rounded-2xl
-                bg-secondary/10 text-secondary transition-colors duration-300
-                group-hover:bg-secondary group-hover:text-white"
-          >
-            <svg
-              class="size-7"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path>
-            </svg>
-          </div>
-          <h3 class="mb-3 text-xl font-bold">Budapest Hub</h3>
-          <p class="text-gray-600">
-            Ideally situated to bridge Eastern and Western Europe, offering
-            optimized routes that save fuel and time.
-          </p>
-        </div>
-
-        <div
-          class="group hover:border-primary/10 relative col-span-1
-              overflow-hidden rounded-3xl border border-white/40 bg-white/40 p-8
-              shadow-md backdrop-blur-xs transition-all duration-500
-              hover:-translate-y-1 hover:bg-white/60 md:col-span-2"
-        >
-          <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
-            <div
-              class="mb-3 flex size-14 shrink-0 items-center justify-center
-                  rounded-2xl bg-secondary/10 text-secondary transition-colors
-                  duration-300 group-hover:bg-secondary group-hover:text-white"
-            >
-              <svg
-                class="size-7"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-            <div>
-              <h3 class="mb-3 text-xl font-bold">Modern & Sustainable Fleet</h3>
-              <p class="max-w-2xl text-gray-600">
-                We operate exclusively with Euro 6 compliant vehicles. This
-                ensures reliability for your schedule and responsibility for our
-                environment. Our commitment to sustainability reduces your
-                supply chain's carbon footprint.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section> -->
-  <section id="services" class="relative px-6 py-12 md:px-12 md:py-32">
-    <div
-      class="absolute bottom-0 left-0 -z-10 hidden size-150 -translate-x-1/3
-          translate-y-1/3 opacity-30 blur-3xl filter md:block"
-    >
-      <div
-        class="to-primary h-full w-full rounded-full bg-linear-to-tr
-            from-teal-500"
-      >
-      </div>
-    </div>
-
-    <div class="mx-auto grid max-w-7xl grid-cols-1 gap-12 lg:grid-cols-2">
-      <div class="flex flex-col justify-center lg:sticky lg:top-62 lg:h-fit">
-        <h2
-          class="text-brand-dark mb-6 text-4xl leading-tight font-bold
-              md:text-6xl"
-        >
-          We move what<br />
-          others can't.
-        </h2>
-        <p class="text-brand-grey text-lg leading-relaxed lg:max-w-md">
-          The supply chain is complex; our solutions are simple. From single
-          pallets to full industrial convoys, we provide the infrastructure your
-          business needs to scale.
-        </p>
-
-        <div class="mt-8 hidden lg:block">
-          <a
-            href="#contact"
-            class="group hover:text-primary flex items-center gap-2
-                font-semibold text-secondary transition-colors"
-          >
-            Ajánlatkérés
-            <svg
-              class="size-5 transition-transform group-hover:translate-x-1"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-            </svg>
-          </a>
-        </div>
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <div
-          class="group relative rounded-2xl p-6 transition-all duration-300
-              hover:bg-white/40 hover:shadow-lg hover:backdrop-blur-md"
-        >
-          <div class="flex gap-6 sm:items-start">
-            <div
-              class="flex size-12 shrink-0 items-center justify-center
-                  rounded-xl bg-secondary/10 text-secondary transition-colors
-                  duration-300 group-hover:bg-secondary group-hover:text-white"
-            >
-              <svg
-                class="size-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"
-                ></path>
-              </svg>
-            </div>
-            <div>
-              <h3
-                class="text-brand-dark mb-2 text-xl font-bold
-                    transition-colors duration-300 group-hover:text-secondary"
-              >
-                Rakomány szállítás
-              </h3>
-              <p class="text-gray-600">
-                komplett -, illetve részrakományok közúti szállítása, illetve
-                szállítmányozása. (Komplett rakomány: az Ön áruját
-                kizárólagosan, a lehető leggyorsabb tranzitidővel szállítjuk a
-                fel- és lerakóhely között. Részrakomány: kedvezőbb díjazás
-                mellett, hosszabb tranzitidővel történő szállítás más
-                megrendelők árujával együtt.)
-              </p>
-            </div>
-          </div>
-          <div
-            class="absolute right-6 bottom-0 left-20 h-px bg-stone-500/10
-                transition-opacity duration-300 group-hover:opacity-0"
-          >
-          </div>
-        </div>
-
-        <div
-          class="group relative rounded-2xl p-6 transition-all duration-300
-              hover:bg-white/40 hover:shadow-lg hover:backdrop-blur-md"
-        >
-          <div class="flex gap-6 sm:items-start">
-            <div
-              class="flex size-12 shrink-0 items-center justify-center
-                  rounded-xl bg-secondary/10 text-secondary transition-colors
-                  duration-300 group-hover:bg-secondary group-hover:text-white"
-            >
-              <svg
-                class="size-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-                ></path>
-              </svg>
-            </div>
-            <div>
-              <h3
-                class="text-brand-dark mb-2 text-xl font-bold
-                    transition-colors duration-300 group-hover:text-secondary"
-              >
-                Diszpécserszolgálat
-              </h3>
-              <p class="text-gray-600">
-                0-24 órás diszpécserszolgálattal vállaljuk gyógyszerek,
-                élelmiszer-alapanyagok, mélyfagyasztott, fagyasztott, előhűtött
-                és friss termékek, veszélyes áruk (ADR) és szárazáruk
-                szállítását.
-              </p>
-            </div>
-          </div>
-          <div
-            class="absolute right-6 bottom-0 left-20 h-px bg-stone-500/10
-                transition-opacity duration-300 group-hover:opacity-0"
-          >
-          </div>
-        </div>
-
-        <div
-          class="group relative rounded-2xl p-6 transition-all duration-300
-              hover:bg-white/40 hover:shadow-lg hover:backdrop-blur-md"
-        >
-          <div class="flex gap-6 sm:items-start">
-            <div
-              class="flex size-12 shrink-0 items-center justify-center
-                  rounded-xl bg-secondary/10 text-secondary transition-colors
-                  duration-300 group-hover:bg-secondary group-hover:text-white"
-            >
-              <svg
-                class="size-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                ></path>
-              </svg>
-            </div>
-            <div>
-              <h3
-                class="text-brand-dark mb-2 text-xl font-bold
-                    transition-colors duration-300 group-hover:text-secondary"
-              >
-                Szállítmány továbbítás
-              </h3>
-              <p class="text-gray-600">
-                1 kg-tól egészen 24 tonnáig továbbítunk normál és veszélyes
-                (ADR) áruk, valamint hűtést és fűtést igénylő szállítmányokat
-                (-25°C - +30°C).
-              </p>
-            </div>
-          </div>
-          <div
-            class="absolute right-6 bottom-0 left-20 h-px bg-stone-500/10
-                transition-opacity duration-300 group-hover:opacity-0"
-          >
-          </div>
-        </div>
-
-        <div
-          class="group relative rounded-2xl p-6 transition-all duration-300
-              hover:bg-white/40 hover:shadow-lg hover:backdrop-blur-md"
-        >
-          <div class="flex gap-6 sm:items-start">
-            <div
-              class="flex size-12 shrink-0 items-center justify-center
-                  rounded-xl bg-secondary/10 text-secondary transition-colors
-                  duration-300 group-hover:bg-secondary group-hover:text-white"
-            >
-              <svg
-                class="size-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                ></path>
-              </svg>
-            </div>
-            <div>
-              <h3
-                class="text-brand-dark mb-2 text-xl font-bold
-                    transition-colors duration-300 group-hover:text-secondary"
-              >
-                Vámügyintézés
-              </h3>
-              <p class="text-gray-600">
-                Teljes körű export és import vámügyintézést vállalunk, hogy
-                partnereink számára a nemzetközi szállítás zökkenőmentes legyen.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              <div class="text-sm">
+                {s.ranges.length > 0 ? (
+                  <>
+                    <RangeBar ranges={s.ranges} />
+                    <p class="tnum text-muted mt-2">{s.ranges.map(formatRange).join(", ")}</p>
+                  </>
+                ) : (
+                  <p class="text-muted">{keySpec[s.slug]}</p>
+                )}
+              </div>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </section>
-  <section id="about" class="mx-auto max-w-7xl px-6 py-12 md:px-0 md:py-32">
-    <div class="grid grid-cols-1 items-center gap-16 md:grid-cols-2 md:gap-24">
+
+  <!-- Promise -->
+  <section class="bg-white">
+    <div class="wrap grid gap-12 py-20 md:py-28 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-center lg:gap-20">
       <div>
-        <h2
-          class="text-brand-dark mb-6 text-4xl leading-tight font-bold
-              md:text-5xl"
-        >
-          Driving the future of European transport.
-        </h2>
-        <p class="text-brand-grey mb-8 text-lg leading-relaxed">
-          A Wind Eurotrans megalapításával az volt a célunk, hogy olyan céget
-          hozzunk létre és működtessünk, amely az ügyfelek maximális
-          kiszolgálása mellett megbízható, pontos és minőségi szolgáltatást
-          garantál a közúti fuvarozás és szállítmányozás teljes időtartamára.
+        <p class="text-muted max-w-xl text-lg">
+          Spoiled chilled loads, careless ADR transport, drivers who don't show up, deliveries that arrive a day
+          late. In freight, these are everyday problems. We started Wind Eurotrans in 2010 to be the company where
+          they don't happen.
         </p>
-        <a
-          href={aboutUrl}
-          class="text-brand-dark border-primary hover:text-primary
-              inline-block border-b-2 pb-1 font-bold transition-colors"
-        >
-          Ismerj meg minket
-        </a>
+        <blockquote class="mt-10">
+          <p class="text-[1.75rem] leading-[1.25] font-medium tracking-[-0.015em] md:text-[2.25rem]">
+            “We don't accept a job that would put the agreed delivery date at risk. The transit times we agree with
+            you are the ones we keep.”
+          </p>
+          <footer class="mt-8 flex items-center gap-4">
+            <span class="bg-signal block h-10 w-1 rounded-full" aria-hidden="true"></span>
+            <span>
+              <span class="block font-semibold">{site.founder.name}</span>
+              <span class="text-muted block text-[0.9375rem]">{site.founder.role}</span>
+            </span>
+          </footer>
+        </blockquote>
+        <a href={pageUrl(locale, "about")} class="link mt-10 inline-block">More about us</a>
       </div>
-
-      <div class="relative delay-200">
-        <img
-          src={`${import.meta.env.BASE_URL}/portrait.jpg`}
-          alt="Modern Truck"
-          class="h-125 w-full rounded-xl object-cover shadow-2xl"
-        />
-
-        <div
-          class="border-primary absolute -bottom-6 -left-2 max-w-70 rounded-lg
-              border-l-4 bg-white/50 p-8 shadow-2xl backdrop-blur-xs
-              md:-left-12"
-        >
-          <strong class="text-brand-dark mb-2 block text-lg">Széll Gergő</strong
-          >
-          <span class="text-brand-grey block text-sm leading-tight"
-            >Alapító és vezérigazgató.</span
-          >
-        </div>
-      </div>
+      <img
+        src={asset("img/driver-612.webp")}
+        alt="Wind Eurotrans driver standing in front of his truck"
+        width="612"
+        height="408"
+        loading="lazy"
+        class="aspect-[4/5] w-full rounded-2xl object-cover object-[35%_center]"
+      />
     </div>
   </section>
-  <section id="contact" class="relative px-6 py-24 md:px-12 md:py-32">
-    <div class="absolute top-0 left-0 -z-10 h-full w-full overflow-hidden">
-      <div
-        class="bg-primary/10 absolute top-1/4 left-0 h-96 w-96 rounded-full
-            blur-[100px]"
-      >
-      </div>
-    </div>
 
-    <div class="mx-auto max-w-7xl">
-      <div class="mb-16">
-        <h2 class="text-text_color text-4xl font-bold md:text-5xl">
-          {t("index.contact.heading")}
-        </h2>
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div class="grid grid-cols-1 gap-4 lg:col-span-1 lg:flex lg:flex-col">
-          <a
-            href="tel:+36205154060"
-            class="relative flex flex-col justify-between
-                overflow-hidden rounded-3xl bg-secondary p-6 text-white shadow-lg
-                transition-transform duration-300 hover:-translate-y-1 sm:p-8"
-          >
-            <div class="mb-6 flex justify-between">
-              <span
-                class="rounded-full bg-white/20 p-2 backdrop-blur-md sm:p-3"
-              >
-                <svg
-                  class="size-5 text-white sm:size-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                  ></path>
-                </svg>
+  <!-- Process -->
+  <section class="wrap py-20 md:py-28">
+    <h2 class="max-w-2xl text-[2rem] leading-tight md:text-[2.75rem]">How a load moves with us</h2>
+    <ol class="mt-12 grid gap-10 md:mt-16 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+      {
+        steps.map((step, i) => (
+          <li class="relative">
+            <div class="flex items-center gap-4" aria-hidden="true">
+              <span class="bg-navy-900 tnum flex size-11 shrink-0 items-center justify-center rounded-full text-lg font-semibold text-white">
+                {i + 1}
               </span>
-              <svg
-                class="hidden size-5 text-white/50 sm:block"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                ></path>
-              </svg>
+              {i < steps.length - 1 && <span class="bg-line hidden h-0.5 grow lg:block" />}
             </div>
-            <div class="flex flex-col items-start">
-              <p
-                class="text-[10px] font-bold tracking-widest text-teal-300
-                    uppercase sm:text-xs"
-              >
-                {t("index.contact.call")}
-              </p>
-              <p class="mt-1 font-bold sm:mt-2 sm:text-2xl">+36 20 515 4060</p>
-            </div>
-          </a>
+            <h3 class="mt-5 text-xl">{step.title}</h3>
+            <p class="text-muted mt-2 max-w-xs">{step.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
 
-          <a
-            href="mailto:gergo.szell@windeurotrans.com"
-            class="group flex flex-col justify-between rounded-3xl border
-                border-stone-500/10 bg-white/40 p-6 backdrop-blur-md
-                transition-all hover:bg-white/60 sm:p-8"
-          >
-            <div class="mb-4 flex justify-between text-secondary">
-              <svg
-                class="size-7 sm:size-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                ></path>
-              </svg>
-              <svg
-                class="hidden size-5 text-secondary sm:block"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                ></path>
-              </svg>
-            </div>
-            <div>
-              <p
-                class="text-[10px] font-bold tracking-widest text-gray-400
-                    uppercase sm:text-xs"
-              >
-                {t("index.contact.email")}
-              </p>
-              <p class="text-text_color mt-1 font-semibold break-all">
-                gergo.szell@windeurotrans.com
-              </p>
-            </div>
-          </a>
-
-          <div
-            class="flex flex-col justify-between rounded-3xl border
-                border-stone-500/10 bg-white/40 p-6 backdrop-blur-md
-                transition-all hover:bg-white/60 sm:p-8"
-          >
-            <div class="mb-4 text-secondary">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="size-7 sm:size-8"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-            </div>
-            <div>
-              <p
-                class="text-[10px] font-bold tracking-widest text-gray-400
-                    uppercase sm:text-xs"
-              >
-                {t("index.contact.businesshours.name")}
-              </p>
-              <p class="text-text_color mt-1 font-semibold">
-                {t("index.contact.businesshours.start")} - {
-                  t("index.contact.businesshours.end")
-                }: 8:00 - 17:00
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-4 lg:col-span-2">
-          <div
-            class="flex flex-col justify-between rounded-3xl border
-                border-stone-500/10 bg-white/40 px-8 py-6 backdrop-blur-md
-                transition-all hover:bg-white/60"
-          >
-            <div class="mb-4 text-secondary">
-              <svg
-                class="size-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                ></path>
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-            </div>
-            <div>
-              <p
-                class="text-xs font-bold tracking-widest text-gray-400
-                    uppercase"
-              >
-                {t("index.contact.address")}
-              </p>
-              <p class="text-text_color mt-1 text-xl font-semibold">
-                2120 Dunakeszi, Kolozsvár u. 29, Hungary
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="relative min-h-87.5 grow overflow-hidden rounded-4xl border
-                border-stone-500/10 shadow-lg lg:min-h-94"
-          >
-            <iframe
-              class="absolute inset-0 h-full w-full grayscale-[0.2]"
-              style="border: 0"
-              loading="lazy"
-              allowfullscreen
-              referrerpolicy="no-referrer-when-downgrade"
-              src="https://www.google.com/maps?q=2120 Dunakeszi, Kolozsvár u. 29&output=embed"
-            >
-            </iframe>
-          </div>
-        </div>
+  <!-- Certificates -->
+  <section class="border-line border-y bg-white">
+    <div class="wrap grid gap-12 py-20 md:py-28 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-20">
+      <div>
+        <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Checked by independent auditors</h2>
+        <p class="text-muted mt-4 max-w-md text-lg">
+          Our quality management and our handling of medicines are certified by outside bodies, so you don't have to
+          take our word for it.
+        </p>
+        <a href={pageUrl(locale, "certificates")} class="link mt-6 inline-block">View the certificates</a>
       </div>
+      <ul class="grid grid-cols-2 gap-5 sm:gap-8">
+        {
+          certificates.map((c) => (
+            <li>
+              <a href={pageUrl(locale, `certificates#${c.id}`)} class="group block">
+                <img
+                  src={asset(c.thumb)}
+                  alt={`${c.name} certificate of ${site.legalName}`}
+                  width="480"
+                  height="679"
+                  loading="lazy"
+                  class="border-line w-full rounded-md border shadow-[0_24px_40px_-24px_rgb(7_23_41/0.4)] transition-transform duration-200 group-hover:-translate-y-1"
+                />
+                <p class="mt-4 font-semibold">{c.name}</p>
+                <p class="text-muted text-[0.9375rem]">Valid until {c.validUntil}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
-  <Footer locale={locale} />
+  <!-- FAQ -->
+  <section class="wrap grid gap-10 py-20 md:py-28 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
+    <div>
+      <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Questions shippers ask us</h2>
+      <p class="text-muted mt-4 max-w-sm text-lg">
+        Something else on your mind? Call us on <a href={site.phoneHref} class="link tnum">{site.phone}</a>.
+      </p>
+    </div>
+    <div class="border-line border-t">
+      {
+        faqs.map((f) => (
+          <details class="faq border-line group border-b">
+            <summary class="flex cursor-pointer list-none items-start justify-between gap-6 py-6 text-lg font-medium">
+              {f.q}
+              <Icon name="chevron" class="text-navy-700 mt-1 size-5 shrink-0 transition-transform group-open:rotate-180" />
+            </summary>
+            <p class="text-muted max-w-2xl pb-7">{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <CtaPanel />
 </Layout>
+
+<style>
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+</style>

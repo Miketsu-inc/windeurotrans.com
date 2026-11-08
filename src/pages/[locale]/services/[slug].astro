@@ -1,0 +1,118 @@
+---
+import type { GetStaticPaths } from "astro";
+import { locales, type Locale } from "../../../i18n/utils";
+
+import Layout from "../../../layouts/Layout.astro";
+import PageHero from "../../../components/PageHero.astro";
+import RangeBar from "../../../components/RangeBar.astro";
+import CtaPanel from "../../../components/CtaPanel.astro";
+import ContactButtons from "../../../components/ContactButtons.astro";
+import { services, type Service } from "../../../data/services";
+import { formatTemp, SCALE_MIN, SCALE_MAX } from "../../../data/temperature";
+import { asset, pageUrl, site } from "../../../data/site";
+
+export const getStaticPaths = (() => {
+  return locales.flatMap((locale) =>
+    services.map((service) => ({ params: { locale, slug: service.slug }, props: { service } })),
+  );
+}) satisfies GetStaticPaths;
+
+const locale = Astro.params.locale as Locale;
+const { service } = Astro.props as { service: Service };
+
+const others = services.filter((s) => s.slug !== service.slug);
+---
+
+<Layout locale={locale} title={service.name} description={service.short}>
+  <PageHero
+    locale={locale}
+    title={service.name}
+    lead={service.lead}
+    crumbs={[{ label: "Services", href: pageUrl(locale, "services") }, { label: service.name }]}
+  >
+    <ContactButtons topic={service.name} class="flex flex-col gap-3 sm:flex-row lg:flex-col" />
+  </PageHero>
+
+  <div class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-20">
+    <article>
+      <img
+        src={asset(service.image.src)}
+        alt={service.image.alt}
+        class="mb-14 aspect-[16/9] w-full rounded-2xl object-cover"
+      />
+      <div class="prose-page">
+        {
+          service.sections.map((section) => (
+            <>
+              <h2>{section.heading}</h2>
+              {section.paragraphs.map((p) => (
+                <p>{p}</p>
+              ))}
+              {section.list && (
+                <ul>
+                  {section.list.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              )}
+            </>
+          ))
+        }
+      </div>
+    </article>
+
+    <aside class="lg:sticky lg:top-28 lg:self-start">
+      <div class="border-line rounded-2xl border bg-white p-6 md:p-7">
+        <h2 class="text-lg">At a glance</h2>
+        {
+          service.ranges.length > 0 && (
+            <div class="mt-5">
+              <RangeBar ranges={service.ranges} />
+              <p class="tnum text-muted mt-2 flex justify-between text-xs">
+                <span>{formatTemp(SCALE_MIN)}</span>
+                <span>{formatTemp(SCALE_MAX)}</span>
+              </p>
+            </div>
+          )
+        }
+        <dl class="mt-4">
+          {
+            service.specs.map((spec) => (
+              <div class="border-line border-b py-3.5 last:border-b-0">
+                <dt class="text-muted text-sm">{spec.label}</dt>
+                <dd class="mt-0.5 font-medium">{spec.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <ContactButtons topic={service.name} tone="light" class="mt-5 flex flex-col gap-3" />
+      </div>
+      <p class="text-muted mt-5 px-1 text-[0.9375rem]">
+        Questions first? Email
+        <a href={`mailto:${site.email}`} class="link mt-1 block w-fit">{site.email}</a>
+      </p>
+    </aside>
+  </div>
+
+  <section class="border-line border-t bg-white">
+    <div class="wrap py-16 md:py-20">
+      <h2 class="text-2xl md:text-[1.75rem]">Other services</h2>
+      <ul class="mt-8 grid gap-x-8 sm:grid-cols-2">
+        {
+          others.map((s) => (
+            <li class="border-line border-t">
+              <a href={pageUrl(locale, `services/${s.slug}`)} class="group block py-5">
+                <span class="decoration-signal block text-lg font-medium decoration-2 underline-offset-4 group-hover:underline">
+                  {s.name}
+                </span>
+                <span class="text-muted mt-1 block">{s.short}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaPanel topic={service.name} />
+</Layout>

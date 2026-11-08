@@ -1,101 +1,72 @@
 ---
-import { getRelativeLocaleUrl } from "astro:i18n";
-import { useTranslation } from "../i18n/utils";
+import { services } from "../data/services";
+import { site, pageUrl, fullAddress, emailParts } from "../data/site";
+
+interface Props {
+  locale: string;
+}
 
 const { locale } = Astro.props;
-
 const year = new Date().getFullYear();
-
-const landingUrl = getRelativeLocaleUrl(locale);
-const aboutUrl = getRelativeLocaleUrl(locale, "about");
-const privacyPolicyUrl = getRelativeLocaleUrl(locale, "privacy-policy");
-
-const t = useTranslation(locale);
 ---
 
-<footer
-  class="border-t border-white/5 bg-secondary px-6 pt-24 pb-8 text-white
-        md:px-12"
->
-  <div class="mx-auto mb-16 grid max-w-7xl grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-5">
-    <div class="lg:col-span-1">
-      <img
-        src={`${import.meta.env.BASE_URL}/logo.png`}
-        class="size-16 w-full object-contain"
-      />
-    </div>
+<footer class="bg-navy-950 text-navy-200">
+  <div class="wrap grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:py-20">
     <div>
-      <h4 class="mb-6 text-lg font-bold">{t("footer.company.name")}</h4>
-      <ul class="space-y-4 text-sm text-gray-200">
-        <li>
-          <a href={aboutUrl} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.company.about")}</a
-          >
-        </li>
-        <li>
-          <a href={`${landingUrl}#about`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.company.employees")}</a
-          >
-        </li>
-        <li>
-          <a href={`${landingUrl}#contact`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.company.contact")}</a
-          >
-        </li>
+      <a href={pageUrl(locale)} class="flex items-center gap-2.5 text-white">
+        <span class="bg-signal block h-7 w-2 rounded-sm" aria-hidden="true"></span>
+        <span class="text-xl leading-none font-semibold tracking-tight">Wind Eurotrans</span>
+      </a>
+      <p class="mt-5 max-w-xs text-[0.9375rem] leading-relaxed">
+        Road freight and forwarding from Dunakeszi, Hungary. GDP certified and ISO 9001:2015 certified.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="mb-4 text-base font-medium text-white">Services</h2>
+      <ul class="space-y-2.5 text-[0.9375rem]">
+        {
+          services.map((s) => (
+            <li>
+              <a href={pageUrl(locale, `services/${s.slug}`)} class="hover:text-white">
+                {s.name}
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </div>
+
     <div>
-      <h4 class="mb-6 text-lg font-bold">{t("footer.services.name")}</h4>
-      <ul class="space-y-4 text-sm text-gray-200">
-        <li>
-          <a href={`${landingUrl}#services`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.services.shipping")}</a
-          >
-        </li>
-        <li>
-          <a href={`${landingUrl}#services`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.services.dispatch")}</a
-          >
-        </li>
-        <li>
-          <a href={`${landingUrl}#services`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.services.forwarding")}</a
-          >
-        </li>
-        <li>
-          <a href={`${landingUrl}#services`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.services.customs")}</a
-          >
-        </li>
+      <h2 class="mb-4 text-base font-medium text-white">Company</h2>
+      <ul class="space-y-2.5 text-[0.9375rem]">
+        <li><a href={pageUrl(locale, "about")} class="hover:text-white">About us</a></li>
+        <li><a href={pageUrl(locale, "certificates")} class="hover:text-white">Certificates</a></li>
+        <li><a href={pageUrl(locale, "contact")} class="hover:text-white">Contact</a></li>
+        <li><a href={pageUrl(locale, "privacy-policy")} class="hover:text-white">Privacy policy</a></li>
       </ul>
     </div>
+
     <div>
-      <h4 class="mb-6 text-lg font-bold">{t("footer.contact.name")}</h4>
-      <ul class="space-y-4 text-sm text-gray-200">
-        <li>2120 Dunakeszi, Kolozsvár u. 29{t("footer.contact.country")}</li>
+      <h2 class="mb-4 text-base font-medium text-white">Contact</h2>
+      <ul class="space-y-2.5 text-[0.9375rem]">
+        <li><a href={site.phoneHref} class="tnum hover:text-white">{site.phone}</a></li>
+        <li><a href={`mailto:${site.email}`} class="hover:text-white">{emailParts[0]}<wbr />{emailParts[1]}</a></li>
         <li>
-          <a href="mailto:gergo.szell@windeurotrans.com"
-            >gergo.szell@windeurotrans.com</a
-          >
-        </li>
-        <li><a href="tel:+36205154060">+36 20 515 4060</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 class="mb-6 text-lg font-bold">{t("footer.legal.name")}</h4>
-      <ul class="space-y-4 text-sm text-gray-200">
-        <li>
-          <a
-            href={privacyPolicyUrl}
-            class="hover:text-primary transition-all hover:pl-2"
-          >
-            {t("footer.legal.privacypolicy")}
+          <a href={site.mapsLink} class="hover:text-white" target="_blank" rel="noopener">
+            {fullAddress}, {site.address.country}
           </a>
         </li>
+        <li>Office: {site.hours}</li>
+        <li>Dispatch: 24 hours a day</li>
       </ul>
     </div>
   </div>
-  <div class="border-t border-white/20 pt-8 text-center text-xs text-gray-200">
-    &copy; {year} Windeurotrans Kft. {t("footer.copyright")}.
+
+  <div class="border-t border-white/10">
+    <div class="wrap flex flex-col gap-2 py-6 text-sm sm:flex-row sm:justify-between">
+      <p>© {year} {site.legalName} All rights reserved.</p>
+      <p>Company registration number {site.registrationNumber}</p>
+    </div>
   </div>
 </footer>

@@ -1,0 +1,254 @@
+---
+/*
+  The temperature band: pick a cargo type and the band shows the range it
+  travels at, on the full −25…+30 °C scale our trailers can hold.
+*/
+import {
+  cargoProfiles,
+  scaleTicks,
+  position,
+  formatTemp,
+  SCALE_MIN,
+  SCALE_MAX,
+  type Range,
+} from "../data/temperature";
+import { services } from "../data/services";
+import { pageUrl, mailto } from "../data/site";
+
+interface Props {
+  locale: string;
+  title?: string;
+  text?: string;
+}
+
+const {
+  locale,
+  title = "Set the temperature. We hold it to the door.",
+  text = "From deep-frozen food at −25 °C to frost-sensitive goods kept warm at +30 °C. Choose what you ship to see the range it travels at.",
+} = Astro.props;
+
+const defaultIndex = 2;
+
+// Compact readout: "+2 to +8 °C"
+const sign = (t: number) => (t > 0 ? "+" : t < 0 ? "−" : "") + Math.abs(t);
+const readout = ([from, to]: Range) => `${sign(from)} to ${formatTemp(to)}`;
+const clip = ([from, to]: Range) => `inset(0 ${100 - position(to)}% 0 ${position(from)}%)`;
+
+const profiles = cargoProfiles.map((p) => {
+  const service = services.find((s) => s.slug === p.service)!;
+  return {
+    id: p.id,
+    label: p.label,
+    text: p.text,
+    readouts: p.ranges.map(readout),
+    ranges: p.ranges.map(([from, to]) => ({ left: position(from), right: position(to) })),
+    clips: p.ranges.map(clip),
+    serviceName: service.name,
+    serviceUrl: pageUrl(locale, `services/${service.slug}`),
+    emailUrl: mailto(`${p.label}, ${p.ranges.map(readout).join(" and ")}`),
+  };
+});
+
+const current = profiles[defaultIndex];
+const hidden = "inset(0 50% 0 50%)";
+---
+
+<section class="border-line border-y bg-white" data-temp data-profiles={JSON.stringify(profiles)}>
+  <div class="wrap py-20 md:py-28">
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-16">
+      <div>
+        <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">{title}</h2>
+        <p class="text-muted mt-4 max-w-md text-lg">{text}</p>
+      </div>
+      <div class="lg:pt-2">
+        <p id="temp-chips-label" class="mb-3 text-sm font-medium">What are you shipping?</p>
+        <div class="flex flex-wrap gap-2" role="group" aria-labelledby="temp-chips-label">
+          {
+            profiles.map((p, i) => (
+              <button
+                type="button"
+                class="temp-chip"
+                aria-pressed={i === defaultIndex ? "true" : "false"}
+                data-index={i}
+              >
+                {p.label}
+              </button>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-14 md:mt-20" aria-live="polite">
+      <p class="tnum flex flex-wrap gap-x-10 gap-y-1 text-[2.75rem] leading-none font-semibold tracking-[-0.03em] sm:text-[4rem] lg:text-[5.25rem]" data-readout>
+        {current.readouts.map((r) => <span>{r}</span>)}
+      </p>
+    </div>
+
+    <!-- Band -->
+    <div class="relative mt-8 md:mt-10" aria-hidden="true">
+      <div class="temp-track">
+        <div class="temp-layer temp-layer--muted"></div>
+        {
+          [0, 1].map((i) => (
+            <div class="temp-layer" data-layer={i} style={`clip-path:${current.clips[i] ?? hidden}`} />
+          ))
+        }
+        {
+          [0, 1].map((i) => {
+            const r = current.ranges[i];
+            return (
+              <div
+                class="temp-bracket"
+                data-bracket={i}
+                style={r ? `left:${r.left}%;width:${r.right - r.left}%` : "left:50%;width:0;opacity:0"}
+              />
+            );
+          })
+        }
+      </div>
+      <div class="relative mt-3 h-6 text-sm">
+        {
+          scaleTicks.map((t) => (
+            <span
+              class:list={[
+                "tnum text-muted absolute top-0",
+                t === SCALE_MIN ? "" : t === SCALE_MAX ? "-translate-x-full" : "-translate-x-1/2",
+                (t === -18 || t === 8 || t === 25) && "hidden sm:block",
+              ]}
+              style={`left:${position(t)}%`}
+            >
+              {formatTemp(t)}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-10 grid gap-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-16">
+      <p class="max-w-xl text-lg" data-text>{current.text}</p>
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <a href={current.serviceUrl} class="btn btn-outline" data-service-link>
+          {current.serviceName}
+        </a>
+        <a href={current.emailUrl} class="btn btn-navy" data-email-link>Email us about this load</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .temp-chip {
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    border: 1.5px solid var(--color-line);
+    border-radius: 999px;
+    background: #fff;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .temp-chip:hover {
+    border-color: var(--color-navy-900);
+  }
+  .temp-chip[aria-pressed="true"] {
+    background: var(--color-navy-900);
+    border-color: var(--color-navy-900);
+    color: #fff;
+  }
+
+  .temp-track {
+    position: relative;
+    height: 4.5rem;
+    border-radius: 0.75rem;
+    background: var(--color-paper);
+  }
+  .temp-layer {
+    position: absolute;
+    inset: 0;
+    border-radius: 0.75rem;
+    background: var(--temp-gradient);
+    transition: clip-path 0.45s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+  .temp-layer--muted {
+    opacity: 0.28;
+  }
+  .temp-bracket {
+    position: absolute;
+    top: -0.5rem;
+    bottom: -0.5rem;
+    border: 2.5px solid var(--color-navy-900);
+    border-radius: 0.875rem;
+    transition:
+      left 0.45s cubic-bezier(0.3, 0.7, 0.2, 1),
+      width 0.45s cubic-bezier(0.3, 0.7, 0.2, 1),
+      opacity 0.2s ease;
+  }
+</style>
+
+<script>
+  type Profile = {
+    label: string;
+    text: string;
+    readouts: string[];
+    ranges: { left: number; right: number }[];
+    clips: string[];
+    serviceName: string;
+    serviceUrl: string;
+    emailUrl: string;
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-temp]").forEach((root) => {
+    const profiles: Profile[] = JSON.parse(root.dataset.profiles!);
+    const chips = root.querySelectorAll<HTMLButtonElement>(".temp-chip");
+    const layers = root.querySelectorAll<HTMLElement>("[data-layer]");
+    const brackets = root.querySelectorAll<HTMLElement>("[data-bracket]");
+    const readout = root.querySelector<HTMLElement>("[data-readout]")!;
+    const text = root.querySelector<HTMLElement>("[data-text]")!;
+    const serviceLink = root.querySelector<HTMLAnchorElement>("[data-service-link]")!;
+    const emailLink = root.querySelector<HTMLAnchorElement>("[data-email-link]")!;
+
+    function select(index: number) {
+      const p = profiles[index];
+      chips.forEach((c, i) => c.setAttribute("aria-pressed", String(i === index)));
+
+      layers.forEach((layer, i) => {
+        // Collapse an unused second range towards the centre of the first one
+        const r = p.ranges[i] ?? p.ranges[0];
+        const mid = (r.left + r.right) / 2;
+        layer.style.clipPath = p.clips[i] ?? `inset(0 ${100 - mid}% 0 ${mid}%)`;
+      });
+      brackets.forEach((bracket, i) => {
+        const r = p.ranges[i];
+        if (r) {
+          bracket.style.left = `${r.left}%`;
+          bracket.style.width = `${r.right - r.left}%`;
+          bracket.style.opacity = "1";
+        } else {
+          const first = p.ranges[0];
+          bracket.style.left = `${(first.left + first.right) / 2}%`;
+          bracket.style.width = "0";
+          bracket.style.opacity = "0";
+        }
+      });
+
+      readout.replaceChildren(
+        ...p.readouts.map((r) => {
+          const span = document.createElement("span");
+          span.textContent = r;
+          return span;
+        }),
+      );
+      text.textContent = p.text;
+      serviceLink.textContent = p.serviceName;
+      serviceLink.href = p.serviceUrl;
+      emailLink.href = p.emailUrl;
+    }
+
+    chips.forEach((chip) => chip.addEventListener("click", () => select(Number(chip.dataset.index))));
+  });
+</script>

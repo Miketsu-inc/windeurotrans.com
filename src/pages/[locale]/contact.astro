@@ -1,0 +1,120 @@
+---
+import type { GetStaticPaths } from "astro";
+import { locales, type Locale } from "../../i18n/utils";
+
+import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
+import Icon from "../../components/Icon.astro";
+import { site, fullAddress, mailto, enquiryChecklist, emailParts } from "../../data/site";
+
+export const getStaticPaths = (() => {
+  return locales.map((locale) => ({ params: { locale } }));
+}) satisfies GetStaticPaths;
+
+const locale = Astro.params.locale as Locale;
+---
+
+<Layout
+  locale={locale}
+  title="Contact us"
+  description={`Call ${site.phone} or email ${site.email} for a price and transit time from Wind Eurotrans, usually within one working day.`}
+>
+  <PageHero
+    locale={locale}
+    title="Contact us"
+    lead="Call or email us with your load. We reply with a price and a transit time, usually within one working day."
+    crumbs={[{ label: "Contact us" }]}
+  />
+
+  <div class="wrap grid gap-14 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-20">
+    <div>
+      <!-- The two ways to reach us -->
+      <div class="grid gap-5 md:grid-cols-2">
+        <a href={site.phoneHref} class="group border-line hover:border-navy-900 rounded-2xl border bg-white p-7 transition-colors md:p-8">
+          <span class="bg-signal text-navy-950 flex size-12 items-center justify-center rounded-full">
+            <Icon name="phone" class="size-5.5" />
+          </span>
+          <span class="mt-6 block text-lg font-medium">Call us</span>
+          <span class="tnum decoration-signal mt-1 block text-[1.75rem] leading-tight font-semibold tracking-tight decoration-2 underline-offset-4 group-hover:underline">
+            {site.phone}
+          </span>
+          <span class="text-muted mt-3 block">{site.hours}</span>
+          <span class="text-muted block">Dispatch answers 24 hours a day for loads on the road.</span>
+        </a>
+
+        <a href={mailto()} class="group border-line hover:border-navy-900 rounded-2xl border bg-white p-7 transition-colors md:p-8">
+          <span class="bg-navy-900 flex size-12 items-center justify-center rounded-full text-white">
+            <Icon name="mail" class="size-5.5" />
+          </span>
+          <span class="mt-6 block text-lg font-medium">Email us</span>
+          <span class="decoration-signal mt-1 block text-xl leading-snug font-semibold decoration-2 underline-offset-4 group-hover:underline">
+            {emailParts[0]}<wbr />{emailParts[1]}
+          </span>
+          <span class="text-muted mt-3 block">We reply within one working day.</span>
+        </a>
+      </div>
+
+      <!-- What to tell us -->
+      <section class="mt-14 md:mt-16">
+        <h2 class="text-2xl md:text-[1.75rem]">What we need to price your load</h2>
+        <p class="text-muted mt-3 max-w-xl text-lg">
+          Have these ready when you call, or put them in your email, so we can price your load without going back and forth.
+        </p>
+        <ul class="mt-6 grid max-w-2xl gap-x-8 gap-y-3 sm:grid-cols-2">
+          {
+            enquiryChecklist.map((item) => (
+              <li class="flex gap-3">
+                <Icon name="check" class="text-signal mt-1 size-5 shrink-0" />
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+        <p class="text-muted mt-6 max-w-xl">
+          Shipping dangerous goods? Add the UN number, the class and the packing group.
+        </p>
+      </section>
+    </div>
+
+    <aside class="lg:self-start">
+      <div class="sign-panel p-8">
+        <h2 class="text-xl">You'll speak to</h2>
+        <p class="mt-3 text-lg font-medium">{site.founder.name}</p>
+        <p class="text-navy-200">{site.founder.role}</p>
+      </div>
+
+      <dl class="mt-8 space-y-6 px-1">
+        <div class="flex gap-3">
+          <Icon name="pin" class="text-navy-700 mt-0.5 size-5 shrink-0" />
+          <div>
+            <dt class="font-medium">Office</dt>
+            <dd class="text-muted">{site.legalName}</dd>
+            <dd class="text-muted">{fullAddress}, {site.address.country}</dd>
+            <dd class="mt-1">
+              <a href={site.mapsLink} class="link text-[0.9375rem]" target="_blank" rel="noopener">Get directions</a>
+            </dd>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <Icon name="doc" class="text-navy-700 mt-0.5 size-5 shrink-0" />
+          <div>
+            <dt class="font-medium">Company registration number</dt>
+            <dd class="text-muted tnum">{site.registrationNumber}</dd>
+          </div>
+        </div>
+      </dl>
+    </aside>
+  </div>
+
+  <section aria-label="Map" class="wrap pb-16 md:pb-24">
+    <div class="border-line relative aspect-[4/3] overflow-hidden rounded-2xl border sm:aspect-[21/9]">
+      <iframe
+        title={`Map showing ${site.legalName}, ${fullAddress}`}
+        class="absolute inset-0 h-full w-full"
+        style="border: 0"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        src={site.mapsEmbed}></iframe>
+    </div>
+  </section>
+</Layout>

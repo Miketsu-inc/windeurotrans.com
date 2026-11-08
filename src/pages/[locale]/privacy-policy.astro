@@ -1,144 +1,136 @@
 ---
 import type { GetStaticPaths } from "astro";
-import { locales, useTranslation, type Locale } from "../../i18n/utils";
+import { locales, type Locale } from "../../i18n/utils";
 
 import Layout from "../../layouts/Layout.astro";
-import Nav from "../../components/Nav.astro";
-import Header from "../../components/Header.astro";
-import Footer from "../../components/Footer.astro";
+import PageHero from "../../components/PageHero.astro";
+import { site, fullAddress } from "../../data/site";
 
 export const getStaticPaths = (() => {
-  return locales.map((locale) => ({
-    params: { locale },
-  }));
+  return locales.map((locale) => ({ params: { locale } }));
 }) satisfies GetStaticPaths;
 
 const locale = Astro.params.locale as Locale;
+
+const toc = [
+  { id: "purpose", label: "Purpose of this notice" },
+  { id: "basis", label: "Legal framework" },
+  { id: "controller", label: "Data controller" },
+  { id: "processors", label: "Data processors" },
+  { id: "data", label: "Data we process" },
+  { id: "legal-basis", label: "Legal basis and retention" },
+  { id: "rights", label: "Your rights" },
+  { id: "updates", label: "Updates to this notice" },
+  { id: "contact", label: "How to contact us" },
+];
 ---
 
-<Layout locale={locale}>
-  <Nav locale={locale} />
-  <Header title="Adatkezelési tájekoztató" />
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <div class="max-w-3xl leading-relaxed flex flex-col gap-8">
-      <div>
-        <h2 class="font-bold text-xl pb-4">Adatvédelmi tájekoztató célja</h2>
-        <p>
-          A jelen adatvédelmi tájékoztató célja, hogy a WIND EUROTRANS Kft.,
-          mint adatkezelő tájékoztassa a szerződött partnereit az általa
-          alkalmazott adatkezelési tevékenységéről, illetve információt nyújtson
-          leendő partnerei számára az adatkezelési tevékenységéről.
-        </p>
-      </div>
-      <div>
-        <h2 class="font-bold text-xl pb-4">Adatkezelésének alapja</h2>
-        <p>
-          Adatkezelésének alapja az Európai Parlament és a Tanács 2016/679 számú
-          rendelkezése személyes adatok védelméről és az ilyen adatok szabad
-          áramlásáról, valamint a 2011. évi CXII. törvény az információs
-          önrendelkezési jogról és az információszabadságról.
-        </p>
-      </div>
-      <div class="flex flex-col gap-2">
-        <h2 class="font-bold text-xl pb-4">Adatkezelő</h2>
-        <p>WIND EUROTRANS Kft.</p>
-        <p>székhelye: 2120 Dunakeszi Kolozsvár u. 6.</p>
-        <p>cégjegyzékszáma: 13 09 139341</p>
-        <p>e-mail: gergo.szell@windeurotrans.com</p>
-        <p>képviseli: Széll Gergő ügyvezető</p>
-        <p>
-          Mint Adatkezelő gyakorolja a személyes adatok feletti ellenőrzést,
-          határozza meg a személyes adatok kezelésének céljait és eszközeit.
-        </p>
-      </div>
-      <div class="flex flex-col gap-4">
-        <h2 class="font-bold text-xl pb-4">Adatfeldolgozók</h2>
-        <p>A WIND EUROTRANS Kft. alkalmazásában álló fuvarszervezők</p>
-        <p>
-          A WIND EUROTRANS Kft. fuvarozási és szállítmányozási tevékenysége
-          során ügyfél adatokat fogad, tárol, őriz és továbbít.
-        </p>
-      </div>
-      <div>
-        <h2 class="font-bold text-xl pb-4">A kezelt adatok köre</h2>
-        <ul class="list-disc list-inside">
-          <li>név</li>
-          <li>telefonszám</li>
-          <li>email</li>
-          <li>cím</li>
-        </ul>
-      </div>
-      <div class="flex flex-col gap-4">
-        <h2 class="font-bold text-xl pb-4">A kezelt adatok jogalapja</h2>
-        <p>
-          Cégünk személyes adatot csak meghatározott célból, megbízás
-          teljesítése érdekében kezel. A teljesítést követően az ügyfél adat a
-          levelező- illetve szállítmányozási szoftverünkben megőrzésre kerül a
-          további kapcsolatápolás érdekében. Ugyanúgy megőrizzük a személyes
-          adatokat akkor is, ha az ajánlatkérést követő ajánlatunk nem került
-          elfogadásra. Amennyiben egy év alatt sem kapcsolattartásra, sem
-          további megállapodásra nem kerül sor, úgy kérjük partnerünk
-          hozzájárulását adatainak további egy évre történő megőrzéséhez.
-        </p>
-        <p>
-          A WIND-EUROTRANS Kft. jogos érdeke, hogy kapcsolattartás, közvetlen
-          üzletszerzés érdekében partnerei kapcsolattartóinak személyes adatait
-          őrizze. Partnereink jogosultak arra, hogy az e célból tárolt személyes
-          adataik kezelése ellen tiltakozzanak. Ebben az esetben a személyes
-          adataikat a továbbiakban nem kezeljük.
-        </p>
-        <p>
-          Cégünk minden munkatársa köteles gondoskodni arról, hogy munkája során
-          jogosulatlan személyek ne tekinthessenek be személyes adatokba,
-          valamint arról, hogy az adatok tárolása, elhelyezése úgy kerüljön
-          kialakításra, hogy a jogosulatlan személyek számára ne legyen
-          hozzáférhető, megismerhető, megváltoztatható és megsemmisíthető.
-        </p>
-        <p>
-          A megbízás teljesítése keretében és azon túl is, őrzött ügyfél
-          személyes adatot harmadik személy vagy cég felé, az érintett
-          megkérdezése nélkül nem továbbítunk.
-        </p>
-        <p>
-          A rendszereinkben lévő adatállomány védelmét Cégünk számára
-          megengedhető legmagasabb szintű technikai megoldásokkal biztosítjuk.
-        </p>
-        <p>
-          Készek vagyunk arra, hogy a személyes adatok kezelésével kapcsolatban
-          mindenkor tájékoztassuk az érintetteket, és intézkedést hozzunk az
-          adatkezeléssel kapcsolatos jogaik érvényesítése érdekében
-          (hozzáféréshez, helyesbítéshez, törléshez, az adatkezelés
-          korlátozásához, az adathordozhatósághoz, a hozzájárulás
-          visszavonásához, valamint a jogorvoslathoz való jog).
-        </p>
-      </div>
-      <div>
-        <h2 class="font-bold text-xl pb-4">
-          Az Adatvédelmi tájékoztatónk frissítései
-        </h2>
-        <p>
-          Készek vagyunk arra, hogy a személyes adatok kezelésével kapcsolatban
-          mindenkor tájékoztassuk az érintetteket, és intézkedést hozzunk az
-          adatkezeléssel kapcsolatos jogaik érvényesítése érdekében
-          (hozzáféréshez, helyesbítéshez, törléshez, az adatkezelés
-          korlátozásához, az adathordozhatósághoz, a hozzájárulás
-          visszavonásához, valamint a jogorvoslathoz való jog).
-        </p>
-      </div>
-      <div>
-        <h2 class="font-bold text-xl pb-4">
-          Hogyan léphet velünk kapcsolatba?
-        </h2>
-        <p>
-          Készek vagyunk arra, hogy a személyes adatok kezelésével kapcsolatban
-          mindenkor tájékoztassuk az érintetteket, és intézkedést hozzunk az
-          adatkezeléssel kapcsolatos jogaik érvényesítése érdekében
-          (hozzáféréshez, helyesbítéshez, törléshez, az adatkezelés
-          korlátozásához, az adathordozhatósághoz, a hozzájárulás
-          visszavonásához, valamint a jogorvoslathoz való jog).
-        </p>
-      </div>
-    </div>
-  </section>
-  <Footer locale={locale} />
+<Layout locale={locale} title="Privacy policy" description={`How ${site.legalName} processes personal data.`}>
+  <PageHero
+    locale={locale}
+    title="Privacy policy"
+    lead={`How ${site.legalName} collects, uses and protects the personal data of its partners.`}
+    crumbs={[{ label: "Privacy policy" }]}
+  />
+
+  <div class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-20">
+    <nav aria-label="On this page" class="lg:sticky lg:top-28 lg:self-start">
+      <p class="mb-3 font-medium">On this page</p>
+      <ol class="border-line space-y-2 border-l-2 pl-4 text-[0.9375rem]">
+        {
+          toc.map((t) => (
+            <li>
+              <a href={`#${t.id}`} class="text-muted hover:text-ink">
+                {t.label}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <article class="prose-page">
+      <h2 id="purpose">Purpose of this notice</h2>
+      <p>
+        This notice explains how {site.legalName}, as data controller, processes the personal data of its contracted
+        partners, and informs prospective partners about the same.
+      </p>
+
+      <h2 id="basis">Legal framework</h2>
+      <p>
+        We process personal data in line with Regulation (EU) 2016/679 of the European Parliament and of the Council
+        on the protection of natural persons with regard to the processing of personal data and on the free movement
+        of such data (GDPR), and Hungarian Act CXII of 2011 on the right to informational self-determination and on
+        freedom of information.
+      </p>
+
+      <h2 id="controller">Data controller</h2>
+      <ul>
+        <li>{site.legalName}</li>
+        <li>Registered office: {fullAddress}, {site.address.country}</li>
+        <li>Company registration number: {site.registrationNumber}</li>
+        <li>Email: <a href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li>Represented by: {site.founder.name}, managing director</li>
+      </ul>
+      <p>
+        As data controller, {site.legalName} controls the personal data and decides the purposes and means of
+        processing it.
+      </p>
+
+      <h2 id="processors">Data processors</h2>
+      <p>
+        Personal data is processed by our own transport planners. In the course of its transport and forwarding work,
+        {site.legalName} receives, stores, keeps and passes on customer data.
+      </p>
+
+      <h2 id="data">Data we process</h2>
+      <ul>
+        <li>Name</li>
+        <li>Phone number</li>
+        <li>Email address</li>
+        <li>Address</li>
+      </ul>
+
+      <h2 id="legal-basis">Legal basis and retention</h2>
+      <p>
+        We process personal data only for a specific purpose: to carry out an order. After the order is completed,
+        the customer's data is kept in our email and forwarding software so we can stay in touch. We also keep the
+        data if a quote we sent was not accepted. If there is no contact or new agreement within one year, we ask our
+        partner's consent to keep the data for one more year.
+      </p>
+      <p>
+        {site.legalName} has a legitimate interest in keeping the personal data of its partners' contact persons for
+        staying in contact and for direct business development. Partners may object to this processing at any time,
+        in which case we stop processing their personal data.
+      </p>
+      <p>
+        Every employee is responsible for making sure that unauthorised people cannot see personal data during their
+        work, and that data is stored so that unauthorised people cannot access, read, change or destroy it.
+      </p>
+      <p>
+        We do not pass on stored personal data to any third person or company without the consent of the person
+        concerned, either while carrying out an order or afterwards.
+      </p>
+      <p>We protect the data in our systems with the highest level of technical security available to us.</p>
+
+      <h2 id="rights">Your rights</h2>
+      <p>
+        You have the right to access, correct and delete your personal data, to restrict its processing, to data
+        portability, to withdraw your consent and to seek legal remedy. We are ready to inform you about how we
+        process your data at any time, and to act so you can exercise these rights.
+      </p>
+
+      <h2 id="updates">Updates to this notice</h2>
+      <p>
+        We may update this notice when the law or the way we work changes. The current version is always published
+        on this page.
+      </p>
+
+      <h2 id="contact">How to contact us</h2>
+      <p>
+        For any question about your personal data, email <a href={`mailto:${site.email}`}>{site.email}</a> or write
+        to {site.legalName}, {fullAddress}, {site.address.country}.
+      </p>
+    </article>
+  </div>
 </Layout>

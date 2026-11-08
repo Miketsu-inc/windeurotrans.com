@@ -1,0 +1,46 @@
+---
+/*
+  Small version of the temperature scale: the full −25…+30 °C track with the
+  service's ranges highlighted. Used next to services as a data glyph.
+*/
+import { position, formatRange, type Range } from "../data/temperature";
+
+interface Props {
+  ranges: Range[];
+  class?: string;
+}
+
+const { ranges, class: className = "" } = Astro.props;
+const label = ranges.map(formatRange).join(" and ");
+
+// Stretch the gradient over the whole track so each fill shows the colour of its place on the scale.
+const fills = ranges.map(([from, to]) => {
+  const left = position(from);
+  const width = position(to) - left;
+  const offset = width >= 100 ? 0 : (left / (100 - width)) * 100;
+  return `left:${left}%;width:${width}%;background-size:${(100 / width) * 100}% 100%;background-position:${offset}% 0`;
+});
+---
+
+<span class:list={["range-bar", className]} role="img" aria-label={label}>
+  {
+    fills.map((style) => <span class="range-bar__fill" {style} />)
+  }
+</span>
+
+<style>
+  .range-bar {
+    position: relative;
+    display: block;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--color-line);
+    overflow: hidden;
+  }
+  .range-bar__fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: var(--temp-gradient);
+  }
+</style>
