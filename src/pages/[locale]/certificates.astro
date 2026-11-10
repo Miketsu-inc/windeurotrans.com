@@ -4,7 +4,6 @@ import { locales, type Locale } from "../../i18n/utils";
 
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
-import CtaPanel from "../../components/CtaPanel.astro";
 import Icon from "../../components/Icon.astro";
 import { certificates } from "../../data/certificates";
 import { asset, site } from "../../data/site";
@@ -22,10 +21,8 @@ const locale = Astro.params.locale as Locale;
   description="Wind Eurotrans holds GDP certification for road transport of medicines and ISO 9001:2015 certification for domestic and international transport and forwarding."
 >
   <PageHero
-    locale={locale}
     title="Certificates"
     lead="Independent auditors check how we work. These are the certificates in force today and what they cover."
-    crumbs={[{ label: "Certificates" }]}
   />
 
   <div class="wrap py-16 md:py-24">
@@ -81,10 +78,4 @@ const locale = Astro.params.locale as Locale;
     }
   </div>
 
-  <CtaPanel
-    title="Need our certificates for a supplier audit?"
-    text="We can send copies and fill in your supplier quality questionnaire. Just ask when you get in touch."
-    topic="certificates for a supplier audit"
-    surface="frost"
-  />
 </Layout>

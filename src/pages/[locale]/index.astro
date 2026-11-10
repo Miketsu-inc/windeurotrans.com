@@ -6,10 +6,9 @@ import Layout from "../../layouts/Layout.astro";
 import Icon from "../../components/Icon.astro";
 import HeroMap from "../../components/HeroMap.astro";
 import ServiceScroller from "../../components/ServiceScroller.astro";
-import CtaPanel from "../../components/CtaPanel.astro";
 import { certificates } from "../../data/certificates";
 import { photos, photoSrc, photoSrcset } from "../../data/fleet";
-import { site, asset, pageUrl } from "../../data/site";
+import { site, asset, pageUrl, emailParts } from "../../data/site";
 
 export const getStaticPaths = (() => {
   return locales.map((locale) => ({ params: { locale } }));
@@ -236,10 +235,72 @@ const faqs = [
     </div>
   </section>
 
-  <CtaPanel surface="frost" />
+  <!--
+    Contact. Same split as the FAQ above, so the two close the page as a pair.
+    The phone number is the one bold element: it is how most loads get booked.
+  -->
+  <section class="bg-frost" aria-labelledby="contact-title">
+    <div class="wrap grid gap-10 py-20 md:py-28 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
+      <div>
+        <h2 id="contact-title" class="text-[2rem] leading-tight md:text-[2.75rem]">Get in touch</h2>
+        <p class="text-muted mt-4 max-w-sm text-lg">
+          Call or email us with your load. You get a price and a transit time, usually within one working day.
+        </p>
+      </div>
+
+      <div>
+        <a
+          href={site.phoneHref}
+          class="contact-phone tnum text-blue-900 inline-block text-[2.75rem] leading-none font-bold tracking-[-0.035em] sm:text-[3.75rem] xl:text-[4.5rem]"
+        >
+          {site.phone}
+        </a>
+
+        <dl class="mt-12 grid gap-8 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-10 md:mt-14 xl:grid-cols-[auto_auto_auto] xl:justify-between">
+          <div>
+            <dt class="text-muted text-[0.9375rem]">Email</dt>
+            <dd class="mt-1.5 text-lg font-medium">
+              <a href={`mailto:${site.email}`} class="contact-link">{emailParts[0]}<wbr />{emailParts[1]}</a>
+            </dd>
+          </div>
+          <div>
+            <dt class="text-muted text-[0.9375rem]">Business hours</dt>
+            <dd class="mt-1.5 text-lg font-medium">Monday to Friday<br />8:00–17:00</dd>
+            <dd class="text-muted mt-1 max-w-[13rem] text-[0.9375rem]">Dispatch answers 24/7 for loads on the road.</dd>
+          </div>
+          <div>
+            <dt class="text-muted text-[0.9375rem]">Office</dt>
+            <dd class="mt-1.5 text-lg font-medium">
+              {site.address.street}<br />{site.address.postcode} {site.address.city}<br />{site.address.country}
+            </dd>
+            <dd class="mt-1">
+              <a href={site.mapsLink} class="link text-[0.9375rem]" target="_blank" rel="noopener">Get directions</a>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
 </Layout>
 
 <style>
+  /* The phone number and email: the site's orange underline, drawn in on hover */
+  .contact-phone,
+  .contact-link {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.16em;
+    transition: text-decoration-color 0.15s ease;
+  }
+  .contact-link {
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+  .contact-phone:hover,
+  .contact-link:hover {
+    text-decoration-color: var(--color-signal);
+  }
   .faq summary::-webkit-details-marker {
     display: none;
   }

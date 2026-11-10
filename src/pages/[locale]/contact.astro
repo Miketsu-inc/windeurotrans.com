@@ -5,7 +5,8 @@ import { locales, type Locale } from "../../i18n/utils";
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
 import Icon from "../../components/Icon.astro";
-import { site, fullAddress, mailto, enquiryChecklist, emailParts } from "../../data/site";
+import ContactCards from "../../components/ContactCards.astro";
+import { site, fullAddress, enquiryChecklist } from "../../data/site";
 
 export const getStaticPaths = (() => {
   return locales.map((locale) => ({ params: { locale } }));
@@ -20,39 +21,14 @@ const locale = Astro.params.locale as Locale;
   description={`Call ${site.phone} or email ${site.email} for a price and transit time from Wind Eurotrans, usually within one working day.`}
 >
   <PageHero
-    locale={locale}
     title="Contact us"
     lead="Call or email us with your load. We reply with a price and a transit time, usually within one working day."
-    crumbs={[{ label: "Contact us" }]}
   />
 
   <div class="wrap grid gap-14 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-20">
     <div>
       <!-- The two ways to reach us -->
-      <div class="grid gap-5 md:grid-cols-2">
-        <a href={site.phoneHref} class="card group p-7 md:p-8">
-          <span class="bg-signal text-ink flex size-12 items-center justify-center rounded-full">
-            <Icon name="phone" class="size-5.5" />
-          </span>
-          <span class="mt-6 block text-lg font-medium">Call us</span>
-          <span class="tnum decoration-signal mt-1 block text-[1.75rem] leading-tight font-semibold tracking-tight decoration-2 underline-offset-4 group-hover:underline">
-            {site.phone}
-          </span>
-          <span class="text-muted mt-3 block">{site.hours}</span>
-          <span class="text-muted block">Dispatch answers 24 hours a day for loads on the road.</span>
-        </a>
-
-        <a href={mailto()} class="card group p-7 md:p-8">
-          <span class="bg-blue-900 flex size-12 items-center justify-center rounded-full text-white">
-            <Icon name="mail" class="size-5.5" />
-          </span>
-          <span class="mt-6 block text-lg font-medium">Email us</span>
-          <span class="decoration-signal mt-1 block text-xl leading-snug font-semibold decoration-2 underline-offset-4 group-hover:underline">
-            {emailParts[0]}<wbr />{emailParts[1]}
-          </span>
-          <span class="text-muted mt-3 block">We reply within one working day.</span>
-        </a>
-      </div>
+      <ContactCards />
 
       <!-- What to tell us -->
       <section class="mt-14 md:mt-16">

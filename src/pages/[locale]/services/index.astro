@@ -5,7 +5,6 @@ import { locales, type Locale } from "../../../i18n/utils";
 import Layout from "../../../layouts/Layout.astro";
 import PageHero from "../../../components/PageHero.astro";
 import ServiceCard from "../../../components/ServiceCard.astro";
-import CtaPanel from "../../../components/CtaPanel.astro";
 import Icon from "../../../components/Icon.astro";
 import { services } from "../../../data/services";
 import { site, mailto } from "../../../data/site";
@@ -29,10 +28,8 @@ const included = [
   description="Road freight and forwarding, temperature-controlled transport, GDP pharmaceutical transport, ADR dangerous goods and customs clearance."
 >
   <PageHero
-    locale={locale}
     title="Services"
     lead="Full and part loads from 1 kg to 24 tonnes, at any temperature from −25 °C to +30 °C, with the paperwork handled."
-    crumbs={[{ label: "Services" }]}
   />
 
   <section class="wrap py-16 md:py-24">
@@ -79,5 +76,4 @@ const included = [
     </div>
   </section>
 
-  <CtaPanel />
 </Layout>

@@ -4,7 +4,6 @@ import { locales, type Locale } from "../../i18n/utils";
 
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
-import CtaPanel from "../../components/CtaPanel.astro";
 import { asset, site, fullAddress, pageUrl } from "../../data/site";
 import { photoSrc, photoSrcset } from "../../data/fleet";
 
@@ -42,10 +41,8 @@ const timeline = [
   description="Wind Eurotrans Kft. is a road freight and forwarding company in Dunakeszi, Hungary, founded in 2010."
 >
   <PageHero
-    locale={locale}
     title="About us"
     lead="A road freight company from Dunakeszi, founded in 2010 to make transport the part of your supply chain you don't have to worry about."
-    crumbs={[{ label: "About us" }]}
   />
 
   <!-- Story -->
@@ -166,5 +163,4 @@ const timeline = [
     </div>
   </section>
 
-  <CtaPanel surface="frost" />
 </Layout>

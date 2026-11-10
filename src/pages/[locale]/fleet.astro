@@ -4,7 +4,6 @@ import { locales, type Locale } from "../../i18n/utils";
 
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
-import CtaPanel from "../../components/CtaPanel.astro";
 import Icon from "../../components/Icon.astro";
 import { photos, photoSrc, photoSrcset } from "../../data/fleet";
 
@@ -21,10 +20,8 @@ const locale = Astro.params.locale as Locale;
   description="Photos of the Wind Eurotrans fleet: Scania tractor units and refrigerated trailers."
 >
   <PageHero
-    locale={locale}
     title="Our fleet"
     lead="These are the Scania trucks and refrigerated trailers that carry your loads. Real photos, not a catalogue."
-    crumbs={[{ label: "Our fleet" }]}
   />
 
   <!-- Gallery: the first photo is wide; any photo opens full size -->
@@ -62,21 +59,23 @@ const locale = Astro.params.locale as Locale;
     </section>
   </div>
 
-  <CtaPanel />
 
   <!-- Full-size viewer -->
   <dialog id="lightbox" class="lightbox" aria-label="Photo viewer">
-    <div class="flex h-full flex-col">
-      <div class="flex items-center justify-between px-4 py-3 text-white md:px-6">
+    <div class="lightbox__shade" data-shade></div>
+    <div class="relative flex h-full flex-col">
+      <div class="flex items-center justify-between px-4 py-3 text-white md:px-6" data-chrome>
         <p class="tnum text-sm text-white/70" data-counter></p>
         <button type="button" class="-mr-2 rounded-md p-2 hover:bg-white/10" aria-label="Close" data-close>
           <Icon name="close" class="size-7" />
         </button>
       </div>
-      <figure class="flex min-h-0 grow flex-col items-center justify-center px-4 pb-4 md:px-20">
-        <img alt="" class="min-h-0 max-w-full rounded-lg object-contain" data-image />
-      </figure>
-      <div class="flex justify-center gap-3 py-5 md:pointer-events-none md:absolute md:inset-x-4 md:top-1/2 md:-translate-y-1/2 md:justify-between md:py-0">
+      <!-- Filled by the script with a photo that has already loaded -->
+      <figure class="flex min-h-0 grow flex-col items-center justify-center px-4 pb-4 md:px-20" data-stage></figure>
+      <div
+        class="flex justify-center gap-3 py-5 md:pointer-events-none md:absolute md:inset-x-4 md:top-1/2 md:-translate-y-1/2 md:justify-between md:py-0"
+        data-chrome
+      >
         <button type="button" class="lightbox__nav" aria-label="Previous photo" data-prev>
           <Icon name="chevron" class="size-6 rotate-90" />
         </button>
@@ -88,67 +87,190 @@ const locale = Astro.params.locale as Locale;
   </dialog>
 </Layout>
 
-<script define:vars={{ photos: photos.map((p) => ({ src: photoSrc(p.name, 1600), alt: p.alt })) }}>
+<script define:vars={{ photos: photos.map((p) => ({ src: photoSrc(p.name, 1600), alt: p.alt, ratio: p.width / p.height })) }}>
+  /*
+    How the viewer avoids glitches: every large photo is loaded and decoded into its own
+    <img> off screen, and only a finished <img> is ever put on stage. Nothing on screen
+    changes its source, so the browser never paints an old, half-loaded or smaller picture.
+
+    Opening, the photo grows out of its thumbnail while the dark shade fades in;
+    closing, it shrinks back into the thumbnail of the photo being viewed.
+  */
   const dialog = document.getElementById("lightbox");
-  const image = dialog.querySelector("[data-image]");
+  const stage = dialog.querySelector("[data-stage]");
+  const shade = dialog.querySelector("[data-shade]");
+  const chrome = [...dialog.querySelectorAll("[data-chrome]")];
   const counter = dialog.querySelector("[data-counter]");
+  const buttons = [...document.querySelectorAll("[data-photo]")];
   let current = 0;
-  let opener = null;
+  let closing = false;
+  // Counts openings, so a closing transition still running can't shut a viewer that has reopened
+  let session = 0;
+  // Bumped on every change of photo, so a slow load can't show up after the user has moved on
+  let request = 0;
 
-  const thumbs = [...document.querySelectorAll("[data-photo] img")];
+  const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const ms = (n) => (still.matches ? 0 : n);
+  const EASE_OUT = "cubic-bezier(0.2, 0, 0, 1)";
+  const EASE_IN_OUT = "cubic-bezier(0.4, 0, 0.2, 1)";
 
-  function show(i) {
+  // One promise per photo: the <img>, once it is ready to paint
+  const loaded = new Map();
+  function load(i) {
     const index = (i + photos.length) % photos.length;
-    current = index;
-    image.alt = photos[index].alt;
-    counter.textContent = `${index + 1} / ${photos.length}`;
-
-    // Show the grid's copy straight away (it is already loaded), so the previous photo never lingers.
-    // If that copy isn't loaded yet, hide the image until the large one is ready.
-    const thumb = thumbs[index];
-    if (thumb.complete && thumb.naturalWidth) {
-      image.src = thumb.currentSrc;
-      image.style.visibility = "";
-    } else {
-      image.style.visibility = "hidden";
+    if (!loaded.has(index)) {
+      const img = new Image();
+      img.className = "lightbox__image";
+      img.draggable = false;
+      img.alt = photos[index].alt;
+      img.style.setProperty("--ratio", photos[index].ratio);
+      img.src = photos[index].src;
+      loaded.set(
+        index,
+        img
+          .decode()
+          .catch(() => {})
+          .then(() => img),
+      );
     }
-
-    // Then swap in the large version once it has decoded
-    const full = new Image();
-    full.src = photos[index].src;
-    full
-      .decode()
-      .catch(() => {})
-      .then(() => {
-        if (current !== index) return;
-        image.src = full.src;
-        image.style.visibility = "";
-      });
+    return loaded.get(index);
   }
 
-  document.querySelectorAll("[data-photo]").forEach((button) => {
-    button.addEventListener("click", () => {
-      opener = button;
-      show(Number(button.dataset.photo));
-      dialog.showModal();
-      document.body.style.overflow = "hidden";
+  /*
+    The transform and clip that make the large photo (at its place on stage) cover exactly
+    what its thumbnail shows in the grid. The thumbnail crops the photo to fill its box,
+    so the photo is scaled to cover that box and the overflow is clipped away.
+    Only used when the thumbnail is clearly in view below the sticky header: otherwise
+    the photo would fly in from, or out through, the header, and a plain fade looks better.
+  */
+  const header = document.getElementById("site-header");
+  function thumbFrame(img, index) {
+    const button = buttons[index];
+    const box = button.getBoundingClientRect();
+    const top = Math.max(box.top, header ? header.getBoundingClientRect().bottom : 0);
+    const bottom = Math.min(box.bottom, innerHeight);
+    if (box.height === 0 || (bottom - top) / box.height < 0.9) return null;
+    // The part of the thumbnail that can be seen
+    const visible = { top, bottom, left: box.left, right: box.right };
+
+    const thumb = button.querySelector("img").getBoundingClientRect();
+    const end = img.getBoundingClientRect();
+    const scale = Math.max(thumb.width / end.width, thumb.height / end.height);
+    const w = end.width * scale;
+    const h = end.height * scale;
+    const x = thumb.left + (thumb.width - w) / 2;
+    const y = thumb.top + (thumb.height - h) / 2;
+    const dx = x + w / 2 - (end.left + end.width / 2);
+    const dy = y + h / 2 - (end.top + end.height / 2);
+    // Clip in the photo's own (unscaled) pixels
+    const inset = [
+      (visible.top - y) / scale,
+      (x + w - visible.right) / scale,
+      (y + h - visible.bottom) / scale,
+      (visible.left - x) / scale,
+    ].map((n) => `${Math.max(0, n)}px`);
+    return {
+      transform: `translate(${dx}px, ${dy}px) scale(${scale})`,
+      clipPath: `inset(${inset.join(" ")} round ${12 / scale}px)`,
+    };
+  }
+  const onStage = { transform: "none", clipPath: "inset(0 round 8px)" };
+
+  function fade(elements, to, duration) {
+    const keyframes = to === 1 ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }];
+    return elements.map((el) => el.animate(keyframes, { duration, easing: "ease", fill: "forwards" }));
+  }
+
+  // opening: true when the viewer has just opened, so the photo grows out of its thumbnail
+  function show(i, opening = false) {
+    const index = (i + photos.length) % photos.length;
+    const token = ++request;
+    current = index;
+    counter.textContent = `${index + 1} / ${photos.length}`;
+
+    stage.replaceChildren();
+    load(index).then((img) => {
+      if (token !== request || closing) return;
+      img.getAnimations().forEach((a) => a.cancel());
+      stage.replaceChildren(img);
+      const from = opening && thumbFrame(img, index);
+      if (from) {
+        img.animate([from, onStage], { duration: ms(240), easing: EASE_OUT });
+      } else {
+        img.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms(160), easing: "ease" });
+      }
     });
+
+    // Get the neighbours ready for the arrows and swipes
+    load(index + 1);
+    load(index - 1);
+  }
+
+  function open(index) {
+    session++;
+    closing = false;
+    for (const el of [shade, ...chrome]) el.getAnimations().forEach((a) => a.cancel());
+    if (!dialog.open) dialog.showModal();
+    document.body.style.overflow = "hidden";
+    fade([shade], 1, ms(200));
+    fade(chrome, 1, ms(200));
+    show(index, true);
+  }
+
+  async function close() {
+    if (closing || !dialog.open) return;
+    closing = true;
+    const closingSession = session;
+    request++;
+    const img = stage.querySelector("img");
+    const animations = [...fade([shade], 0, ms(200)), ...fade(chrome, 0, ms(120))];
+    if (img) {
+      img.getAnimations().forEach((a) => a.cancel());
+      const to = thumbFrame(img, current);
+      animations.push(
+        to
+          ? img.animate([onStage, to], { duration: ms(200), easing: EASE_IN_OUT, fill: "forwards" })
+          : img.animate([{ opacity: 1, scale: 1 }, { opacity: 0, scale: 0.96 }], { duration: ms(160), easing: "ease", fill: "forwards" }),
+      );
+    }
+    await Promise.all(animations.map((a) => a.finished.catch(() => {})));
+    if (session === closingSession) dialog.close();
+  }
+
+  buttons.forEach((button) => {
+    const index = Number(button.dataset.photo);
+    // Start on the large photo as soon as the user shows interest, before the click lands
+    for (const type of ["pointerenter", "pointerdown", "focus"]) {
+      button.addEventListener(type, () => load(index), { once: true, passive: true });
+    }
+    button.addEventListener("click", () => open(index));
   });
 
   dialog.addEventListener("close", () => {
+    request++;
+    closing = false;
+    for (const el of [shade, ...chrome, ...stage.children]) el.getAnimations().forEach((a) => a.cancel());
+    stage.replaceChildren();
     document.body.style.overflow = "";
-    opener?.focus();
+    // Back on the photo the user was last looking at
+    buttons[current].focus({ preventScroll: true });
   });
-  dialog.querySelector("[data-close]").addEventListener("click", () => dialog.close());
+  // Escape: run the closing transition instead of closing at once
+  dialog.addEventListener("cancel", (e) => {
+    e.preventDefault();
+    close();
+  });
+  dialog.querySelector("[data-close]").addEventListener("click", close);
   dialog.querySelector("[data-prev]").addEventListener("click", () => show(current - 1));
   dialog.querySelector("[data-next]").addEventListener("click", () => show(current + 1));
 
   // Clicking the dark area around the photo closes the viewer
   dialog.addEventListener("click", (e) => {
-    if (e.target === dialog || e.target.tagName === "FIGURE") dialog.close();
+    if (e.target === dialog || e.target === stage || e.target === shade) close();
   });
 
   dialog.addEventListener("keydown", (e) => {
+    if (closing) return;
     if (e.key === "ArrowLeft") show(current - 1);
     if (e.key === "ArrowRight") show(current + 1);
   });
@@ -157,7 +279,7 @@ const locale = Astro.params.locale as Locale;
   let startX = null;
   dialog.addEventListener("touchstart", (e) => (startX = e.touches[0].clientX), { passive: true });
   dialog.addEventListener("touchend", (e) => {
-    if (startX === null) return;
+    if (startX === null || closing) return;
     const dx = e.changedTouches[0].clientX - startX;
     if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
     startX = null;
@@ -173,13 +295,31 @@ const locale = Astro.params.locale as Locale;
     margin: 0;
     padding: 0;
     border: 0;
-    background: rgb(0 18 48 / 0.97);
+    background: transparent;
+    /* The photo grows out of the grid, so it must be allowed to sit outside its box */
+    overflow: visible;
+    /* Quick clicks on the arrows count as double clicks, which would select the photo and buttons */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
   .lightbox::backdrop {
     background: transparent;
   }
-  .lightbox [data-image] {
+  .lightbox__shade {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 18 48 / 0.97);
+  }
+  /* Made by the script, so it needs :global to escape Astro's scoping */
+  .lightbox :global(.lightbox__image) {
+    /* Sized from the photo's proportions, so it never resizes once it is on screen */
+    aspect-ratio: var(--ratio);
+    width: min(100%, calc((100dvh - 9rem) * var(--ratio)));
     max-height: calc(100dvh - 9rem);
+    border-radius: 0.5rem;
+    object-fit: contain;
+    will-change: transform;
   }
   .lightbox__nav {
     pointer-events: auto;
