@@ -1,54 +1,60 @@
 ---
-import type { GetStaticPaths } from "astro";
-import { locales, type Locale } from "../../i18n/utils";
-
+import { getImage, Picture } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
 import Icon from "../../components/Icon.astro";
-import { photos, photoSrc, photoSrcset } from "../../data/fleet";
+import { photos } from "../../data/fleet";
+import { format, getDictionary, getLocale, localeStaticPaths } from "../../i18n";
 
-export const getStaticPaths = (() => {
-  return locales.map((locale) => ({ params: { locale } }));
-}) satisfies GetStaticPaths;
+export const getStaticPaths = localeStaticPaths;
 
-const locale = Astro.params.locale as Locale;
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const page = t.fleet;
+
+const gallery = await Promise.all(
+  photos.map(async (p) => {
+    const large = await getImage({ src: p.image, width: 1600, format: "webp" });
+    return { ...p, alt: page.alt[p.alt], large: large.src };
+  }),
+);
+const viewerData = JSON.stringify(
+  gallery.map((p) => ({ src: p.large, alt: p.alt, ratio: p.image.width / p.image.height })),
+);
 ---
 
-<Layout
-  locale={locale}
-  title="Our fleet"
-  description="Photos of the Wind Eurotrans fleet: Scania tractor units and refrigerated trailers."
->
-  <PageHero
-    title="Our fleet"
-    lead="These are the Scania trucks and refrigerated trailers that carry your loads. Real photos, not a catalogue."
-  />
+<Layout title={page.title} description={page.description}>
+  <PageHero title={page.title} lead={page.lead} />
 
-  <!-- Gallery: the first photo is wide; any photo opens full size -->
   <div class="border-line bg-frost border-b">
-    <section aria-label="Photos" class="wrap py-16 md:py-20">
+    <section aria-label={page.photos} class="wrap py-16 md:py-20">
       <ul class="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
         {
-          photos.map((p, i) => (
+          gallery.map((p, i) => (
             <li class:list={[i === 0 && "sm:col-span-2"]}>
               <button
                 type="button"
                 class="group relative block h-full w-full cursor-zoom-in overflow-hidden rounded-xl"
                 data-photo={i}
-                aria-label={`Open photo: ${p.alt}`}
+                aria-label={format(page.open, { alt: p.alt })}
               >
-                <img
-                  src={photoSrc(p.name)}
-                  srcset={photoSrcset(p.name)}
-                  sizes={i === 0 ? "(min-width: 1280px) 800px, (min-width: 640px) 66vw, 100vw" : "(min-width: 1280px) 400px, (min-width: 640px) 50vw, 100vw"}
-                  alt={p.alt}
-                  width={p.width}
-                  height={p.height}
+                <Picture
+                  src={p.image}
+                  alt=""
+                  formats={["avif"]}
+                  fallbackFormat="webp"
+                  widths={i === 0 ? [640, 960, 1280, 1600] : [400, 640, 800]}
+                  sizes={
+                    i === 0
+                      ? "(min-width: 1280px) 800px, (min-width: 640px) 66vw, 100vw"
+                      : "(min-width: 1280px) 400px, (min-width: 640px) 50vw, 100vw"
+                  }
                   loading={i < 3 ? "eager" : "lazy"}
+                  fetchpriority={i === 0 ? "high" : undefined}
                   class:list={[
                     "w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]",
                     // The wide photo takes the height of its row, set by the photo next to it
-                    i === 0 ? "aspect-[4/3] sm:aspect-[16/9] lg:absolute lg:inset-0 lg:aspect-auto lg:h-full" : "aspect-[4/3]",
+                    i === 0 ? "aspect-4/3 sm:aspect-video lg:absolute lg:inset-0 lg:aspect-auto lg:h-full" : "aspect-4/3",
                   ]}
                 />
               </button>
@@ -59,27 +65,24 @@ const locale = Astro.params.locale as Locale;
     </section>
   </div>
 
-
-  <!-- Full-size viewer -->
-  <dialog id="lightbox" class="lightbox" aria-label="Photo viewer">
+  <dialog id="lightbox" class="lightbox" aria-label={page.viewer} data-photos={viewerData}>
     <div class="lightbox__shade" data-shade></div>
     <div class="relative flex h-full flex-col">
       <div class="flex items-center justify-between px-4 py-3 text-white md:px-6" data-chrome>
-        <p class="tnum text-sm text-white/70" data-counter></p>
-        <button type="button" class="-mr-2 rounded-md p-2 hover:bg-white/10" aria-label="Close" data-close>
+        <p class="tnum text-sm text-white/70" aria-live="polite" data-counter></p>
+        <button type="button" class="-mr-2 rounded-md p-2 hover:bg-white/10" aria-label={page.close} data-close>
           <Icon name="close" class="size-7" />
         </button>
       </div>
-      <!-- Filled by the script with a photo that has already loaded -->
       <figure class="flex min-h-0 grow flex-col items-center justify-center px-4 pb-4 md:px-20" data-stage></figure>
       <div
         class="flex justify-center gap-3 py-5 md:pointer-events-none md:absolute md:inset-x-4 md:top-1/2 md:-translate-y-1/2 md:justify-between md:py-0"
         data-chrome
       >
-        <button type="button" class="lightbox__nav" aria-label="Previous photo" data-prev>
+        <button type="button" class="lightbox__nav" aria-label={page.previous} data-prev>
           <Icon name="chevron" class="size-6 rotate-90" />
         </button>
-        <button type="button" class="lightbox__nav" aria-label="Next photo" data-next>
+        <button type="button" class="lightbox__nav" aria-label={page.next} data-next>
           <Icon name="chevron" class="size-6 -rotate-90" />
         </button>
       </div>
@@ -87,21 +90,21 @@ const locale = Astro.params.locale as Locale;
   </dialog>
 </Layout>
 
-<script define:vars={{ photos: photos.map((p) => ({ src: photoSrc(p.name, 1600), alt: p.alt, ratio: p.width / p.height })) }}>
+<script>
   /*
-    How the viewer avoids glitches: every large photo is loaded and decoded into its own
-    <img> off screen, and only a finished <img> is ever put on stage. Nothing on screen
-    changes its source, so the browser never paints an old, half-loaded or smaller picture.
-
-    Opening, the photo grows out of its thumbnail while the dark shade fades in;
-    closing, it shrinks back into the thumbnail of the photo being viewed.
+    Each large photo is loaded and decoded into its own <img> off screen, and only a finished <img>
+    is put on stage, so the viewer never shows a half-loaded picture. Opening, the photo grows out of
+    its thumbnail; closing, it shrinks back into it.
   */
-  const dialog = document.getElementById("lightbox");
-  const stage = dialog.querySelector("[data-stage]");
-  const shade = dialog.querySelector("[data-shade]");
-  const chrome = [...dialog.querySelectorAll("[data-chrome]")];
-  const counter = dialog.querySelector("[data-counter]");
-  const buttons = [...document.querySelectorAll("[data-photo]")];
+  type Photo = { src: string; alt: string; ratio: number };
+
+  const dialog = document.querySelector<HTMLDialogElement>("#lightbox")!;
+  const photos: Photo[] = JSON.parse(dialog.dataset.photos!);
+  const stage = dialog.querySelector<HTMLElement>("[data-stage]")!;
+  const shade = dialog.querySelector<HTMLElement>("[data-shade]")!;
+  const chrome = [...dialog.querySelectorAll<HTMLElement>("[data-chrome]")];
+  const counter = dialog.querySelector<HTMLElement>("[data-counter]")!;
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>("[data-photo]")];
   let current = 0;
   let closing = false;
   // Counts openings, so a closing transition still running can't shut a viewer that has reopened
@@ -110,20 +113,20 @@ const locale = Astro.params.locale as Locale;
   let request = 0;
 
   const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const ms = (n) => (still.matches ? 0 : n);
+  const ms = (n: number) => (still.matches ? 0 : n);
   const EASE_OUT = "cubic-bezier(0.2, 0, 0, 1)";
   const EASE_IN_OUT = "cubic-bezier(0.4, 0, 0.2, 1)";
 
   // One promise per photo: the <img>, once it is ready to paint
-  const loaded = new Map();
-  function load(i) {
+  const loaded = new Map<number, Promise<HTMLImageElement>>();
+  function load(i: number) {
     const index = (i + photos.length) % photos.length;
     if (!loaded.has(index)) {
       const img = new Image();
       img.className = "lightbox__image";
       img.draggable = false;
       img.alt = photos[index].alt;
-      img.style.setProperty("--ratio", photos[index].ratio);
+      img.style.setProperty("--ratio", String(photos[index].ratio));
       img.src = photos[index].src;
       loaded.set(
         index,
@@ -133,18 +136,15 @@ const locale = Astro.params.locale as Locale;
           .then(() => img),
       );
     }
-    return loaded.get(index);
+    return loaded.get(index)!;
   }
 
   /*
-    The transform and clip that make the large photo (at its place on stage) cover exactly
-    what its thumbnail shows in the grid. The thumbnail crops the photo to fill its box,
-    so the photo is scaled to cover that box and the overflow is clipped away.
-    Only used when the thumbnail is clearly in view below the sticky header: otherwise
-    the photo would fly in from, or out through, the header, and a plain fade looks better.
+    The transform and clip that make the photo on stage cover exactly what its thumbnail shows.
+    Only used when the thumbnail is fully in view below the sticky header; otherwise a fade looks better.
   */
   const header = document.getElementById("site-header");
-  function thumbFrame(img, index) {
+  function thumbFrame(img: HTMLImageElement, index: number) {
     const button = buttons[index];
     const box = button.getBoundingClientRect();
     const top = Math.max(box.top, header ? header.getBoundingClientRect().bottom : 0);
@@ -153,7 +153,7 @@ const locale = Astro.params.locale as Locale;
     // The part of the thumbnail that can be seen
     const visible = { top, bottom, left: box.left, right: box.right };
 
-    const thumb = button.querySelector("img").getBoundingClientRect();
+    const thumb = button.querySelector("img")!.getBoundingClientRect();
     const end = img.getBoundingClientRect();
     const scale = Math.max(thumb.width / end.width, thumb.height / end.height);
     const w = end.width * scale;
@@ -176,13 +176,12 @@ const locale = Astro.params.locale as Locale;
   }
   const onStage = { transform: "none", clipPath: "inset(0 round 8px)" };
 
-  function fade(elements, to, duration) {
+  function fade(elements: HTMLElement[], to: 0 | 1, duration: number) {
     const keyframes = to === 1 ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }];
     return elements.map((el) => el.animate(keyframes, { duration, easing: "ease", fill: "forwards" }));
   }
 
-  // opening: true when the viewer has just opened, so the photo grows out of its thumbnail
-  function show(i, opening = false) {
+  function show(i: number, opening = false) {
     const index = (i + photos.length) % photos.length;
     const token = ++request;
     current = index;
@@ -206,7 +205,7 @@ const locale = Astro.params.locale as Locale;
     load(index - 1);
   }
 
-  function open(index) {
+  function open(index: number) {
     session++;
     closing = false;
     for (const el of [shade, ...chrome]) el.getAnimations().forEach((a) => a.cancel());
@@ -239,7 +238,7 @@ const locale = Astro.params.locale as Locale;
 
   buttons.forEach((button) => {
     const index = Number(button.dataset.photo);
-    // Start on the large photo as soon as the user shows interest, before the click lands
+    // Start loading the large photo before the click lands
     for (const type of ["pointerenter", "pointerdown", "focus"]) {
       button.addEventListener(type, () => load(index), { once: true, passive: true });
     }
@@ -252,7 +251,6 @@ const locale = Astro.params.locale as Locale;
     for (const el of [shade, ...chrome, ...stage.children]) el.getAnimations().forEach((a) => a.cancel());
     stage.replaceChildren();
     document.body.style.overflow = "";
-    // Back on the photo the user was last looking at
     buttons[current].focus({ preventScroll: true });
   });
   // Escape: run the closing transition instead of closing at once
@@ -260,11 +258,10 @@ const locale = Astro.params.locale as Locale;
     e.preventDefault();
     close();
   });
-  dialog.querySelector("[data-close]").addEventListener("click", close);
-  dialog.querySelector("[data-prev]").addEventListener("click", () => show(current - 1));
-  dialog.querySelector("[data-next]").addEventListener("click", () => show(current + 1));
+  dialog.querySelector("[data-close]")!.addEventListener("click", close);
+  dialog.querySelector("[data-prev]")!.addEventListener("click", () => show(current - 1));
+  dialog.querySelector("[data-next]")!.addEventListener("click", () => show(current + 1));
 
-  // Clicking the dark area around the photo closes the viewer
   dialog.addEventListener("click", (e) => {
     if (e.target === dialog || e.target === stage || e.target === shade) close();
   });
@@ -276,7 +273,7 @@ const locale = Astro.params.locale as Locale;
   });
 
   // Swipe on touch screens
-  let startX = null;
+  let startX: number | null = null;
   dialog.addEventListener("touchstart", (e) => (startX = e.touches[0].clientX), { passive: true });
   dialog.addEventListener("touchend", (e) => {
     if (startX === null || closing) return;
@@ -296,9 +293,8 @@ const locale = Astro.params.locale as Locale;
     padding: 0;
     border: 0;
     background: transparent;
-    /* The photo grows out of the grid, so it must be allowed to sit outside its box */
     overflow: visible;
-    /* Quick clicks on the arrows count as double clicks, which would select the photo and buttons */
+    /* Quick clicks on the arrows would otherwise select the photo */
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
@@ -311,9 +307,7 @@ const locale = Astro.params.locale as Locale;
     inset: 0;
     background: rgb(0 18 48 / 0.97);
   }
-  /* Made by the script, so it needs :global to escape Astro's scoping */
   .lightbox :global(.lightbox__image) {
-    /* Sized from the photo's proportions, so it never resizes once it is on screen */
     aspect-ratio: var(--ratio);
     width: min(100%, calc((100dvh - 9rem) * var(--ratio)));
     max-height: calc(100dvh - 9rem);

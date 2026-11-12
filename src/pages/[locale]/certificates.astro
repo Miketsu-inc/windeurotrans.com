@@ -1,83 +1,102 @@
 ---
-import type { GetStaticPaths } from "astro";
-import { locales, type Locale } from "../../i18n/utils";
-
+import { Picture } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
 import Icon from "../../components/Icon.astro";
 import { certificates } from "../../data/certificates";
-import { asset, site } from "../../data/site";
+import { site } from "../../data/site";
+import { format, formatDate, getDictionary, getLocale, localeStaticPaths } from "../../i18n";
 
-export const getStaticPaths = (() => {
-  return locales.map((locale) => ({ params: { locale } }));
-}) satisfies GetStaticPaths;
+export const getStaticPaths = localeStaticPaths;
 
-const locale = Astro.params.locale as Locale;
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const page = t.certificates;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+const items = certificates.map((c) => {
+  const text = page[c.id];
+  return {
+    ...c,
+    ...text,
+    files: Object.entries(c.files).map(([lang, file]) => ({
+      lang,
+      label: page.languages[lang as keyof typeof c.files],
+      href: `${base}/${file}`,
+    })),
+    details: [
+      { label: page.labels.standard, value: text.standard },
+      { label: page.labels.scope, value: text.scope },
+      { label: page.labels.body, value: c.body },
+      { label: page.labels.number, value: c.number },
+      { label: page.labels[c.issued.label], value: formatDate(locale, c.issued.date) },
+      { label: page.labels.validUntil, value: formatDate(locale, c.validUntil) },
+    ],
+  };
+});
 ---
 
-<Layout
-  locale={locale}
-  title="Certificates"
-  description="Wind Eurotrans holds GDP certification for road transport of medicines and ISO 9001:2015 certification for domestic and international transport and forwarding."
->
-  <PageHero
-    title="Certificates"
-    lead="Independent auditors check how we work. These are the certificates in force today and what they cover."
-  />
+<Layout title={page.title} description={page.description}>
+  <PageHero title={page.title} lead={page.lead} />
 
   <div class="bg-frost">
-  <div class="wrap py-16 md:py-24">
-    {
-      certificates.map((c, i) => (
-        <section
-          id={c.id}
-          class:list={[
-            "grid scroll-mt-28 gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16",
-            i > 0 && "border-line mt-16 border-t pt-16 md:mt-24 md:pt-24",
-          ]}
-        >
-          <a href={asset(c.files[0].href)} class="group block self-start" target="_blank" rel="noopener">
-            <img
-              src={asset(c.image)}
-              alt={`${c.title} certificate of ${site.legalName}`}
-              width="900"
-              height="1273"
-              loading={i === 0 ? "eager" : "lazy"}
-              class="border-line w-full rounded-md border bg-white shadow-[0_30px_50px_-30px_rgb(0_36_97/0.45)]"
-            />
-            <span class="text-muted mt-3 flex items-center gap-1.5 text-sm group-hover:text-ink">
-              <Icon name="external" class="size-4" />
-              Open full size
-            </span>
-          </a>
+    <div class="wrap py-16 md:py-24">
+      {
+        items.map((c, i) => (
+          <section
+            id={c.id}
+            aria-labelledby={`${c.id}-title`}
+            class:list={[
+              "grid scroll-mt-28 gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16",
+              i > 0 && "border-line mt-16 border-t pt-16 md:mt-24 md:pt-24",
+            ]}
+          >
+            <a href={c.files[0].href} class="group block self-start" target="_blank" rel="noopener">
+              <Picture
+                src={c.image}
+                alt={format(page.imageAlt, { title: c.title, name: site.legalName })}
+                formats={["avif"]}
+                fallbackFormat="webp"
+                widths={[480, 720, 900]}
+                sizes="(min-width: 768px) 40vw, 100vw"
+                loading={i === 0 ? "eager" : "lazy"}
+                class="border-line w-full rounded-md border bg-white shadow-[0_30px_50px_-30px_rgb(0_36_97/0.45)]"
+              />
+              <span class="text-muted group-hover:text-ink mt-3 flex items-center gap-1.5 text-sm">
+                <Icon name="external" class="size-4" />
+                {page.openFull}
+                <span class="sr-only">{t.meta.newTab}</span>
+              </span>
+            </a>
 
-          <div>
-            <h2 class="text-[1.75rem] leading-tight md:text-[2.25rem]">{c.title}</h2>
-            <p class="text-muted mt-4 max-w-xl text-lg">{c.summary}</p>
+            <div>
+              <h2 id={`${c.id}-title`} class="text-[1.75rem] leading-tight md:text-[2.25rem]">
+                {c.title}
+              </h2>
+              <p class="text-muted mt-4 max-w-xl text-lg">{c.summary}</p>
 
-            <dl class="border-line mt-10 border-t">
-              {c.details.map((d) => (
-                <div class="border-line grid gap-1 border-b py-4 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-6">
-                  <dt class="text-muted text-[0.9375rem]">{d.label}</dt>
-                  <dd class="font-medium">{d.value}</dd>
-                </div>
-              ))}
-            </dl>
+              <dl class="border-line mt-10 border-t">
+                {c.details.map((d) => (
+                  <div class="border-line grid gap-1 border-b py-4 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-6">
+                    <dt class="text-muted text-[0.9375rem]">{d.label}</dt>
+                    <dd class="font-medium">{d.value}</dd>
+                  </div>
+                ))}
+              </dl>
 
-            <p class="mt-8 flex flex-wrap items-center gap-3">
-              <span class="text-muted mr-1">Download:</span>
-              {c.files.map((f) => (
-                <a href={asset(f.href)} class="btn btn-outline min-h-10 px-4 py-2 text-[0.9375rem]" download>
-                  <Icon name="doc" class="size-4.5" />
-                  {f.label}
-                </a>
-              ))}
-            </p>
-          </div>
-        </section>
-      ))
-    }
+              <p class="mt-8 flex flex-wrap items-center gap-3">
+                <span class="text-muted mr-1">{page.download}</span>
+                {c.files.map((f) => (
+                  <a href={f.href} hreflang={f.lang} class="btn btn-outline min-h-10 px-4 py-2 text-[0.9375rem]" download>
+                    <Icon name="doc" class="size-4.5" />
+                    {f.label}
+                  </a>
+                ))}
+              </p>
+            </div>
+          </section>
+        ))
+      }
+    </div>
   </div>
-  </div>
-
 </Layout>

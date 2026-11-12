@@ -1,82 +1,47 @@
 ---
+import { Image } from "astro:assets";
 import Icon from "./Icon.astro";
-import { services } from "../data/services";
-import { site, asset, pageUrl } from "../data/site";
+import logo from "../assets/logo.svg";
+import { site } from "../data/site";
+import { format, getDictionary, getLocale, languageNames, locales, localizedPath, pagePath } from "../i18n";
+import { getServices } from "../i18n/content";
 
-interface Props {
-  locale: string;
-}
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const services = await getServices(locale);
+const currentPath = pagePath(Astro.url);
 
-const { locale } = Astro.props;
-
-const languages = [
-  { code: "hu", label: "Magyar" },
-  { code: "en", label: "English" },
-  { code: "it", label: "Italiano" },
-];
-
-// Current path without the base and the locale, so the language switcher stays on the same page
-const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-let path = Astro.url.pathname;
-if (path.startsWith(base)) path = path.slice(base.length);
-const parts = path.split("/").filter(Boolean);
-if (languages.some((l) => l.code === parts[0])) parts.shift();
-const currentPath = parts.join("/");
-
-const langUrls = languages.map((l) => ({
-  ...l,
-  url: pageUrl(l.code, currentPath),
-}));
+const languages = locales.map((code) => ({ code, label: languageNames[code], url: localizedPath(code, currentPath) }));
 
 const nav = [
-  { label: "Fleet", href: pageUrl(locale, "fleet"), match: "fleet" },
-  {
-    label: "Certificates",
-    href: pageUrl(locale, "certificates"),
-    match: "certificates",
-  },
-  { label: "About us", href: pageUrl(locale, "about"), match: "about" },
-  { label: "Contact", href: pageUrl(locale, "contact"), match: "contact" },
+  { label: t.nav.fleet, path: "fleet" },
+  { label: t.nav.certificates, path: "certificates" },
+  { label: t.nav.about, path: "about" },
 ];
-
-const isServices = currentPath.startsWith("services");
+const isCurrent = (path: string) => currentPath === path || currentPath.startsWith(`${path}/`);
 ---
 
-<header
-  id="site-header"
-  class="text-ink sticky top-0 z-50 bg-frost border-b border-transparent transition-colors"
->
-  <div class="wrap flex h-16 lg:h-18 items-center gap-6">
-    <a
-      href={pageUrl(locale)}
-      class="mr-auto shrink-0 lg:mr-4"
-      aria-label={`${site.name} home`}
-    >
-      <img
-        src={asset("logo.svg")}
-        alt=""
-        width="1711"
-        height="740"
-        class="h-11 w-auto lg:h-14"
-      />
+<header id="site-header" class="text-ink bg-frost sticky top-0 z-50 border-b border-transparent transition-colors">
+  <div class="wrap flex h-16 items-center gap-6 lg:h-18">
+    <a href={localizedPath(locale)} class="mr-auto shrink-0 lg:mr-4">
+      <Image src={logo} alt={format(t.nav.home, { name: site.name })} class="h-11 w-auto lg:h-14" loading="eager" />
     </a>
 
-    <nav aria-label="Main" class="hidden font-medium lg:block">
+    <nav aria-label={t.nav.main} class="hidden font-medium lg:block">
       <ul class="flex items-center gap-1">
-        <!-- "Services" goes to the services page; hovering it (or the chevron button) lists the services -->
         <li class="relative" data-dropdown>
           <div class="nav-item flex items-center">
             <a
-              href={pageUrl(locale, "services")}
-              class:list={["nav-link py-2 pl-3", isServices && "nav-current"]}
+              href={localizedPath(locale, "services")}
+              class:list={["nav-link py-2 pl-3", isCurrent("services") && "nav-current"]}
               aria-current={currentPath === "services" ? "page" : undefined}
             >
-              Services
+              {t.nav.services}
             </a>
             <button
               type="button"
               class="py-2 pr-2.5 pl-1"
-              aria-label="Show services"
+              aria-label={t.nav.showServices}
               aria-expanded="false"
               aria-controls="services-menu"
               data-dropdown-trigger
@@ -84,26 +49,17 @@ const isServices = currentPath.startsWith("services");
               <Icon name="chevron" class="size-4 transition-transform" />
             </button>
           </div>
-          <ul
-            id="services-menu"
-            class="text-ink invisible absolute top-full left-0 mt-2 w-[22rem] border-line rounded-xl border bg-white p-1.5 opacity-0 shadow-[0_18px_40px_-16px_rgb(0_36_97/0.25)] transition-[opacity,visibility] duration-150"
-            data-dropdown-panel
-          >
+          <ul id="services-menu" class="dropdown-panel left-0 w-88" data-dropdown-panel>
             {
               services.map((s) => (
                 <li>
                   <a
-                    href={pageUrl(locale, `services/${s.slug}`)}
-                    class:list={[
-                      "nav-item block rounded-lg px-3 py-2.5",
-                      currentPath === `services/${s.slug}` && "is-current",
-                    ]}
-                    aria-current={
-                      currentPath === `services/${s.slug}` ? "page" : undefined
-                    }
+                    href={localizedPath(locale, `services/${s.slug}`)}
+                    class:list={["nav-item block px-3 py-2.5", currentPath === `services/${s.slug}` && "is-current"]}
+                    aria-current={currentPath === `services/${s.slug}` ? "page" : undefined}
                   >
-                    <span class="nav-link font-semibold">{s.name}</span>
-                    <span class="text-muted block text-sm">{s.tagline}</span>
+                    <span class="nav-link font-semibold">{s.data.name}</span>
+                    <span class="text-muted block text-sm">{s.data.tagline}</span>
                   </a>
                 </li>
               ))
@@ -111,33 +67,23 @@ const isServices = currentPath.startsWith("services");
           </ul>
         </li>
         {
-          nav
-            .filter((item) => item.match !== "contact")
-            .map((item) => (
-              <li>
-                <a
-                  href={item.href}
-                  class:list={[
-                    "nav-item nav-link block px-3 py-2",
-                    currentPath.startsWith(item.match) && "nav-current",
-                  ]}
-                  aria-current={
-                    currentPath.startsWith(item.match) ? "page" : undefined
-                  }
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))
+          nav.map((item) => (
+            <li>
+              <a
+                href={localizedPath(locale, item.path)}
+                class:list={["nav-item nav-link block px-3 py-2", isCurrent(item.path) && "nav-current"]}
+                aria-current={isCurrent(item.path) ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
         }
       </ul>
     </nav>
 
     <div class="ml-auto hidden items-center gap-2 font-medium lg:flex">
-      <a
-        href={site.phoneHref}
-        class="nav-item tnum flex items-center gap-2 px-3 py-2"
-      >
+      <a href={site.phoneHref} class="nav-item tnum flex items-center gap-2 px-3 py-2">
         <Icon name="phone" class="text-signal size-4.5" />
         <span class="nav-link">{site.phone}</span>
       </a>
@@ -148,27 +94,21 @@ const isServices = currentPath.startsWith("services");
           class="nav-item flex cursor-pointer items-center gap-1.5 px-3 py-2"
           aria-expanded="false"
           aria-controls="lang-menu"
-          aria-label="Change language"
           data-dropdown-trigger
         >
           <Icon name="globe" class="size-4.5" />
           <span class="nav-link">{locale.toUpperCase()}</span>
+          <span class="sr-only">{t.nav.changeLanguage}</span>
         </button>
-        <ul
-          id="lang-menu"
-          class="text-ink invisible absolute top-full right-0 mt-2 w-40 border-line rounded-xl border bg-white p-1.5 opacity-0 shadow-[0_18px_40px_-16px_rgb(0_36_97/0.25)] transition-[opacity,visibility] duration-150"
-          data-dropdown-panel
-        >
+        <ul id="lang-menu" class="dropdown-panel right-0 w-40" data-dropdown-panel>
           {
-            langUrls.map((l) => (
+            languages.map((l) => (
               <li>
                 <a
                   href={l.url}
                   lang={l.code}
-                  class:list={[
-                    "nav-item block rounded-lg px-3 py-2",
-                    l.code === locale && "is-current font-semibold",
-                  ]}
+                  hreflang={l.code}
+                  class:list={["nav-item block px-3 py-2", l.code === locale && "is-current font-semibold"]}
                   aria-current={l.code === locale ? "true" : undefined}
                 >
                   <span class="nav-link">{l.label}</span>
@@ -179,66 +119,42 @@ const isServices = currentPath.startsWith("services");
         </ul>
       </div>
 
-      <a
-        href={pageUrl(locale, "contact")}
-        class="btn btn-signal ml-2 min-h-0 h-11 rounded-md px-3.5 py-0"
-        >Contact us</a
-      >
+      <a href={localizedPath(locale, "contact")} class="btn btn-signal ml-2 h-11 min-h-0 rounded-md px-3.5 py-0">
+        {t.nav.contactUs}
+      </a>
     </div>
 
     <button
       type="button"
-      id="menu-open"
       class="-mr-2 rounded-md p-2 lg:hidden"
-      aria-label="Open menu"
-      aria-expanded="false"
+      aria-label={t.nav.openMenu}
+      aria-haspopup="dialog"
       aria-controls="mobile-menu"
+      data-menu-open
     >
       <Icon name="menu" class="size-7" />
     </button>
   </div>
 
-  <!-- Mobile menu -->
-  <div
+  <dialog
     id="mobile-menu"
-    class="text-ink bg-frost fixed inset-0 z-50 hidden flex-col overflow-y-auto lg:hidden"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Menu"
+    class="text-ink bg-frost m-0 h-dvh max-h-none w-full max-w-none flex-col overflow-y-auto p-0 open:flex lg:hidden"
+    aria-label={t.nav.menu}
   >
-    <div
-      class="wrap border-line flex h-[calc(4rem+1px)] shrink-0 items-center justify-between border-b"
-    >
-      <img
-        src={asset("logo.svg")}
-        alt={site.name}
-        width="1711"
-        height="740"
-        class="h-11 w-auto"
-      />
-      <button
-        type="button"
-        id="menu-close"
-        class="-mr-2 rounded-md p-2"
-        aria-label="Close menu"
-      >
+    <div class="wrap border-line flex h-16.25 shrink-0 items-center justify-between border-b">
+      <Image src={logo} alt="" class="h-11 w-auto" />
+      <button type="button" class="-mr-2 rounded-md p-2" aria-label={t.nav.closeMenu} data-menu-close>
         <Icon name="close" class="size-7" />
       </button>
     </div>
-    <nav aria-label="Mobile" class="wrap flex grow flex-col pt-4 pb-8">
-      <a
-        href={pageUrl(locale, "services")}
-        class="font-display block py-2 text-2xl font-semibold">Services</a
-      >
+    <nav aria-label={t.nav.main} class="wrap flex grow flex-col pt-4 pb-8">
+      <a href={localizedPath(locale, "services")} class="block py-2 text-2xl font-semibold">{t.nav.services}</a>
       <ul class="pb-3">
         {
           services.map((s) => (
             <li>
-              <a
-                href={pageUrl(locale, `services/${s.slug}`)}
-                class="text-muted block py-1.5 pl-4 text-lg"
-              >
-                {s.name}
+              <a href={localizedPath(locale, `services/${s.slug}`)} class="text-muted block py-1.5 pl-4 text-lg">
+                {s.data.name}
               </a>
             </li>
           ))
@@ -246,50 +162,68 @@ const isServices = currentPath.startsWith("services");
       </ul>
       <ul class="pb-8">
         {
-          nav.map((item) => (
+          [...nav, { label: t.nav.contact, path: "contact" }].map((item) => (
             <li>
-              <a
-                href={item.href}
-                class="font-display block py-2 text-2xl font-semibold"
-              >
+              <a href={localizedPath(locale, item.path)} class="block py-2 text-2xl font-semibold">
                 {item.label}
               </a>
             </li>
           ))
         }
       </ul>
-      <div class="mt-auto">
-        <div class="flex gap-2" aria-label="Language">
-          {
-            langUrls.map((l) => (
+      <ul class="mt-auto flex gap-2" aria-label={t.nav.language}>
+        {
+          languages.map((l) => (
+            <li>
               <a
                 href={l.url}
                 lang={l.code}
+                hreflang={l.code}
                 class:list={[
-                  "rounded-md border px-3 py-1.5 text-sm",
-                  l.code === locale
-                    ? "border-blue-900 text-blue-900"
-                    : "border-line text-muted",
+                  "block rounded-md border px-3 py-1.5 text-sm",
+                  l.code === locale ? "border-blue-900 text-blue-900" : "border-line text-muted",
                 ]}
                 aria-current={l.code === locale ? "true" : undefined}
               >
                 {l.label}
               </a>
-            ))
-          }
-        </div>
-      </div>
+            </li>
+          ))
+        }
+      </ul>
     </nav>
-  </div>
+  </dialog>
 </header>
 
 <style>
-  /* Hover: a light neutral grey behind the item; the text stays dark */
+  .dropdown-panel {
+    position: absolute;
+    top: 100%;
+    margin-top: 0.5rem;
+    padding: 0.375rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 18px 40px -16px rgb(0 36 97 / 0.25);
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity 0.15s,
+      visibility 0.15s;
+  }
+  [data-dropdown].is-open .dropdown-panel {
+    visibility: visible;
+    opacity: 1;
+  }
+  [data-dropdown].is-open [data-dropdown-trigger] :global(svg) {
+    transform: rotate(180deg);
+  }
+
   .nav-item {
     border-radius: 0.375rem;
     transition: background-color 0.15s ease;
   }
-  [data-dropdown-panel] .nav-item {
+  .dropdown-panel .nav-item {
     border-radius: 0.5rem;
   }
   .nav-item:hover,
@@ -297,57 +231,42 @@ const isServices = currentPath.startsWith("services");
     background-color: rgb(0 0 0 / 0.05);
   }
 
-  /* Current page: orange underline under the text (orange text on white is too faint to read) */
+  /* The current page is marked with an orange underline */
   .nav-link {
     text-decoration-line: underline;
     text-decoration-thickness: 2px;
     text-decoration-color: transparent;
     text-underline-offset: 0.45em;
   }
-  [data-dropdown-panel] .nav-link {
+  .dropdown-panel .nav-link {
     text-underline-offset: 0.3em;
   }
   .is-current .nav-link,
   .nav-current {
     text-decoration-color: var(--color-signal);
   }
-  /* No line under the header at the top of the page, so it runs into the white hero; it appears once you scroll */
+
   #site-header.is-scrolled {
     border-color: var(--color-line);
   }
-  [data-dropdown].is-open [data-dropdown-panel] {
-    visibility: visible;
-    opacity: 1;
-  }
-  [data-dropdown].is-open [data-dropdown-trigger] :global(svg) {
-    transform: rotate(180deg);
-  }
-  @media (max-width: 1023px) {
-    #mobile-menu.is-open {
-      display: flex;
-    }
-  }
-  /* While the menu is open the page can't scroll, so its scrollbar goes. Paint the space it leaves white, like the menu. */
-  :global(html:has(#mobile-menu.is-open)) {
+
+  /* The open menu hides the page's scrollbar; fill the gap it leaves with the menu's colour */
+  :global(html:has(#mobile-menu[open])) {
     background: var(--color-frost);
   }
 </style>
 
 <script>
-  // Dropdowns: open on click or hover, close on outside click and Escape
   const dropdowns = document.querySelectorAll<HTMLElement>("[data-dropdown]");
+  const canHover = window.matchMedia("(hover: hover)");
 
   function setOpen(dropdown: HTMLElement, open: boolean) {
     dropdown.classList.toggle("is-open", open);
-    dropdown
-      .querySelector("[data-dropdown-trigger]")
-      ?.setAttribute("aria-expanded", String(open));
+    dropdown.querySelector("[data-dropdown-trigger]")?.setAttribute("aria-expanded", String(open));
   }
 
   dropdowns.forEach((dropdown) => {
-    const trigger = dropdown.querySelector<HTMLElement>(
-      "[data-dropdown-trigger]",
-    )!;
+    const trigger = dropdown.querySelector<HTMLElement>("[data-dropdown-trigger]")!;
     let closeTimer: number | undefined;
 
     trigger.addEventListener("click", (e) => {
@@ -358,13 +277,13 @@ const isServices = currentPath.startsWith("services");
     });
 
     dropdown.addEventListener("mouseenter", () => {
-      if (!window.matchMedia("(hover: hover)").matches) return;
+      if (!canHover.matches) return;
       window.clearTimeout(closeTimer);
       dropdowns.forEach((d) => d !== dropdown && setOpen(d, false));
       setOpen(dropdown, true);
     });
     dropdown.addEventListener("mouseleave", () => {
-      if (!window.matchMedia("(hover: hover)").matches) return;
+      if (!canHover.matches) return;
       closeTimer = window.setTimeout(() => setOpen(dropdown, false), 150);
     });
     dropdown.addEventListener("focusout", (e) => {
@@ -372,45 +291,28 @@ const isServices = currentPath.startsWith("services");
     });
   });
 
-  document.addEventListener("click", () =>
-    dropdowns.forEach((d) => setOpen(d, false)),
-  );
+  document.addEventListener("click", () => dropdowns.forEach((d) => setOpen(d, false)));
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     dropdowns.forEach((d) => {
-      if (d.classList.contains("is-open")) {
-        setOpen(d, false);
-        d.querySelector<HTMLElement>("[data-dropdown-trigger]")?.focus();
-      }
+      if (!d.classList.contains("is-open")) return;
+      setOpen(d, false);
+      d.querySelector<HTMLElement>("[data-dropdown-trigger]")?.focus();
     });
-    if (menu.classList.contains("is-open")) closeMenu();
   });
 
-  // Header line: only once the page has scrolled
   const header = document.getElementById("site-header")!;
-  const updateHeader = () =>
-    header.classList.toggle("is-scrolled", window.scrollY > 4);
+  const updateHeader = () => header.classList.toggle("is-scrolled", window.scrollY > 4);
   updateHeader();
   window.addEventListener("scroll", updateHeader, { passive: true });
 
-  // Mobile menu
-  const menu = document.getElementById("mobile-menu")!;
-  const openBtn = document.getElementById("menu-open")!;
-  const closeBtn = document.getElementById("menu-close")!;
-
-  function openMenu() {
-    menu.classList.add("is-open");
-    openBtn.setAttribute("aria-expanded", "true");
+  const menu = document.querySelector<HTMLDialogElement>("#mobile-menu")!;
+  document.querySelector("[data-menu-open]")!.addEventListener("click", () => {
+    menu.showModal();
     document.body.style.overflow = "hidden";
-    closeBtn.focus();
-  }
-  function closeMenu() {
-    menu.classList.remove("is-open");
-    openBtn.setAttribute("aria-expanded", "false");
-    document.body.style.overflow = "";
-    openBtn.focus();
-  }
-
-  openBtn.addEventListener("click", openMenu);
-  closeBtn.addEventListener("click", closeMenu);
+  });
+  document.querySelector("[data-menu-close]")!.addEventListener("click", () => menu.close());
+  menu.addEventListener("close", () => (document.body.style.overflow = ""));
+  // The menu is for small screens only: close it if the window grows to desktop width
+  window.matchMedia("(min-width: 1024px)").addEventListener("change", (e) => e.matches && menu.close());
 </script>

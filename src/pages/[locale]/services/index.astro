@@ -1,81 +1,71 @@
 ---
-import type { GetStaticPaths } from "astro";
-import { locales, type Locale } from "../../../i18n/utils";
-
 import Layout from "../../../layouts/Layout.astro";
 import PageHero from "../../../components/PageHero.astro";
 import ServiceCard from "../../../components/ServiceCard.astro";
 import Icon from "../../../components/Icon.astro";
-import { services } from "../../../data/services";
-import { site, mailto } from "../../../data/site";
+import { site } from "../../../data/site";
+import { format, getDictionary, getLocale, localeStaticPaths } from "../../../i18n";
+import { getServices } from "../../../i18n/content";
 
-export const getStaticPaths = (() => {
-  return locales.map((locale) => ({ params: { locale } }));
-}) satisfies GetStaticPaths;
+export const getStaticPaths = localeStaticPaths;
 
-const locale = Astro.params.locale as Locale;
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const page = t.services;
+const services = await getServices(locale);
 
 const included = [
-  { icon: "dispatch", title: "24/7 dispatch", text: "Someone follows your load and picks up the phone, day and night." },
-  { icon: "doc", title: "Complete paperwork", text: "CMR, ADR and customs documents prepared and checked before departure." },
-  { icon: "badge", title: "Certified processes", text: "Every service runs under our ISO 9001:2015 quality management system." },
+  { icon: "dispatch", ...page.included.dispatch },
+  { icon: "doc", ...page.included.paperwork },
+  { icon: "badge", ...page.included.certified },
 ] as const;
 ---
 
-<Layout
-  locale={locale}
-  title="Services"
-  description="Road freight and forwarding, temperature-controlled transport, GDP pharmaceutical transport, ADR dangerous goods and customs clearance."
->
-  <PageHero
-    title="Services"
-    lead="Full and part loads from 1 kg to 24 tonnes, at any temperature from −25 °C to +30 °C, with the paperwork handled."
-  />
+<Layout title={page.title} description={page.description}>
+  <PageHero title={page.title} lead={page.lead} />
 
   <div class="bg-frost">
-  <section class="wrap py-16 md:py-24">
-    <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {
-        services.map((s, i) => (
-          <li>
-            <ServiceCard service={s} locale={locale} eager={i < 3} />
-          </li>
-        ))
-      }
-      <!-- Fills the sixth slot of the grid -->
-      <li class="sign-panel flex flex-col p-8 md:p-9">
-        <h2 class="text-xl leading-snug md:text-[1.375rem]">Not sure which one you need?</h2>
-        <p class="text-blue-200 mt-2 mb-6">Tell us what you are shipping and we'll tell you how we would move it.</p>
-        <div class="mt-auto flex flex-col gap-3">
-          <a href={site.phoneHref} class="btn btn-signal tnum">
-            <Icon name="phone" class="size-4.5" />
-            Call {site.phone}
-          </a>
-          <a href={mailto()} class="btn btn-outline-light">
-            <Icon name="mail" class="size-4.5" />
-            Email us
-          </a>
-        </div>
-      </li>
-    </ul>
-  </section>
+    <section class="wrap py-16 md:py-24">
+      <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          services.map((s, i) => (
+            <li>
+              <ServiceCard service={s} eager={i < 3} />
+            </li>
+          ))
+        }
+        <li class="sign-panel flex flex-col p-8 md:p-9">
+          <h2 class="text-xl leading-snug md:text-[1.375rem]">{page.help.title}</h2>
+          <p class="mt-2 mb-6 text-blue-200">{page.help.text}</p>
+          <div class="mt-auto flex flex-col gap-3">
+            <a href={site.phoneHref} class="btn btn-signal tnum">
+              <Icon name="phone" class="size-4.5" />
+              {format(page.help.call, { phone: site.phone })}
+            </a>
+            <a href={site.emailHref} class="btn btn-outline-light">
+              <Icon name="mail" class="size-4.5" />
+              {page.help.email}
+            </a>
+          </div>
+        </li>
+      </ul>
+    </section>
   </div>
 
   <section class="border-line border-y">
     <div class="wrap py-16 md:py-24">
-    <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Included with every load</h2>
-    <ul class="mt-10 grid gap-8 md:grid-cols-3">
-      {
-        included.map((item) => (
-          <li class="border-line border-l-2 pl-5 md:[&:first-child]:border-l-0 md:[&:first-child]:pl-0">
-            <Icon name={item.icon} class="text-blue-900 size-6" />
-            <h3 class="mt-3 text-lg">{item.title}</h3>
-            <p class="text-muted mt-1">{item.text}</p>
-          </li>
-        ))
-      }
-    </ul>
+      <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">{page.included.title}</h2>
+      <ul class="mt-10 grid gap-8 md:grid-cols-3">
+        {
+          included.map((item) => (
+            <li class="border-line border-l-2 pl-5 md:first:border-l-0 md:first:pl-0">
+              <Icon name={item.icon} class="size-6 text-blue-900" />
+              <h3 class="mt-3 text-lg">{item.title}</h3>
+              <p class="text-muted mt-1">{item.text}</p>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
-
 </Layout>

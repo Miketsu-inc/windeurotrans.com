@@ -1,42 +1,61 @@
 ---
+import fontUrl from "@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-wght-normal.woff2?url";
 import "../styles/global.css";
 import SiteHeader from "../components/SiteHeader.astro";
 import Footer from "../components/Footer.astro";
 import { site } from "../data/site";
+import { defaultLocale, getDictionary, getLocale, locales, localizedUrl, pagePath } from "../i18n";
 
 interface Props {
-  locale: string;
   title?: string;
   description?: string;
+  /** For pages that shouldn't appear in search results or have language versions, like the 404 page. */
+  noindex?: boolean;
 }
 
-const {
-  locale,
-  title,
-  description = "Temperature-controlled, pharmaceutical (GDP) and ADR road freight from Hungary across Europe. Full and part loads from 1 kg to 24 tonnes, 24/7 dispatch.",
-} = Astro.props;
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const { title, description = t.meta.description, noindex = false } = Astro.props;
 
-const pageTitle = title ? `${title} | ${site.name}` : `${site.name} | Road freight you can count on`;
+const pageTitle = title ? `${title} | ${site.name}` : `${site.name} | ${t.meta.tagline}`;
+const path = pagePath(Astro.url);
+const canonical = localizedUrl(locale, path);
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const ogImage = new URL(`${base}/img/og.jpg`, Astro.site).href;
 ---
 
 <!doctype html>
 <html lang={locale}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f4f7fc" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
     <link rel="icon" href={`${base}/favicon-32.png`} sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href={`${base}/apple-touch-icon.png`} />
-    <link rel="alternate" hreflang="hu" href={`${base}/hu/`} />
-    <link rel="alternate" hreflang="en" href={`${base}/en/`} />
-    <link rel="alternate" hreflang="it" href={`${base}/it/`} />
+    {
+      noindex ? (
+        <meta name="robots" content="noindex" />
+      ) : (
+        <>
+          <link rel="canonical" href={canonical} />
+          {locales.map((l) => (
+            <link rel="alternate" hreflang={l} href={localizedUrl(l, path)} />
+          ))}
+          <link rel="alternate" hreflang="x-default" href={localizedUrl(defaultLocale, path)} />
+        </>
+      )
+    }
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(`${base}/img/og.jpg`, Astro.site).href} />
+    {!noindex && <meta property="og:url" content={canonical} />}
+    <meta property="og:locale" content={locale} />
+    <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -45,13 +64,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   <body class="min-h-screen antialiased">
     <a
       href="#main"
-      class="bg-signal text-ink fixed top-3 left-3 z-[100] -translate-y-20 rounded-md px-4 py-2 font-medium focus:translate-y-0"
-      >Skip to content</a
+      class="bg-signal text-ink fixed top-3 left-3 z-100 -translate-y-20 rounded-md px-4 py-2 font-medium focus:translate-y-0"
+      >{t.meta.skipLink}</a
     >
-    <SiteHeader locale={locale} />
-    <main id="main">
+    <SiteHeader />
+    <main id="main" tabindex="-1" class="focus:outline-none">
       <slot />
     </main>
-    <Footer locale={locale} />
+    <Footer />
   </body>
 </html>

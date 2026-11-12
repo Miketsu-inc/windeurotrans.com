@@ -1,89 +1,53 @@
 ---
-import type { GetStaticPaths } from "astro";
-import { locales, type Locale } from "../../i18n/utils";
-
+import { Picture } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
-import { asset, site } from "../../data/site";
-import { photoSrc, photoSrcset } from "../../data/fleet";
+import driver from "../../assets/driver.webp";
+import fleetAngle from "../../assets/fleet/fleet-angle.webp";
+import { site } from "../../data/site";
+import { getDictionary, getLocale, localeStaticPaths } from "../../i18n";
 
-export const getStaticPaths = (() => {
-  return locales.map((locale) => ({ params: { locale } }));
-}) satisfies GetStaticPaths;
+export const getStaticPaths = localeStaticPaths;
 
-const locale = Astro.params.locale as Locale;
-
-const principles = [
-  {
-    title: "We keep the dates we agree",
-    text: "We don't accept a job that would put the agreed deadline at risk. If we say Thursday morning, the truck is there Thursday morning.",
-  },
-  {
-    title: "We treat your goods as our own",
-    text: "Your cargo is handled with care, precisely and safely, from loading to the signed delivery note.",
-  },
-  {
-    title: "We work to audited rules",
-    text: "Every load runs under our ISO 9001:2015 quality system, and medicines under our GDP certification.",
-  },
-];
-
-const timeline = [
-  { year: "2010", text: "Wind Eurotrans Kft. is founded in Dunakeszi on 23 July." },
-  { year: "2017", text: "First certified to ISO 9001 by DNV for domestic and international transport and forwarding." },
-  { year: "2025", text: "Certified for Good Distribution Practice of medicines (GDP) by URS." },
-];
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const about = t.about;
+const initials = site.founder
+  .split(" ")
+  .map((part) => part[0])
+  .join("");
 ---
 
-<Layout
-  locale={locale}
-  title="About us"
-  description="Wind Eurotrans Kft. is a road freight and forwarding company in Dunakeszi, Hungary, founded in 2010."
->
-  <PageHero
-    title="About us"
-    lead="A road freight company from Dunakeszi, founded in 2010 to make transport the part of your supply chain you don't have to worry about."
-  />
+<Layout title={about.title} description={about.description}>
+  <PageHero title={about.title} lead={about.lead} />
 
-  <!-- Story -->
   <div class="bg-frost">
-  <section class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] lg:items-center lg:gap-20">
-    <div class="max-w-xl">
-      <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">Why we started</h2>
-      <div class="mt-6 space-y-4 text-lg">
-        <p>
-          Chilled goods kept at the wrong temperature. Dangerous goods moved without the right paperwork. Drivers who
-          can't be relied on. Deliveries that arrive late or incomplete. In freight, these problems are common, and
-          they cost more than money: they cost the trust between business partners.
-        </p>
-        <p>
-          We founded Wind Eurotrans to be a carrier that doesn't cause them. Our aim is simple: for our customers,
-          transport should be a fixed point in their business, not a risk.
-        </p>
-        <p class="text-muted">
-          We believe reliable logistics comes down to expertise, responsibility and doing exactly what was agreed.
-        </p>
+    <section class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] lg:items-center lg:gap-20">
+      <div class="max-w-xl">
+        <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">{about.story.title}</h2>
+        <div class="mt-6 space-y-4 text-lg">
+          {about.story.paragraphs.map((p) => <p>{p}</p>)}
+          <p class="text-muted">{about.story.belief}</p>
+        </div>
       </div>
-    </div>
-    <img
-      src={photoSrc("fleet-angle")}
-      srcset={photoSrcset("fleet-angle")}
-      sizes="(min-width: 1024px) 40vw, 100vw"
-      alt="A row of orange Wind Eurotrans Scania trucks"
-      width="1600"
-      height="1200"
-      class="aspect-[4/3] w-full rounded-2xl object-cover"
-    />
-  </section>
+      <Picture
+        src={fleetAngle}
+        alt={about.story.imageAlt}
+        formats={["avif"]}
+        fallbackFormat="webp"
+        widths={[600, 900, 1200]}
+        sizes="(min-width: 1024px) 40vw, 100vw"
+        class="aspect-4/3 w-full rounded-2xl object-cover"
+      />
+    </section>
   </div>
 
-  <!-- Principles -->
   <section class="border-line border-y">
     <div class="wrap py-16 md:py-24">
-      <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">What you can expect from us</h2>
+      <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">{about.principles.title}</h2>
       <ul class="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
         {
-          principles.map((p) => (
+          about.principles.items.map((p) => (
             <li class="border-signal border-t-2 pt-6">
               <h3 class="text-xl">{p.title}</h3>
               <p class="text-muted mt-3">{p.text}</p>
@@ -94,61 +58,56 @@ const timeline = [
     </div>
   </section>
 
-  <!-- Timeline -->
   <div class="bg-frost">
-  <section class="wrap grid gap-10 py-16 md:py-24 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
-    <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">Since 2010</h2>
-    <ol class="border-line relative border-l-2 pl-8">
-      {
-        timeline.map((t) => (
-          <li class="relative pb-10 last:pb-0">
-            <span class="bg-signal ring-ice absolute top-1.5 -left-[2.4rem] size-3.5 rounded-full ring-4" aria-hidden="true" />
-            <p class="tnum text-2xl font-semibold">{t.year}</p>
-            <p class="text-muted mt-1 max-w-lg text-lg">{t.text}</p>
-          </li>
-        ))
-      }
-    </ol>
-  </section>
+    <section class="wrap grid gap-10 py-16 md:py-24 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
+      <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">{about.timeline.title}</h2>
+      <ol class="border-line relative border-l-2 pl-8">
+        {
+          about.timeline.items.map((item) => (
+            <li class="relative pb-10 last:pb-0">
+              <span
+                class="bg-signal ring-frost absolute top-1.5 -left-[2.4rem] size-3.5 rounded-full ring-4"
+                aria-hidden="true"
+              />
+              <p class="tnum text-2xl font-semibold">{item.year}</p>
+              <p class="text-muted mt-1 max-w-lg text-lg">{item.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
   </div>
 
-  <!-- People -->
   <section class="border-line border-t">
     <div class="wrap py-16 md:py-24">
-      <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">The people behind your loads</h2>
+      <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">{about.people.title}</h2>
       <div class="mt-12 grid gap-12 md:grid-cols-2 md:gap-14">
         <figure>
-          <div class="band-night flex aspect-[3/2] w-full items-center justify-center rounded-2xl">
-            <!-- Replace with a photo of the founder -->
-            <span class="text-blue-300 text-6xl font-semibold tracking-tight">SG</span>
+          <!-- Placeholder until there is a photo of the founder -->
+          <div class="band-night flex aspect-3/2 w-full items-center justify-center rounded-2xl" aria-hidden="true">
+            <span class="text-6xl font-semibold tracking-tight text-blue-300">{initials}</span>
           </div>
           <figcaption class="mt-5">
-            <p class="text-xl font-semibold">{site.founder.name}</p>
-            <p class="text-muted">{site.founder.role}</p>
-            <p class="mt-3 max-w-md">
-              Gergő founded the company in 2010 and still prices and plans loads with customers himself.
-            </p>
+            <p class="text-xl font-semibold">{site.founder}</p>
+            <p class="text-muted">{t.common.founderRole}</p>
+            <p class="mt-3 max-w-md">{about.people.founder}</p>
           </figcaption>
         </figure>
         <figure>
-          <img
-            src={asset("img/driver-612.webp")}
-            alt="Wind Eurotrans driver in front of his truck"
-            width="612"
-            height="408"
-            loading="lazy"
-            class="aspect-[3/2] w-full rounded-2xl object-cover"
+          <Picture
+            src={driver}
+            alt={about.people.driverAlt}
+            formats={["avif"]}
+            fallbackFormat="webp"
+            sizes="(min-width: 768px) 50vw, 100vw"
+            class="aspect-3/2 w-full rounded-2xl object-cover"
           />
           <figcaption class="mt-5">
-            <p class="text-xl font-semibold">Our drivers</p>
-            <p class="mt-3 max-w-md">
-              Experienced, trained for ADR and temperature-controlled loads, and in contact with dispatch for the
-              whole journey. They are the reason your load arrives the way it left.
-            </p>
+            <p class="text-xl font-semibold">{about.people.drivers}</p>
+            <p class="mt-3 max-w-md">{about.people.driversText}</p>
           </figcaption>
         </figure>
       </div>
     </div>
   </section>
-
 </Layout>

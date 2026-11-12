@@ -1,137 +1,48 @@
 ---
-import type { GetStaticPaths } from "astro";
-import { locales, type Locale } from "../../i18n/utils";
-
+import { render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
-import { site, fullAddress } from "../../data/site";
+import { site } from "../../data/site";
+import { format, getDictionary, getLocale, localeStaticPaths } from "../../i18n";
+import { getPage } from "../../i18n/content";
 
-export const getStaticPaths = (() => {
-  return locales.map((locale) => ({ params: { locale } }));
-}) satisfies GetStaticPaths;
+export const getStaticPaths = localeStaticPaths;
 
-const locale = Astro.params.locale as Locale;
-
-const toc = [
-  { id: "purpose", label: "Purpose of this notice" },
-  { id: "basis", label: "Legal framework" },
-  { id: "controller", label: "Data controller" },
-  { id: "processors", label: "Data processors" },
-  { id: "data", label: "Data we process" },
-  { id: "legal-basis", label: "Legal basis and retention" },
-  { id: "rights", label: "Your rights" },
-  { id: "updates", label: "Updates to this notice" },
-  { id: "contact", label: "How to contact us" },
-];
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const page = t.privacy;
+const { Content, headings } = await render(await getPage(locale, "privacy-policy"));
+const toc = headings.filter((h) => h.depth === 2);
 ---
 
-<Layout locale={locale} title="Privacy policy" description={`How ${site.legalName} processes personal data.`}>
-  <PageHero
-    title="Privacy policy"
-    lead={`How ${site.legalName} collects, uses and protects the personal data of its partners.`}
-  />
+<Layout title={page.title} description={format(page.description, { name: site.legalName })}>
+  <PageHero title={page.title} lead={format(page.lead, { name: site.legalName })} />
 
   <div class="bg-frost">
-  <div class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-20">
-    <nav aria-label="On this page" class="lg:sticky lg:top-28 lg:self-start">
-      <p class="mb-3 font-medium">On this page</p>
-      <ol class="border-line border-l-2 text-[0.9375rem]">
-        {
-          toc.map((t) => (
-            <li>
-              <a href={`#${t.id}`} class="toc-link text-muted hover:text-ink -ml-0.5 block border-l-2 border-transparent py-1 pl-4" data-toc={t.id}>
-                {t.label}
-              </a>
-            </li>
-          ))
-        }
-      </ol>
-    </nav>
+    <div class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-20">
+      <nav aria-labelledby="toc-title" class="lg:sticky lg:top-28 lg:self-start">
+        <h2 id="toc-title" class="mb-3 text-base font-medium tracking-normal">{page.toc}</h2>
+        <ol class="border-line border-l-2 text-[0.9375rem]">
+          {
+            toc.map((h) => (
+              <li>
+                <a
+                  href={`#${h.slug}`}
+                  class="toc-link text-muted hover:text-ink -ml-0.5 block border-l-2 border-transparent py-1 pl-4"
+                  data-toc={h.slug}
+                >
+                  {h.text}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
 
-    <article class="prose-page">
-      <h2 id="purpose">Purpose of this notice</h2>
-      <p>
-        This notice explains how {site.legalName}, as data controller, processes the personal data of its contracted
-        partners, and informs prospective partners about the same.
-      </p>
-
-      <h2 id="basis">Legal framework</h2>
-      <p>
-        We process personal data in line with Regulation (EU) 2016/679 of the European Parliament and of the Council
-        on the protection of natural persons with regard to the processing of personal data and on the free movement
-        of such data (GDPR), and Hungarian Act CXII of 2011 on the right to informational self-determination and on
-        freedom of information.
-      </p>
-
-      <h2 id="controller">Data controller</h2>
-      <ul>
-        <li>{site.legalName}</li>
-        <li>Registered office: {fullAddress}, {site.address.country}</li>
-        <li>Company registration number: {site.registrationNumber}</li>
-        <li>Email: <a href={`mailto:${site.email}`}>{site.email}</a></li>
-        <li>Represented by: {site.founder.name}, managing director</li>
-      </ul>
-      <p>
-        As data controller, {site.legalName} controls the personal data and decides the purposes and means of
-        processing it.
-      </p>
-
-      <h2 id="processors">Data processors</h2>
-      <p>
-        Personal data is processed by our own transport planners. In the course of its transport and forwarding work,
-        {site.legalName} receives, stores, keeps and passes on customer data.
-      </p>
-
-      <h2 id="data">Data we process</h2>
-      <ul>
-        <li>Name</li>
-        <li>Phone number</li>
-        <li>Email address</li>
-        <li>Address</li>
-      </ul>
-
-      <h2 id="legal-basis">Legal basis and retention</h2>
-      <p>
-        We process personal data only for a specific purpose: to carry out an order. After the order is completed,
-        the customer's data is kept in our email and forwarding software so we can stay in touch. We also keep the
-        data if a quote we sent was not accepted. If there is no contact or new agreement within one year, we ask our
-        partner's consent to keep the data for one more year.
-      </p>
-      <p>
-        {site.legalName} has a legitimate interest in keeping the personal data of its partners' contact persons for
-        staying in contact and for direct business development. Partners may object to this processing at any time,
-        in which case we stop processing their personal data.
-      </p>
-      <p>
-        Every employee is responsible for making sure that unauthorised people cannot see personal data during their
-        work, and that data is stored so that unauthorised people cannot access, read, change or destroy it.
-      </p>
-      <p>
-        We do not pass on stored personal data to any third person or company without the consent of the person
-        concerned, either while carrying out an order or afterwards.
-      </p>
-      <p>We protect the data in our systems with the highest level of technical security available to us.</p>
-
-      <h2 id="rights">Your rights</h2>
-      <p>
-        You have the right to access, correct and delete your personal data, to restrict its processing, to data
-        portability, to withdraw your consent and to seek legal remedy. We are ready to inform you about how we
-        process your data at any time, and to act so you can exercise these rights.
-      </p>
-
-      <h2 id="updates">Updates to this notice</h2>
-      <p>
-        We may update this notice when the law or the way we work changes. The current version is always published
-        on this page.
-      </p>
-
-      <h2 id="contact">How to contact us</h2>
-      <p>
-        For any question about your personal data, email <a href={`mailto:${site.email}`}>{site.email}</a> or write
-        to {site.legalName}, {fullAddress}, {site.address.country}.
-      </p>
-    </article>
-  </div>
+      <article class="prose-page">
+        <Content />
+      </article>
+    </div>
   </div>
 </Layout>
 
@@ -149,7 +60,7 @@ const toc = [
 </style>
 
 <script>
-  // Scrollspy: highlight the section whose heading last passed the upper part of the screen
+  // Highlight the section whose heading last passed the upper third of the screen
   const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-toc]")];
   const headings = links.map((a) => document.getElementById(a.dataset.toc!)!);
   let ticking = false;
@@ -161,7 +72,7 @@ const toc = [
     headings.forEach((h, i) => {
       if (h.getBoundingClientRect().top <= line) current = i;
     });
-    // At the very bottom the last sections can't reach the line, so pick the last one
+    // At the very bottom the last headings can't reach the line
     if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) current = headings.length - 1;
     links.forEach((a, i) => {
       a.classList.toggle("is-active", i === current);

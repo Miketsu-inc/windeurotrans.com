@@ -1,8 +1,4 @@
 ---
-/*
-  Masthead shared by every subpage: a night band under the white header,
-  with the page title and an optional intro and actions.
-*/
 interface Props {
   title: string;
   lead?: string;
@@ -13,12 +9,7 @@ const { title, lead } = Astro.props;
 
 <section class="band-night">
   <div class="wrap pt-12 pb-14 md:pt-16 md:pb-20">
-    <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-      <div class="max-w-3xl">
-        <h1 class="text-[2.5rem] leading-[1.05] md:text-[3.5rem]">{title}</h1>
-        {lead && <p class="text-blue-200 mt-5 max-w-2xl text-lg md:text-xl md:leading-relaxed">{lead}</p>}
-      </div>
-      <slot />
-    </div>
+    <h1 class="max-w-3xl text-[2.5rem] leading-[1.05] md:text-[3.5rem]">{title}</h1>
+    {lead && <p class="mt-5 max-w-2xl text-lg text-blue-200 md:text-xl md:leading-relaxed">{lead}</p>}
   </div>
 </section>

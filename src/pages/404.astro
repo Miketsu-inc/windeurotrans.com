@@ -1,27 +1,26 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { pageUrl } from "../data/site";
+import { getDictionary, getLocale, localizedPath } from "../i18n";
 
-const locale = "en";
+const locale = getLocale(Astro);
+const t = getDictionary(locale).notFound;
 
-// Truck in side view, facing right: white refrigerated trailer behind an orange cab (local units, front at x 353)
+// Truck in side view, facing right: a white refrigerated trailer behind an orange cab
 const trailerWheels = [30, 64, 98];
 const cabWheels = [236, 302];
 const panels = Array.from({ length: 9 }, (_, i) => 26 + i * 25);
 ---
 
-<Layout locale={locale} title="Page not found">
+<Layout title={t.title} noindex>
   <section class="bg-frost overflow-hidden">
     <div class="wrap grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
       <div>
-        <p class="text-muted text-lg">Error 404</p>
-        <h1 class="mt-3 text-[2.5rem] leading-[1.05] md:text-[3.5rem]">This road doesn't go anywhere.</h1>
-        <p class="text-muted mt-5 max-w-md text-lg">
-          The page may have moved, or the address has a typo. Start again from the home page, or call or email us.
-        </p>
+        <p class="text-muted text-lg">{t.eyebrow}</p>
+        <h1 class="mt-3 text-[2.5rem] leading-[1.05] md:text-[3.5rem]">{t.heading}</h1>
+        <p class="text-muted mt-5 max-w-md text-lg">{t.text}</p>
         <div class="mt-8 flex flex-wrap gap-3">
-          <a href={pageUrl(locale)} class="btn btn-signal">Go to the home page</a>
-          <a href={pageUrl(locale, "contact")} class="btn btn-outline">Contact us</a>
+          <a href={localizedPath(locale)} class="btn btn-signal">{t.home}</a>
+          <a href={localizedPath(locale, "contact")} class="btn btn-outline">{t.contact}</a>
         </div>
       </div>
 
@@ -59,10 +58,7 @@ const panels = Array.from({ length: 9 }, (_, i) => 26 + i * 25);
           <rect x="222" y="208" width="124" height="8" class="dead-end__dark" />
           <rect x="254" y="212" width="26" height="12" rx="3" class="dead-end__tank" />
 
-          <!--
-            Cab, drawn from a Scania side view: an upright box with a rounded roof deflector rising to the back,
-            the big door window at the front, a small sleeper window behind it, the front wheel under the middle
-          -->
+          <!-- Cab, after a Scania side view: upright box, roof deflector, big door window -->
           <path d="M258 214V111H340Q346 111 346 117V206Q346 214 338 214Z" fill="#fd4a01" />
           <path d="M262 111V96Q262 92 266 92H300Q323 93 336 111Z" fill="#fd4a01" />
           <path d="M262 111H337" class="dead-end__seam-dark" />

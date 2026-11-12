@@ -1,37 +1,26 @@
-@import url("https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..800;1,400..600&display=swap");
+@import "@fontsource-variable/schibsted-grotesk";
 @import "tailwindcss";
 
 @theme {
-  /* Schibsted Grotesk: drawn for a Scandinavian news group. Firm and editorial, and it holds up at small sizes. */
-  --font-sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
 
-  /* Brand: Wind blue (#003A91) and the orange used in the logo files, with tints and shades for the UI */
   --color-blue-950: #002461;
   --color-blue-900: #003a91;
-  --color-blue-700: #1d55ad;
   --color-blue-300: #a3bbe3;
   --color-blue-200: #c9d8f0;
+  /* Orange buttons carry dark text: white on this orange fails contrast */
   --color-signal: #fd4a01;
-  /* Lighter orange for button hover: keeps dark text readable */
   --color-signal-400: #ff6d2a;
-  /* Darker orange for orange text on light surfaces (passes AA) */
-  --color-signal-700: #c24100;
-
-  /* Supporting blues: night for the deep bands and footer, cobalt for glows, sky for a light highlight band */
   --color-night: #071735;
-  --color-cobalt: #1f5fc7;
   --color-sky: #dce8f8;
 
-  /* Surfaces and text */
-  --color-frost: #ffffff; /* light sections, header, cards */
-  --color-ice: #eef3fb; /* page background and alternate sections */
-  --color-ink: #0a1a36; /* text */
-  --color-muted: #475a7a; /* secondary text */
-  --color-line: #d6e0ee; /* rules and borders */
-  --color-line-strong: #aebbcf; /* hovered borders, link underlines */
+  --color-frost: #ffffff;
+  --color-ice: #eef3fb;
+  --color-ink: #0a1a36;
+  --color-muted: #475a7a;
+  --color-line: #d6e0ee;
+  --color-line-strong: #aebbcf;
 
-  /* Depth: shadows tinted with the brand blue rather than grey */
   --shadow-card: 0 1px 2px rgb(0 36 97 / 0.05), 0 12px 28px -14px rgb(0 36 97 / 0.22);
   --shadow-lift: 0 2px 4px rgb(0 36 97 / 0.06), 0 24px 44px -18px rgb(0 36 97 / 0.34);
 
@@ -46,7 +35,6 @@
   }
 
   body {
-    font-family: var(--font-sans);
     font-size: var(--text-body);
     line-height: var(--text-body--line-height);
     color: var(--color-ink);
@@ -56,7 +44,6 @@
   h1,
   h2,
   h3 {
-    font-family: var(--font-display);
     font-weight: 650;
     letter-spacing: -0.02em;
     text-wrap: balance;
@@ -91,7 +78,6 @@
     }
   }
 
-  /* Buttons. Orange buttons carry dark text: white on this orange fails contrast. */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -117,20 +103,6 @@
   .btn-signal:hover {
     background: var(--color-signal-400);
   }
-  .btn-blue {
-    background: var(--color-blue-900);
-    color: #fff;
-  }
-  .btn-blue:hover {
-    background: var(--color-blue-700);
-  }
-  .btn-outline-light {
-    border: 1.5px solid rgb(255 255 255 / 0.45);
-    color: #fff;
-  }
-  .btn-outline-light:hover {
-    border-color: rgb(255 255 255 / 0.75);
-  }
   .btn-outline {
     border: 1.5px solid var(--color-line);
     color: var(--color-ink);
@@ -140,14 +112,17 @@
   .btn-outline:hover {
     border-color: var(--color-line-strong);
   }
+  .btn-outline-light {
+    border: 1.5px solid rgb(255 255 255 / 0.45);
+    color: #fff;
+  }
+  .btn-outline-light:hover {
+    border-color: rgb(255 255 255 / 0.75);
+  }
 
-  /*
-    Text links: ink text on a grey underline, so they read as links without a second colour.
-    The underline turns orange on hover.
-  */
+  /* Text links: a grey underline that turns orange on hover */
   .link,
   .prose-page a {
-    color: inherit;
     font-weight: 600;
     text-decoration: underline;
     text-decoration-color: var(--color-line-strong);
@@ -155,23 +130,11 @@
     text-underline-offset: 0.3em;
     transition: text-decoration-color 0.15s ease;
   }
-  .link {
-    color: var(--color-ink);
-  }
   .link:hover,
   .prose-page a:hover {
     text-decoration-color: var(--color-signal);
   }
-  /* On the night and blue bands */
-  .link-light {
-    color: #fff;
-    text-decoration-color: rgb(255 255 255 / 0.4);
-  }
 
-  /*
-    Night band: the deep blue sections (page headers, trust points, certificates).
-    Wind blue fading into night, with a cobalt glow from the top right.
-  */
   .band-night {
     background:
       radial-gradient(70% 130% at 88% 0%, rgb(31 95 199 / 0.5), transparent 60%),
@@ -179,7 +142,6 @@
     color: #fff;
   }
 
-  /* Cards: white panels that sit on a soft blue shadow and lift a little when they are links */
   .card {
     background: #fff;
     border: 1px solid rgb(214 224 238 / 0.8);
@@ -190,17 +152,13 @@
       box-shadow 0.2s ease,
       border-color 0.2s ease;
   }
-  a.card:hover,
-  .card-link:hover {
+  a.card:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-lift);
     border-color: var(--color-blue-200);
   }
 
-  /*
-    Sign panel: blue panel with an inset white rule,
-    the way European motorway direction signs are drawn.
-  */
+  /* A blue panel with an inset white rule, drawn like a European motorway sign */
   .sign-panel {
     position: relative;
     background:
@@ -219,7 +177,6 @@
     pointer-events: none;
   }
 
-  /* Long-form text (privacy policy, service details) */
   .prose-page {
     max-width: 42rem;
   }

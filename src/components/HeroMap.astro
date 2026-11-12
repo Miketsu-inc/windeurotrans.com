@@ -1,8 +1,7 @@
 ---
 /*
-  Hero graphic: a dot-grid map of Europe with the motorway corridors we drive
-  from our Dunakeszi hub. The map fades out in a circle so it sits in the
-  background; on desktop, hovering a destination brightens its road.
+  A dot-grid map of Europe with the motorway corridors we drive from Dunakeszi.
+  On desktop, hovering a destination highlights its road.
 */
 import { mapSize, hub, landDots, hungaryDots, borders, hungaryOutline, network, routes } from "../data/europe-map";
 
@@ -38,7 +37,8 @@ const list = Object.values(routes).map((r) => {
 <div class="hero-map" data-hero-map>
   <svg viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} class="block h-auto w-full overflow-visible" aria-hidden="true">
     <defs>
-      <!-- The edges fade out along each side rather than in a circle: a horizontal fade multiplied by a vertical one -->
+      <path id="hm-land" d={landDots} />
+      <!-- Edge fade: a horizontal gradient masked by a vertical one -->
       <linearGradient id="hm-fade-x">
         <stop offset="0" stop-color="#000" />
         <stop offset="0.05" stop-color="#3a3a3a" />
@@ -71,8 +71,8 @@ const list = Object.values(routes).map((r) => {
     </defs>
 
     <g mask="url(#hm-edge)">
-      <path d={landDots} class="hero-map__land" />
-      <path d={landDots} class="hero-map__land hero-map__land--lit" mask="url(#hm-spotlight)" />
+      <use href="#hm-land" class="hero-map__land" />
+      <use href="#hm-land" class="hero-map__land hero-map__land--lit" mask="url(#hm-spotlight)" />
       <path d={borders} class="hero-map__borders" />
     </g>
     <path d={hungaryOutline} class="hero-map__hu-outline" />
@@ -101,11 +101,9 @@ const list = Object.values(routes).map((r) => {
 </div>
 
 <style>
-  /* Roads and destinations in neutral greys; orange is kept for Hungary, the hub, the trucks and a hovered stop */
   .hero-map {
     --map-ink: #2b3548;
     --map-grey: #6b778c;
-    /* It's a picture: no text selection on the city names when clicking or dragging over it */
     user-select: none;
     -webkit-user-select: none;
   }
@@ -138,7 +136,6 @@ const list = Object.values(routes).map((r) => {
     stroke-linejoin: round;
   }
 
-  /* Roads */
   .hero-map__network,
   .hero-map__road,
   .hero-map__truck {
@@ -199,7 +196,6 @@ const list = Object.values(routes).map((r) => {
     fill: transparent;
   }
 
-  /* Hover: the chosen road brightens a little, the rest of the network steps back a little */
   .hero-map.has-active .hero-map__network {
     stroke-opacity: 0.2;
   }
@@ -213,8 +209,6 @@ const list = Object.values(routes).map((r) => {
     fill-opacity: 1;
   }
 
-  /* Hub */
-  /* The hub: orange like the trucks that leave it, with a white ring to lift it off Hungary's dots */
   .hero-map__hub {
     fill: var(--color-signal);
     stroke: #fff;
@@ -244,7 +238,7 @@ const list = Object.values(routes).map((r) => {
     }
   }
 
-  /* Below desktop the map sits behind the headline as a backdrop, so it carries no names */
+  /* Below desktop the map is a backdrop behind the headline */
   @media (max-width: 1023px) {
     .hero-map__name,
     .hero-map__hub-label {

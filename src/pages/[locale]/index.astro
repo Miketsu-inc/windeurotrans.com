@@ -1,90 +1,63 @@
 ---
-import type { GetStaticPaths } from "astro";
-import { locales, type Locale } from "../../i18n/utils";
-
+import { Picture } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import Icon from "../../components/Icon.astro";
 import HeroMap from "../../components/HeroMap.astro";
 import ServiceScroller from "../../components/ServiceScroller.astro";
 import WhyUs from "../../components/WhyUs.astro";
 import OfficeMap from "../../components/OfficeMap.astro";
-import { site, asset, pageUrl, emailParts } from "../../data/site";
+import driver from "../../assets/driver.webp";
+import { site, emailParts } from "../../data/site";
+import { getDictionary, getLocale, localeStaticPaths, localizedPath } from "../../i18n";
 
-export const getStaticPaths = (() => {
-  return locales.map((locale) => ({ params: { locale } }));
-}) satisfies GetStaticPaths;
+export const getStaticPaths = localeStaticPaths;
 
-const locale = Astro.params.locale as Locale;
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const home = t.home;
 
-// Key facts under the hero. The qualities (certificates, dispatch and so on) have their own section further down.
 const facts = [
-  { icon: "road", title: "On the road since 2010", text: "Based in Dunakeszi, next to Budapest" },
-  { icon: "thermometer", title: "−25 °C to +30 °C", text: "Any temperature your load needs" },
-  { icon: "globe", title: "Across Europe", text: "Door to door, from Hungary" },
-  { icon: "layers", title: "Five services, one team", text: "Transport, cold chain, medicines, ADR, customs" },
+  { icon: "road", ...home.facts.since },
+  { icon: "thermometer", ...home.facts.temperature },
+  { icon: "globe", ...home.facts.europe },
+  { icon: "layers", ...home.facts.services },
 ] as const;
-
-const faqs = [
-  {
-    q: "Do you take part loads, or only full trucks?",
-    a: "Both. A full truckload goes straight from pickup to delivery. A part load shares the trailer with other loads going the same way, so it costs less and takes a little longer.",
-  },
-  {
-    q: "What is the smallest and largest load you carry?",
-    a: "Anything from 1 kg up to 24 tonnes.",
-  },
-  {
-    q: "Which countries do you deliver to?",
-    a: "We drive in Hungary and across Europe. Tell us the pickup and delivery address and we confirm the route and transit time with the price.",
-  },
-  {
-    q: "Can you carry medicines at +2 °C to +8 °C?",
-    a: "Yes. We are GDP certified for road transport of medicinal products, and we carry them at +2 °C to +8 °C or +15 °C to +25 °C with a temperature record for every load.",
-  },
-  {
-    q: "Do you handle customs?",
-    a: "Yes. We handle export and import customs clearance, so the truck and the documents are ready at the same time.",
-  },
-  {
-    q: "What happens if something goes wrong on the road?",
-    a: "Our dispatch team works around the clock. If a delay or a problem comes up, we call you straight away with the facts and the fix, so you never have to chase us for news.",
-  },
-];
 ---
 
-<Layout locale={locale}>
-  <!-- Hero: on white, so it runs on from the header. Headline beside an animated route map; below desktop the map fills the top and the text and buttons sit together at the bottom. -->
+<Layout>
   <section class="bg-frost overflow-hidden bg-[radial-gradient(50%_60%_at_78%_48%,#e3edfb_0%,transparent_75%)]">
-    <div class="wrap relative flex min-h-[calc(85svh-4rem)] flex-col justify-end gap-8 pt-16 pb-10 md:pb-14 lg:grid lg:min-h-0 lg:gap-y-0 lg:pt-10 lg:pb-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[1fr_auto_auto_1fr] lg:gap-x-6">
+    <div
+      class="wrap relative flex min-h-[calc(85svh-4rem)] flex-col justify-end gap-8 pt-16 pb-10 md:pb-14 lg:grid lg:min-h-0 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[1fr_auto_auto_1fr] lg:gap-x-6 lg:gap-y-0 lg:pt-10 lg:pb-10"
+    >
       <div class="relative z-10 lg:col-start-1 lg:row-start-2">
-        <h1 class="text-[2.75rem] leading-[1] font-bold tracking-[-0.035em] sm:text-[4rem] xl:text-[4.75rem]">
-          Reliability you can count on.
+        <h1 class="text-[2.75rem] leading-none font-bold tracking-[-0.035em] sm:text-[4rem] xl:text-[4.75rem]">
+          {home.hero.title}
         </h1>
-        <p class="text-muted mt-6 max-w-lg text-lg md:text-xl md:leading-relaxed">
-          Refrigerated, pharmaceutical and dangerous goods by road, from Hungary to anywhere in Europe. At the
-          temperature and on the day we agreed with you.
-        </p>
+        <p class="text-muted mt-6 max-w-lg text-lg md:text-xl md:leading-relaxed">{home.hero.text}</p>
       </div>
-      <div class="pointer-events-none absolute top-[32%] left-1/2 w-[min(40rem,125%)] -translate-x-1/2 md:w-[min(54rem,115%)] -translate-y-1/2 opacity-60 lg:pointer-events-auto lg:static lg:mx-auto lg:w-full lg:translate-x-0 lg:translate-y-0 lg:opacity-100 lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:-my-6 lg:-ml-16 lg:max-w-none xl:w-[calc(100%+5.5rem)]">
+      <!-- Below desktop the map sits behind the text; on desktop it fills the right column and runs past it -->
+      <div
+        class="pointer-events-none absolute top-[32%] left-1/2 w-[min(40rem,125%)] -translate-1/2 opacity-60 md:w-[min(54rem,115%)] lg:pointer-events-auto lg:static lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:-my-6 lg:-ml-16 lg:w-full lg:max-w-none lg:translate-0 lg:opacity-100 xl:w-[calc(100%+5.5rem)]"
+      >
         <HeroMap />
       </div>
       <div class="relative z-10 flex gap-3 *:flex-1 sm:*:flex-none lg:col-start-1 lg:row-start-3 lg:mt-8">
-        <a href={pageUrl(locale, "contact")} class="btn btn-signal">Get in touch</a>
-        <a href={pageUrl(locale, "services")} class="btn btn-outline">Our services</a>
+        <a href={localizedPath(locale, "contact")} class="btn btn-signal">{home.hero.contact}</a>
+        <a href={localizedPath(locale, "services")} class="btn btn-outline">{home.hero.services}</a>
       </div>
     </div>
   </section>
 
-  <!-- Key facts: the blue band that follows the white hero. On phones the first two only, titles only: the hero and "What we move" already cover the other two. -->
-  <section aria-label="Key facts" class="band-night">
+  <!-- On phones only the first two facts show, without their descriptions -->
+  <section aria-label={home.facts.label} class="band-night">
     <ul class="wrap grid grid-cols-2 gap-x-5 gap-y-7 py-9 sm:gap-x-8 sm:gap-y-8 sm:py-12 md:py-16 lg:grid-cols-4">
       {
         facts.map((f) => (
-          <li class="flex flex-col gap-2 border-white/20 even:border-l-2 [&:nth-child(n+3)]:hidden sm:[&:nth-child(n+3)]:flex even:pl-5 sm:flex-row sm:gap-4 lg:[&:not(:first-child)]:border-l-2 lg:[&:not(:first-child)]:pl-5">
+          <li class="flex flex-col gap-2 border-white/20 even:border-l-2 even:pl-5 nth-[n+3]:hidden sm:flex-row sm:gap-4 sm:nth-[n+3]:flex lg:not-first:border-l-2 lg:not-first:pl-5">
             <Icon name={f.icon} class="text-signal mt-0.5 size-6 shrink-0" />
             <div>
               <p class="leading-snug font-semibold">{f.title}</p>
-              <p class="text-blue-200 mt-0.5 hidden text-[0.9375rem] leading-snug sm:block">{f.text}</p>
+              <p class="mt-0.5 hidden text-[0.9375rem] leading-snug text-blue-200 sm:block">{f.text}</p>
             </div>
           </li>
         ))
@@ -93,115 +66,105 @@ const faqs = [
   </section>
 
   <div class="bg-frost">
-    <ServiceScroller locale={locale} />
+    <ServiceScroller />
   </div>
 
-  <WhyUs locale={locale} />
+  <WhyUs />
 
-  <!-- Promise -->
   <section class="bg-frost">
     <div class="wrap grid gap-12 py-20 md:py-28 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-center lg:gap-20">
       <div>
-        <p class="text-muted max-w-xl text-lg">
-          Spoiled chilled loads, careless ADR transport, drivers who don't show up, deliveries that arrive a day
-          late. In freight, these are everyday problems. We started Wind Eurotrans in 2010 to be the company where
-          they don't happen.
-        </p>
-        <blockquote class="mt-10">
-          <p class="text-[1.75rem] leading-[1.25] font-medium tracking-[-0.015em] md:text-[2.25rem]">
-            “We don't accept a job that would put the agreed delivery date at risk. The transit times we agree with
-            you are the ones we keep.”
-          </p>
-          <footer class="mt-8 flex items-center gap-4">
+        <p class="text-muted max-w-xl text-lg">{home.promise.text}</p>
+        <figure class="mt-10">
+          <blockquote>
+            <p class="text-[1.75rem] leading-tight font-medium tracking-[-0.015em] md:text-[2.25rem]">
+              “{home.promise.quote}”
+            </p>
+          </blockquote>
+          <figcaption class="mt-8 flex items-center gap-4">
             <span class="bg-signal block h-10 w-1 rounded-full" aria-hidden="true"></span>
             <span>
-              <span class="block font-semibold">{site.founder.name}</span>
-              <span class="text-muted block text-[0.9375rem]">{site.founder.role}</span>
+              <span class="block font-semibold">{site.founder}</span>
+              <span class="text-muted block text-[0.9375rem]">{t.common.founderRole}</span>
             </span>
-          </footer>
-        </blockquote>
-        <a href={pageUrl(locale, "about")} class="link mt-10 inline-block">More about us</a>
+          </figcaption>
+        </figure>
+        <a href={localizedPath(locale, "about")} class="link mt-10 inline-block">{home.promise.more}</a>
       </div>
-      <img
-        src={asset("img/driver-612.webp")}
-        alt="Wind Eurotrans driver standing in front of his truck"
-        width="612"
-        height="408"
-        loading="lazy"
-        class="aspect-[4/5] w-full rounded-2xl object-cover object-[35%_center]"
+      <Picture
+        src={driver}
+        alt={home.promise.imageAlt}
+        formats={["avif"]}
+        fallbackFormat="webp"
+        sizes="(min-width: 1024px) 40vw, 100vw"
+        class="aspect-4/5 w-full rounded-2xl object-cover object-[35%_center]"
       />
     </div>
   </section>
 
-  <!-- FAQ: a night band, so the page keeps alternating white and blue down to the contact section -->
   <section class="band-night">
     <div class="wrap grid gap-10 py-20 md:py-28 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
-    <div>
-      <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Questions shippers ask us</h2>
-      <p class="mt-4 max-w-sm text-lg text-blue-200">
-        Short answers to what we get asked most. For anything else, our details are just below.
-      </p>
-    </div>
-    <div>
-      {
-        faqs.map((f) => (
-          <details class="faq border-b border-white/15 last:border-b-0" data-faq>
-            <summary class="flex cursor-pointer list-none items-start justify-between gap-6 py-6 text-lg font-medium">
-              {f.q}
-              <Icon name="chevron" class="faq__chevron mt-1 size-5 shrink-0" />
-            </summary>
-            <div class="faq__answer">
-              <p class="max-w-2xl pb-7 text-blue-200">{f.a}</p>
-            </div>
-          </details>
-        ))
-      }
-    </div>
+      <div>
+        <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">{home.faq.title}</h2>
+        <p class="mt-4 max-w-sm text-lg text-blue-200">{home.faq.text}</p>
+      </div>
+      <div>
+        {
+          home.faq.items.map((f) => (
+            <details class="faq border-b border-white/15 last:border-b-0" data-faq>
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-6 py-6 text-lg font-medium">
+                {f.q}
+                <Icon name="chevron" class="faq__chevron mt-1 size-5 shrink-0" />
+              </summary>
+              <div class="faq__answer">
+                <p class="max-w-2xl pb-7 text-blue-200">{f.a}</p>
+              </div>
+            </details>
+          ))
+        }
+      </div>
     </div>
   </section>
 
-  <!-- Contact: one panel in two halves, talking to us on white and the office over a crop of the hero map -->
   <section class="bg-frost" aria-labelledby="contact-title">
     <div class="wrap grid gap-10 py-20 md:py-28 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
       <div>
-        <h2 id="contact-title" class="text-[2rem] leading-tight md:text-[2.75rem]">Get in touch</h2>
-        <p class="text-muted mt-4 max-w-sm text-lg">
-          Call or email us with your load. You get a price and a transit time, usually within one working day.
-        </p>
+        <h2 id="contact-title" class="text-[2rem] leading-tight md:text-[2.75rem]">{home.contact.title}</h2>
+        <p class="text-muted mt-4 max-w-sm text-lg">{home.contact.text}</p>
       </div>
 
       <div class="border-line grid overflow-hidden rounded-xl border sm:grid-cols-2">
         <div class="bg-frost p-7 md:p-9">
-          <h3 class="text-xl">Talk to us</h3>
+          <h3 class="text-xl">{home.contact.talk}</h3>
           <dl class="mt-8 space-y-7">
             <div>
-              <dt class="text-muted text-[0.9375rem]">Phone</dt>
-              <dd class="mt-1 text-[1.0625rem] font-semibold">
-                <a href={site.phoneHref} class="contact-link tnum">{site.phone}</a>
+              <dt class="text-muted text-[0.9375rem]">{t.common.phone}</dt>
+              <dd class="mt-1 text-[1.0625rem]">
+                <a href={site.phoneHref} class="link tnum">{site.phone}</a>
               </dd>
             </div>
             <div>
-              <dt class="text-muted text-[0.9375rem]">Email</dt>
-              <dd class="mt-1 text-[1.0625rem] font-semibold">
-                <a href={`mailto:${site.email}`} class="contact-link">{emailParts[0]}<wbr />{emailParts[1]}</a>
+              <dt class="text-muted text-[0.9375rem]">{t.common.email}</dt>
+              <dd class="mt-1 text-[1.0625rem]">
+                <a href={site.emailHref} class="link">{emailParts[0]}<wbr />{emailParts[1]}</a>
               </dd>
             </div>
             <div>
-              <dt class="text-muted text-[0.9375rem]">Business hours</dt>
-              <dd class="mt-1 text-[1.0625rem] font-semibold">Monday to Friday, 8:00–17:00</dd>
+              <dt class="text-muted text-[0.9375rem]">{t.common.businessHours}</dt>
+              <dd class="mt-1 text-[1.0625rem] font-semibold">{t.common.hours}</dd>
             </div>
           </dl>
         </div>
 
-        <div class="bg-ice border-line relative flex min-h-[22rem] flex-col justify-end border-t p-7 sm:border-t-0 sm:border-l md:p-9">
+        <div class="bg-ice border-line relative flex min-h-88 flex-col justify-end border-t p-7 sm:border-t-0 sm:border-l md:p-9">
           <OfficeMap class="contact-map absolute inset-0 h-full w-full" />
           <div class="relative">
-            <h3 class="text-xl">Visit us</h3>
+            <h3 class="text-xl">{home.contact.visit}</h3>
             <p class="mt-3 text-[1.0625rem]">
-              {site.address.street}<br />{site.address.postcode} {site.address.city}, {site.address.country}
+              {site.address.street}<br />{site.address.postcode} {site.address.city}, {t.common.country}
             </p>
             <a href={site.mapsLink} class="link mt-4 inline-block text-[0.9375rem]" target="_blank" rel="noopener">
-              Get directions
+              {t.common.getDirections}<span class="sr-only"> {t.meta.newTab}</span>
             </a>
           </div>
         </div>
@@ -211,18 +174,7 @@ const faqs = [
 </Layout>
 
 <style>
-  /* Phone and email: a grey underline that turns orange on hover, like the site's other links */
-  .contact-link {
-    text-decoration: underline;
-    text-decoration-color: var(--color-line-strong);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.3em;
-    transition: text-decoration-color 0.15s ease;
-  }
-  .contact-link:hover {
-    text-decoration-color: var(--color-signal);
-  }
-  /* The office map fades out before the address so the text sits on plain ground */
+  /* The office map fades out before the address */
   :global(.contact-map) {
     mask-image: linear-gradient(to bottom, #000 35%, transparent 70%);
   }
@@ -244,7 +196,7 @@ const faqs = [
 </style>
 
 <script>
-  // Open and close the answers with a height animation instead of a jump
+  // Animate the answers' height on open and close
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   document.querySelectorAll<HTMLDetailsElement>("[data-faq]").forEach((faq) => {

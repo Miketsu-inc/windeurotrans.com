@@ -1,33 +1,28 @@
 ---
-/* Homepage services: the list scrolls on the right while the intro stays put on the left. */
-import { services } from "../data/services";
-import { pageUrl } from "../data/site";
+import { getDictionary, getLocale, localizedPath } from "../i18n";
+import { getServices } from "../i18n/content";
 
-interface Props {
-  locale: string;
-}
-
-const { locale } = Astro.props;
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const services = await getServices(locale);
 ---
 
 <section class="wrap grid gap-8 py-20 md:py-28 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
   <div class="lg:sticky lg:top-28 lg:self-start">
-    <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">What we move</h2>
-    <p class="text-muted mt-4 max-w-sm text-lg">
-      Five services, one team. Most loads combine two or three of them, and you deal with us for all of it.
-    </p>
-    <a href={pageUrl(locale, "services")} class="link mt-6 inline-block">See all services</a>
+    <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">{t.home.services.title}</h2>
+    <p class="text-muted mt-4 max-w-sm text-lg">{t.home.services.text}</p>
+    <a href={localizedPath(locale, "services")} class="link mt-6 inline-block">{t.home.services.all}</a>
   </div>
 
   <ul>
     {
       services.map((s) => (
         <li class="border-line border-b last:border-b-0 [&:first-child>a]:pt-1 [&:last-child>a]:pb-0">
-          <a href={pageUrl(locale, `services/${s.slug}`)} class="group block py-7 md:py-8">
+          <a href={localizedPath(locale, `services/${s.slug}`)} class="group block py-7 md:py-8">
             <h3 class="decoration-signal text-xl leading-snug decoration-2 underline-offset-4 group-hover:underline md:text-[1.3125rem]">
-              {s.name}
+              {s.data.name}
             </h3>
-            <p class="text-muted mt-2 max-w-xl">{s.short}</p>
+            <p class="text-muted mt-2 max-w-xl">{s.data.short}</p>
           </a>
         </li>
       ))

@@ -1,44 +1,30 @@
 ---
-import type { GetStaticPaths } from "astro";
-import { locales, type Locale } from "../../i18n/utils";
-
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
 import Icon from "../../components/Icon.astro";
-import { site, fullAddress, enquiryChecklist, emailParts, mailto } from "../../data/site";
+import { site, fullAddress, emailParts } from "../../data/site";
+import { format, getDictionary, getLocale, localeStaticPaths } from "../../i18n";
 
-export const getStaticPaths = (() => {
-  return locales.map((locale) => ({ params: { locale } }));
-}) satisfies GetStaticPaths;
+export const getStaticPaths = localeStaticPaths;
 
-const locale = Astro.params.locale as Locale;
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const page = t.contact;
 ---
 
-<Layout
-  locale={locale}
-  title="Contact us"
-  description={`Call ${site.phone} or email ${site.email} for a price and transit time from Wind Eurotrans, usually within one working day.`}
->
-  <PageHero
-    title="Contact us"
-    lead="Call or email us with your load. We reply with a price and a transit time, usually within one working day."
-  />
+<Layout title={page.title} description={format(page.description, { phone: site.phone, email: site.email })}>
+  <PageHero title={page.title} lead={page.lead} />
 
-  <!-- What to have ready, shown as a filled-in example rather than a checklist -->
-  <section class="bg-frost">
-    <!-- What to have ready -->
-    <div class="wrap grid items-start gap-8 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
+  <div class="bg-frost">
+    <section class="wrap grid items-start gap-8 py-16 md:py-24 lg:grid-cols-2 lg:gap-16" aria-labelledby="need-title">
       <div>
-        <h2 class="text-2xl md:text-[2rem]">What we need to price your load</h2>
-        <p class="text-muted mt-4 max-w-lg text-lg">
-          Have these ready when you call, or put them in your email, so we can price your load without going back and
-          forth.
-        </p>
+        <h2 id="need-title" class="text-2xl md:text-[2rem]">{page.need.title}</h2>
+        <p class="text-muted mt-4 max-w-lg text-lg">{page.need.text}</p>
       </div>
       <div>
         <ul class="space-y-3.5 text-lg">
           {
-            enquiryChecklist.map((item) => (
+            page.need.items.map((item) => (
               <li class="flex gap-3">
                 <Icon name="check" class="text-signal mt-1 size-5 shrink-0" />
                 {item}
@@ -46,63 +32,60 @@ const locale = Astro.params.locale as Locale;
             ))
           }
         </ul>
-        <p class="text-muted mt-6">Shipping dangerous goods? Add the UN number, the class and the packing group.</p>
+        <p class="text-muted mt-6">{page.need.dangerous}</p>
       </div>
-    </div>
+    </section>
 
-    <!-- How to reach us: the details on the left, the map beside them -->
-    <div class="wrap grid gap-10 pb-16 md:pb-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
+    <section class="wrap grid gap-10 pb-16 md:pb-24 lg:grid-cols-2 lg:gap-16" aria-labelledby="details-title">
       <div>
-        <h2 class="text-2xl md:text-[2rem]">Contact details</h2>
-        <ul class="mt-8 space-y-7">
-          <li>
-            <div>
-              <p class="contact-label"><Icon name="phone" class="size-4" />Phone</p>
-              <a href={site.phoneHref} class="contact-link tnum mt-0.5 inline-block text-lg font-semibold">{site.phone}</a>
-            </div>
-          </li>
-          <li>
-            <div>
-              <p class="contact-label"><Icon name="mail" class="size-4" />Email</p>
-              <a href={mailto()} class="contact-link mt-0.5 inline-block text-lg font-semibold">{emailParts[0]}<wbr />{emailParts[1]}</a>
-            </div>
-          </li>
-          <li>
-            <div>
-              <p class="contact-label"><Icon name="clock" class="size-4" />Business hours</p>
-              <p class="mt-0.5 text-lg font-semibold">Monday to Friday, 8:00–17:00</p>
-            </div>
-          </li>
-          <li>
-            <div>
-              <p class="contact-label"><Icon name="pin" class="size-4" />Office</p>
-              <address class="mt-0.5 text-lg font-semibold not-italic">
+        <h2 id="details-title" class="text-2xl md:text-[2rem]">{page.details}</h2>
+        <dl class="mt-8 space-y-7">
+          <div>
+            <dt class="contact-label"><Icon name="phone" class="size-4" />{t.common.phone}</dt>
+            <dd class="mt-0.5 text-lg">
+              <a href={site.phoneHref} class="link tnum">{site.phone}</a>
+            </dd>
+          </div>
+          <div>
+            <dt class="contact-label"><Icon name="mail" class="size-4" />{t.common.email}</dt>
+            <dd class="mt-0.5 text-lg">
+              <a href={site.emailHref} class="link">{emailParts[0]}<wbr />{emailParts[1]}</a>
+            </dd>
+          </div>
+          <div>
+            <dt class="contact-label"><Icon name="clock" class="size-4" />{t.common.businessHours}</dt>
+            <dd class="mt-0.5 text-lg font-semibold">{t.common.hours}</dd>
+          </div>
+          <div>
+            <dt class="contact-label"><Icon name="pin" class="size-4" />{t.common.office}</dt>
+            <dd class="mt-0.5">
+              <address class="text-lg font-semibold not-italic">
                 {site.address.street}, {site.address.postcode} {site.address.city}
               </address>
-              <a href={site.mapsLink} class="link mt-2.5 inline-block text-[0.9375rem]" target="_blank" rel="noopener">Get directions</a>
-            </div>
-          </li>
-        </ul>
+              <a href={site.mapsLink} class="link mt-2.5 inline-block text-[0.9375rem]" target="_blank" rel="noopener">
+                {t.common.getDirections}<span class="sr-only"> {t.meta.newTab}</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
         <p class="text-muted border-line mt-10 border-t pt-5 text-[0.9375rem]">
-          {site.legalName}, company registration number <span class="tnum">{site.registrationNumber}</span>
+          {format(page.registration, { name: site.legalName, number: site.registrationNumber })}
         </p>
       </div>
 
-      <div class="bg-sky border-line relative h-[24rem] overflow-hidden rounded-xl border lg:h-auto lg:min-h-[30rem]">
+      <div class="bg-sky border-line relative h-96 overflow-hidden rounded-xl border lg:h-auto lg:min-h-120">
         <iframe
-          title={`Map showing ${site.legalName}, ${fullAddress}`}
-          class="absolute inset-0 h-full w-full"
-          style="border: 0"
+          title={format(page.map, { name: site.legalName, address: fullAddress })}
+          class="absolute inset-0 h-full w-full border-0"
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
-          src={site.mapsEmbed}></iframe>
+          src={`${site.mapsEmbed}&hl=${locale}`}></iframe>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </Layout>
 
 <style>
-  /* Contact details: a small orange icon in line with each label */
   .contact-label {
     display: flex;
     align-items: center;
@@ -114,17 +97,5 @@ const locale = Astro.params.locale as Locale;
   .contact-label :global(svg) {
     flex-shrink: 0;
     color: var(--color-signal);
-  }
-
-  /* Phone and email: a quiet underline that turns orange on hover */
-  .contact-link {
-    text-decoration-line: underline;
-    text-decoration-color: var(--color-line-strong);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.3em;
-    transition: text-decoration-color 0.15s ease;
-  }
-  .contact-link:hover {
-    text-decoration-color: var(--color-signal);
   }
 </style>

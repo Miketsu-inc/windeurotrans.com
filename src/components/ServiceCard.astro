@@ -1,53 +1,42 @@
 ---
-/*
-  A service as a clickable card: photo, name and one line.
-  Hover: the card lifts (like every card link) and "Read more" takes the orange underline links use.
-  The compact version (photo and name only) previews other services under an article.
-*/
-import type { Service } from "../data/services";
-import { pageUrl } from "../data/site";
-import { photoSrc, photoSrcset } from "../data/fleet";
+import { Picture } from "astro:assets";
+import { getDictionary, getLocale, localizedPath } from "../i18n";
+import type { Service } from "../i18n/content";
 
 interface Props {
   service: Service;
-  locale: string;
-  /** Load the photo straight away (cards in the first screen). */
+  /** Load the photo straight away, for cards in the first screen. */
   eager?: boolean;
-  /** Photo and name only, with an h3 title. */
+  /** Photo and name only, under an h3. */
   compact?: boolean;
 }
 
-const { service: s, locale, eager = false, compact = false } = Astro.props;
+const { service, eager = false, compact = false } = Astro.props;
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const { name, short, image, imageAlt, imagePosition } = service.data;
 const Heading = compact ? "h3" : "h2";
 ---
 
-<a
-  href={pageUrl(locale, `services/${s.slug}`)}
-  class="card group flex h-full flex-col overflow-hidden"
->
-  <img
-    src={photoSrc(s.image.photo)}
-    srcset={photoSrcset(s.image.photo)}
-    sizes={compact ? "(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw" : "(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"}
-    alt={s.image.alt}
-    width="800"
-    height="533"
+<a href={localizedPath(locale, `services/${service.slug}`)} class="card group flex h-full flex-col overflow-hidden">
+  <Picture
+    src={image}
+    alt={imageAlt}
+    formats={["avif"]}
+    fallbackFormat="webp"
+    widths={[400, 600, 800]}
+    sizes={compact
+      ? "(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
+      : "(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"}
     loading={eager ? "eager" : "lazy"}
-    class="aspect-[3/2] w-full object-cover"
-    style={s.image.position && `object-position: ${s.image.position}`}
+    class="aspect-3/2 w-full object-cover"
+    style={imagePosition && `object-position: ${imagePosition}`}
   />
   <div class:list={["flex grow flex-col", compact ? "p-5" : "p-6 md:p-7"]}>
-    <Heading
-      class:list={[
-        "leading-snug",
-        compact ? "text-lg" : "text-xl md:text-[1.375rem]",
-      ]}
-    >
-      {s.name}
-    </Heading>
-    {!compact && <p class="text-muted mt-2">{s.short}</p>}
+    <Heading class:list={["leading-snug", compact ? "text-lg" : "text-xl md:text-[1.375rem]"]}>{name}</Heading>
+    {!compact && <p class="text-muted mt-2">{short}</p>}
     <span class:list={["mt-auto self-start", compact ? "pt-4" : "pt-6"]}>
-      <span class="link group-hover:decoration-signal">Read more</span>
+      <span class="link group-hover:decoration-signal">{t.common.readMore}</span>
     </span>
   </div>
 </a>
