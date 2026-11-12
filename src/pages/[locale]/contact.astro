@@ -1,0 +1,101 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
+import Icon from "../../components/Icon.astro";
+import { site, fullAddress, emailParts } from "../../data/site";
+import { format, getDictionary, getLocale, localeStaticPaths } from "../../i18n";
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const page = t.contact;
+---
+
+<Layout title={page.title} description={format(page.description, { phone: site.phone, email: site.email })}>
+  <PageHero title={page.title} lead={page.lead} />
+
+  <div class="bg-frost">
+    <section class="wrap grid items-start gap-8 py-16 md:py-24 lg:grid-cols-2 lg:gap-16" aria-labelledby="need-title">
+      <div>
+        <h2 id="need-title" class="text-2xl md:text-[2rem]">{page.need.title}</h2>
+        <p class="text-muted mt-4 max-w-lg text-lg">{page.need.text}</p>
+      </div>
+      <div>
+        <ul class="space-y-3.5 text-lg">
+          {
+            page.need.items.map((item) => (
+              <li class="flex gap-3">
+                <Icon name="check" class="text-signal mt-1 size-5 shrink-0" />
+                {item}
+              </li>
+            ))
+          }
+        </ul>
+        <p class="text-muted mt-6">{page.need.dangerous}</p>
+      </div>
+    </section>
+
+    <section class="wrap grid gap-10 pb-16 md:pb-24 lg:grid-cols-2 lg:gap-16" aria-labelledby="details-title">
+      <div>
+        <h2 id="details-title" class="text-2xl md:text-[2rem]">{page.details}</h2>
+        <dl class="mt-8 space-y-7">
+          <div>
+            <dt class="contact-label"><Icon name="phone" class="size-4" />{t.common.phone}</dt>
+            <dd class="mt-0.5 text-lg">
+              <a href={site.phoneHref} class="link tnum">{site.phone}</a>
+            </dd>
+          </div>
+          <div>
+            <dt class="contact-label"><Icon name="mail" class="size-4" />{t.common.email}</dt>
+            <dd class="mt-0.5 text-lg">
+              <a href={site.emailHref} class="link">{emailParts[0]}<wbr />{emailParts[1]}</a>
+            </dd>
+          </div>
+          <div>
+            <dt class="contact-label"><Icon name="clock" class="size-4" />{t.common.businessHours}</dt>
+            <dd class="mt-0.5 text-lg font-semibold">{t.common.hours}</dd>
+          </div>
+          <div>
+            <dt class="contact-label"><Icon name="pin" class="size-4" />{t.common.office}</dt>
+            <dd class="mt-0.5">
+              <address class="text-lg font-semibold not-italic">
+                {site.address.street}, {site.address.postcode} {site.address.city}
+              </address>
+              <a href={site.mapsLink} class="link mt-2.5 inline-block text-[0.9375rem]" target="_blank" rel="noopener">
+                {t.common.getDirections}<span class="sr-only"> {t.meta.newTab}</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+        <p class="text-muted border-line mt-10 border-t pt-5 text-[0.9375rem]">
+          {format(page.registration, { name: site.legalName, number: site.registrationNumber })}
+        </p>
+      </div>
+
+      <div class="bg-sky border-line relative h-96 overflow-hidden rounded-xl border lg:h-auto lg:min-h-120">
+        <iframe
+          title={format(page.map, { name: site.legalName, address: fullAddress })}
+          class="absolute inset-0 h-full w-full border-0"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src={`${site.mapsEmbed}&hl=${locale}`}></iframe>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .contact-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+    line-height: 1.25rem;
+  }
+  .contact-label :global(svg) {
+    flex-shrink: 0;
+    color: var(--color-signal);
+  }
+</style>

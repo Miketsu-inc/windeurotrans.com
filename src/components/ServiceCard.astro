@@ -1,0 +1,42 @@
+---
+import { Picture } from "astro:assets";
+import { getDictionary, getLocale, localizedPath } from "../i18n";
+import type { Service } from "../i18n/content";
+
+interface Props {
+  service: Service;
+  /** Load the photo straight away, for cards in the first screen. */
+  eager?: boolean;
+  /** Photo and name only, under an h3. */
+  compact?: boolean;
+}
+
+const { service, eager = false, compact = false } = Astro.props;
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const { name, short, image, imageAlt, imagePosition } = service.data;
+const Heading = compact ? "h3" : "h2";
+---
+
+<a href={localizedPath(locale, `services/${service.slug}`)} class="card group flex h-full flex-col overflow-hidden">
+  <Picture
+    src={image}
+    alt={imageAlt}
+    formats={["avif"]}
+    fallbackFormat="webp"
+    widths={[400, 600, 800]}
+    sizes={compact
+      ? "(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw"
+      : "(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"}
+    loading={eager ? "eager" : "lazy"}
+    class="aspect-3/2 w-full object-cover"
+    style={imagePosition && `object-position: ${imagePosition}`}
+  />
+  <div class:list={["flex grow flex-col", compact ? "p-5" : "p-6 md:p-7"]}>
+    <Heading class:list={["leading-snug", compact ? "text-lg" : "text-xl md:text-[1.375rem]"]}>{name}</Heading>
+    {!compact && <p class="text-muted mt-2">{short}</p>}
+    <span class:list={["mt-auto self-start", compact ? "pt-4" : "pt-6"]}>
+      <span class="link group-hover:decoration-signal">{t.common.readMore}</span>
+    </span>
+  </div>
+</a>

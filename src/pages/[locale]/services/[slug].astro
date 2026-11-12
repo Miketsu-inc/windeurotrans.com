@@ -1,0 +1,93 @@
+---
+import type { GetStaticPaths } from "astro";
+import { Picture } from "astro:assets";
+import { render } from "astro:content";
+import Layout from "../../../layouts/Layout.astro";
+import PageHero from "../../../components/PageHero.astro";
+import ServiceCard from "../../../components/ServiceCard.astro";
+import { getDictionary, locales, localizedPath, type Locale } from "../../../i18n";
+import { getServices, type Service } from "../../../i18n/content";
+
+export const getStaticPaths = (async () => {
+  const paths = await Promise.all(
+    locales.map(async (locale) => {
+      const services = await getServices(locale);
+      return services.map((service) => ({ params: { locale, slug: service.slug }, props: { locale, service, services } }));
+    }),
+  );
+  return paths.flat();
+}) satisfies GetStaticPaths;
+
+interface Props {
+  locale: Locale;
+  service: Service;
+  services: Service[];
+}
+
+const { locale, service, services } = Astro.props;
+const t = getDictionary(locale);
+const { name, lead, short, image, imageAlt, imagePosition, specs } = service.data;
+const { Content } = await render(service);
+const others = services.filter((s) => s.slug !== service.slug);
+---
+
+<Layout title={name} description={short}>
+  <PageHero title={name} lead={lead} />
+
+  <div class="bg-frost">
+    <div class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-20">
+      <article>
+        <Picture
+          src={image}
+          alt={imageAlt}
+          formats={["avif"]}
+          fallbackFormat="webp"
+          widths={[640, 960, 1280, 1600]}
+          sizes="(min-width: 1280px) 760px, (min-width: 1024px) 60vw, 100vw"
+          loading="eager"
+          fetchpriority="high"
+          class="mb-14 aspect-video w-full rounded-2xl object-cover"
+          style={imagePosition && `object-position: ${imagePosition}`}
+        />
+        <div class="prose-page">
+          <Content />
+        </div>
+      </article>
+
+      <aside class="lg:sticky lg:top-28 lg:self-start">
+        <div class="card p-6 md:p-7">
+          <h2 class="text-lg">{t.services.detail.glance}</h2>
+          <dl class="mt-4">
+            {
+              specs.map((spec) => (
+                <div class="border-line border-b py-3.5 last:border-b-0">
+                  <dt class="text-muted text-sm">{spec.label}</dt>
+                  <dd class="mt-0.5 font-medium">{spec.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+        <p class="text-muted mt-5 px-1 text-[0.9375rem]">
+          {t.services.detail.price}
+          <a href={localizedPath(locale, "contact")} class="link text-ink mt-1 block w-fit">{t.services.detail.contact}</a>
+        </p>
+      </aside>
+    </div>
+  </div>
+
+  <div class="border-line border-t">
+    <section class="wrap py-16 md:py-20">
+      <h2 class="text-2xl md:text-[1.75rem]">{t.services.detail.others}</h2>
+      <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          others.map((s) => (
+            <li>
+              <ServiceCard service={s} compact />
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+</Layout>

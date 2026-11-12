@@ -1,101 +1,82 @@
 ---
-import { getRelativeLocaleUrl } from "astro:i18n";
-import { useTranslation } from "../i18n/utils";
+import { site, fullAddress, emailParts } from "../data/site";
+import { format, getDictionary, getLocale, localizedPath } from "../i18n";
+import { getServices } from "../i18n/content";
 
-const { locale } = Astro.props;
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const services = await getServices(locale);
 
-const year = new Date().getFullYear();
-
-const landingUrl = getRelativeLocaleUrl(locale);
-const aboutUrl = getRelativeLocaleUrl(locale, "about");
-const privacyPolicyUrl = getRelativeLocaleUrl(locale, "privacy-policy");
-
-const t = useTranslation(locale);
+const company = [
+  { label: t.footer.aboutUs, path: "about" },
+  { label: t.footer.fleet, path: "fleet" },
+  { label: t.footer.certificates, path: "certificates" },
+  { label: t.footer.contact, path: "contact" },
+  { label: t.footer.privacy, path: "privacy-policy" },
+];
 ---
 
-<footer
-  class="border-t border-white/5 bg-secondary px-6 pt-24 pb-8 text-white
-        md:px-12"
->
-  <div class="mx-auto mb-16 grid max-w-7xl grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-5">
-    <div class="lg:col-span-1">
-      <img
-        src={`${import.meta.env.BASE_URL}/logo.png`}
-        class="size-16 w-full object-contain"
-      />
-    </div>
+<footer class="bg-blue-950 text-blue-300">
+  <div class="wrap grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:py-20">
     <div>
-      <h4 class="mb-6 text-lg font-bold">{t("footer.company.name")}</h4>
-      <ul class="space-y-4 text-sm text-gray-200">
-        <li>
-          <a href={aboutUrl} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.company.about")}</a
-          >
-        </li>
-        <li>
-          <a href={`${landingUrl}#about`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.company.employees")}</a
-          >
-        </li>
-        <li>
-          <a href={`${landingUrl}#contact`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.company.contact")}</a
-          >
-        </li>
+      <!-- The tight line height lines the name up with the column headings -->
+      <a href={localizedPath(locale)} class="block text-2xl leading-5 font-semibold text-white">{site.name}</a>
+      <p class="mt-5 max-w-xs text-[0.9375rem] leading-relaxed">{t.footer.about}</p>
+    </div>
+
+    <nav aria-labelledby="footer-services">
+      <h2 id="footer-services" class="mb-4 text-base font-semibold text-white">{t.footer.services}</h2>
+      <ul class="space-y-2.5 text-[0.9375rem]">
+        {
+          services.map((s) => (
+            <li>
+              <a href={localizedPath(locale, `services/${s.slug}`)} class="hover:text-white">
+                {s.data.name}
+              </a>
+            </li>
+          ))
+        }
       </ul>
-    </div>
-    <div>
-      <h4 class="mb-6 text-lg font-bold">{t("footer.services.name")}</h4>
-      <ul class="space-y-4 text-sm text-gray-200">
-        <li>
-          <a href={`${landingUrl}#services`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.services.shipping")}</a
-          >
-        </li>
-        <li>
-          <a href={`${landingUrl}#services`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.services.dispatch")}</a
-          >
-        </li>
-        <li>
-          <a href={`${landingUrl}#services`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.services.forwarding")}</a
-          >
-        </li>
-        <li>
-          <a href={`${landingUrl}#services`} class="hover:text-primary transition-all hover:pl-2"
-            >{t("footer.services.customs")}</a
-          >
-        </li>
+    </nav>
+
+    <nav aria-labelledby="footer-company">
+      <h2 id="footer-company" class="mb-4 text-base font-semibold text-white">{t.footer.company}</h2>
+      <ul class="space-y-2.5 text-[0.9375rem]">
+        {
+          company.map((item) => (
+            <li>
+              <a href={localizedPath(locale, item.path)} class="hover:text-white">
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
       </ul>
-    </div>
+    </nav>
+
     <div>
-      <h4 class="mb-6 text-lg font-bold">{t("footer.contact.name")}</h4>
-      <ul class="space-y-4 text-sm text-gray-200">
-        <li>2120 Dunakeszi, Kolozsvár u. 29{t("footer.contact.country")}</li>
+      <h2 class="mb-4 text-base font-semibold text-white">{t.footer.contact}</h2>
+      <ul class="space-y-2.5 text-[0.9375rem]">
+        <li><a href={site.phoneHref} class="tnum hover:text-white">{site.phone}</a></li>
         <li>
-          <a href="mailto:gergo.szell@windeurotrans.com"
-            >gergo.szell@windeurotrans.com</a
-          >
+          <a href={site.emailHref} class="hover:text-white">{emailParts[0]}<wbr />{emailParts[1]}</a>
         </li>
-        <li><a href="tel:+36205154060">+36 20 515 4060</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 class="mb-6 text-lg font-bold">{t("footer.legal.name")}</h4>
-      <ul class="space-y-4 text-sm text-gray-200">
         <li>
-          <a
-            href={privacyPolicyUrl}
-            class="hover:text-primary transition-all hover:pl-2"
-          >
-            {t("footer.legal.privacypolicy")}
+          <a href={site.mapsLink} class="hover:text-white" target="_blank" rel="noopener">
+            {fullAddress}, {t.common.country}
+            <span class="sr-only">{t.meta.newTab}</span>
           </a>
         </li>
+        <li>{format(t.footer.office, { hours: t.common.hours })}</li>
+        <li>{t.footer.dispatch}</li>
       </ul>
     </div>
   </div>
-  <div class="border-t border-white/20 pt-8 text-center text-xs text-gray-200">
-    &copy; {year} Windeurotrans Kft. {t("footer.copyright")}.
+
+  <div class="border-t border-white/10">
+    <div class="wrap flex flex-col gap-2 py-6 text-sm sm:flex-row sm:justify-between">
+      <p>{format(t.footer.rights, { year: new Date().getFullYear(), name: site.legalName })}</p>
+      <p>{format(t.footer.registration, { number: site.registrationNumber })}</p>
+    </div>
   </div>
 </footer>

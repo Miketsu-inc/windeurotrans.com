@@ -1,52 +1,7 @@
-export default {
-  index: {
-    hero: {
-      beforetitle: "Logistics Solutions Hungary",
-      title1: "Megbízhatóság,",
-      title2: "amelyre",
-      title3: "számíthat.",
-      button: "Ajánlatkérés",
-    },
-    contact: {
-      heading: "Vegyük fel a kapcsolatot",
-      call: "telefonszám",
-      email: "email",
-      businesshours: {
-        name: "nyitvatartás",
-        start: "Hétfő",
-        end: "Péntek",
-      },
-      address: "cím",
-    },
-  },
-  nav: {
-    whyus: "Miért mi?",
-    services: "Szolgáltatások",
-    about: "Rólunk",
-    contact: "Kapcsolat",
-  },
-  footer: {
-    company: {
-      name: "Vállalat",
-      about: "Rólunk",
-      employees: "Munkatársaink",
-      contact: "Kapcsolat",
-    },
-    services: {
-      name: "Szolgáltatások",
-      shipping: "Rakomány szállítás",
-      dispatch: "Diszpécserszolgálat",
-      forwarding: "Szállítmány továbbítás",
-      customs: "Vámügyintézés",
-    },
-    contact: {
-      name: "Kapcsolat",
-      country: "",
-    },
-    legal: {
-      name: "Jogi információk",
-      privacypolicy: "Adatkezelési tájekoztató",
-    },
-    copyright: "Minden jog fenntartva",
-  },
-};
+import type { Translation } from ".";
+
+/**
+ * Add translations here, following the shape of en.ts. Anything left out is shown in English.
+ * Lists (like the FAQ) are replaced as a whole, so translate every item in a list you add.
+ */
+export default {} satisfies Translation;

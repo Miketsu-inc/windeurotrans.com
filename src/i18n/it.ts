@@ -1,11 +1,7 @@
-import type hu from "./hu";
+import type { Translation } from ".";
 
-type DeepPartial<T> = {
-  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
-};
-
-const it: DeepPartial<typeof hu> = {
-  nav: {},
-};
-
-export default it;
+/**
+ * Add translations here, following the shape of en.ts. Anything left out is shown in English.
+ * Lists (like the FAQ) are replaced as a whole, so translate every item in a list you add.
+ */
+export default {} satisfies Translation;

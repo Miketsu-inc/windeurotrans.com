@@ -1,25 +1,26 @@
 ---
+import { defaultLocale, languageNames, locales, localizedPath, localizedUrl } from "../i18n";
 
+const target = localizedPath(defaultLocale);
+const paths = Object.fromEntries(locales.map((l) => [l, localizedPath(l)]));
 ---
 
-<style>
-  body {
-    display: none;
-  }
-</style>
-
-<script>
-  const base = import.meta.env.BASE_URL;
-
-  const locales = ["en", "hu", "it"];
-  const defaultLocale = "en";
-
-  const browserLang = navigator.language.slice(0, 2);
-  const locale = locales.includes(browserLang) ? browserLang : defaultLocale;
-
-  const target = base + "/" + locale + "/";
-
-  if (!window.location.pathname.startsWith(target)) {
-    window.location.replace(target);
-  }
-</script>
+<!doctype html>
+<html lang={defaultLocale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wind Eurotrans</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={localizedUrl(defaultLocale)} />
+    <script is:inline define:vars={{ paths, fallback: target }}>
+      // Send visitors to their browser's language if we have it, otherwise to the default
+      const match = navigator.languages.map((l) => l.slice(0, 2)).find((l) => l in paths);
+      location.replace(match ? paths[match] : fallback);
+    </script>
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+  </head>
+  <body>
+    <a href={target}>{languageNames[defaultLocale]}</a>
+  </body>
+</html>

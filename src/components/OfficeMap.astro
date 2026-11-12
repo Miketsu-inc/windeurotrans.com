@@ -1,0 +1,83 @@
+---
+/*
+  A small crop of the hero map around Dunakeszi: the land dots, the roads out of
+  the hub and the orange hub itself. Static, and only the dots and roads inside
+  the crop are kept, so it stays light.
+*/
+import { hub, landDots, hungaryDots, network, routes } from "../data/europe-map";
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+
+// The crop: the hub sits in the upper part, leaving room below for text laid over the map
+const box = { x: hub.x - 180, y: hub.y - 80, w: 360, h: 380 };
+const pad = 10;
+const inside = (x: number, y: number) =>
+  x >= box.x - pad && x <= box.x + box.w + pad && y >= box.y - pad && y <= box.y + box.h + pad;
+
+// Dots are written as "Mx yh0"; keep the ones in the crop
+const cropDots = (d: string) =>
+  [...d.matchAll(/M([\d.]+) ([\d.]+)h0/g)]
+    .filter(([, x, y]) => inside(+x, +y))
+    .map(([m]) => m)
+    .join("");
+
+// Roads are written as "Mx yLx y" segments; keep those with an end in the crop
+const trunks = [...new Set(Object.values(routes).map((r) => r.d.slice(1).split("L")[0]))];
+const roads = (trunks.map((start) => `M${hub.x} ${hub.y}L${start}`).join("") + network)
+  .split("M")
+  .filter(Boolean)
+  .filter((seg) =>
+    seg.split("L").some((p) => {
+      const [x, y] = p.trim().split(" ").map(Number);
+      return inside(x, y);
+    }),
+  )
+  .map((seg) => `M${seg}`)
+  .join("");
+---
+
+<svg
+  viewBox={`${box.x} ${box.y} ${box.w} ${box.h}`}
+  preserveAspectRatio="xMidYMid slice"
+  class={className}
+  aria-hidden="true"
+>
+  <path d={cropDots(landDots)} class="office-map__land" />
+  <path d={cropDots(hungaryDots)} class="office-map__hu" />
+  <path d={roads} class="office-map__roads" />
+  <circle cx={hub.x} cy={hub.y} r="15" class="office-map__halo" />
+  <circle cx={hub.x} cy={hub.y} r="7.5" class="office-map__hub" />
+</svg>
+
+<style>
+  .office-map__land,
+  .office-map__hu {
+    fill: none;
+    stroke-width: 4.8;
+    stroke-linecap: round;
+  }
+  .office-map__land {
+    stroke: #cbd7e8;
+  }
+  .office-map__hu {
+    stroke: #a9bcd9;
+  }
+  .office-map__roads {
+    fill: none;
+    stroke: #2b3548;
+    stroke-opacity: 0.3;
+    stroke-width: 1.5;
+  }
+  .office-map__halo {
+    fill: var(--color-signal);
+    opacity: 0.15;
+  }
+  .office-map__hub {
+    fill: var(--color-signal);
+    stroke: #fff;
+    stroke-width: 3;
+  }
+</style>

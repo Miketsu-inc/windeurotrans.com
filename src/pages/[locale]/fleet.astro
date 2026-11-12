@@ -1,0 +1,333 @@
+---
+import { getImage, Picture } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
+import Icon from "../../components/Icon.astro";
+import { photos } from "../../data/fleet";
+import { format, getDictionary, getLocale, localeStaticPaths } from "../../i18n";
+
+export const getStaticPaths = localeStaticPaths;
+
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const page = t.fleet;
+
+const gallery = await Promise.all(
+  photos.map(async (p) => {
+    const large = await getImage({ src: p.image, width: 1600, format: "webp" });
+    return { ...p, alt: page.alt[p.alt], large: large.src };
+  }),
+);
+const viewerData = JSON.stringify(
+  gallery.map((p) => ({ src: p.large, alt: p.alt, ratio: p.image.width / p.image.height })),
+);
+---
+
+<Layout title={page.title} description={page.description}>
+  <PageHero title={page.title} lead={page.lead} />
+
+  <div class="border-line bg-frost border-b">
+    <section aria-label={page.photos} class="wrap py-16 md:py-20">
+      <ul class="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
+        {
+          gallery.map((p, i) => (
+            <li class:list={[i === 0 && "sm:col-span-2"]}>
+              <button
+                type="button"
+                class="group relative block h-full w-full cursor-zoom-in overflow-hidden rounded-xl"
+                data-photo={i}
+                aria-label={format(page.open, { alt: p.alt })}
+              >
+                <Picture
+                  src={p.image}
+                  alt=""
+                  formats={["avif"]}
+                  fallbackFormat="webp"
+                  widths={i === 0 ? [640, 960, 1280, 1600] : [400, 640, 800]}
+                  sizes={
+                    i === 0
+                      ? "(min-width: 1280px) 800px, (min-width: 640px) 66vw, 100vw"
+                      : "(min-width: 1280px) 400px, (min-width: 640px) 50vw, 100vw"
+                  }
+                  loading={i < 3 ? "eager" : "lazy"}
+                  fetchpriority={i === 0 ? "high" : undefined}
+                  class:list={[
+                    "w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]",
+                    // The wide photo takes the height of its row, set by the photo next to it
+                    i === 0 ? "aspect-4/3 sm:aspect-video lg:absolute lg:inset-0 lg:aspect-auto lg:h-full" : "aspect-4/3",
+                  ]}
+                />
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+
+  <dialog id="lightbox" class="lightbox" aria-label={page.viewer} data-photos={viewerData}>
+    <div class="lightbox__shade" data-shade></div>
+    <div class="relative flex h-full flex-col">
+      <div class="flex items-center justify-between px-4 py-3 text-white md:px-6" data-chrome>
+        <p class="tnum text-sm text-white/70" aria-live="polite" data-counter></p>
+        <button type="button" class="-mr-2 rounded-md p-2 hover:bg-white/10" aria-label={page.close} data-close>
+          <Icon name="close" class="size-7" />
+        </button>
+      </div>
+      <figure class="flex min-h-0 grow flex-col items-center justify-center px-4 pb-4 md:px-20" data-stage></figure>
+      <div
+        class="flex justify-center gap-3 py-5 md:pointer-events-none md:absolute md:inset-x-4 md:top-1/2 md:-translate-y-1/2 md:justify-between md:py-0"
+        data-chrome
+      >
+        <button type="button" class="lightbox__nav" aria-label={page.previous} data-prev>
+          <Icon name="chevron" class="size-6 rotate-90" />
+        </button>
+        <button type="button" class="lightbox__nav" aria-label={page.next} data-next>
+          <Icon name="chevron" class="size-6 -rotate-90" />
+        </button>
+      </div>
+    </div>
+  </dialog>
+</Layout>
+
+<script>
+  /*
+    Each large photo is loaded and decoded into its own <img> off screen, and only a finished <img>
+    is put on stage, so the viewer never shows a half-loaded picture. Opening, the photo grows out of
+    its thumbnail; closing, it shrinks back into it.
+  */
+  type Photo = { src: string; alt: string; ratio: number };
+
+  const dialog = document.querySelector<HTMLDialogElement>("#lightbox")!;
+  const photos: Photo[] = JSON.parse(dialog.dataset.photos!);
+  const stage = dialog.querySelector<HTMLElement>("[data-stage]")!;
+  const shade = dialog.querySelector<HTMLElement>("[data-shade]")!;
+  const chrome = [...dialog.querySelectorAll<HTMLElement>("[data-chrome]")];
+  const counter = dialog.querySelector<HTMLElement>("[data-counter]")!;
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>("[data-photo]")];
+  let current = 0;
+  let closing = false;
+  // Counts openings, so a closing transition still running can't shut a viewer that has reopened
+  let session = 0;
+  // Bumped on every change of photo, so a slow load can't show up after the user has moved on
+  let request = 0;
+
+  const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const ms = (n: number) => (still.matches ? 0 : n);
+  const EASE_OUT = "cubic-bezier(0.2, 0, 0, 1)";
+  const EASE_IN_OUT = "cubic-bezier(0.4, 0, 0.2, 1)";
+
+  // One promise per photo: the <img>, once it is ready to paint
+  const loaded = new Map<number, Promise<HTMLImageElement>>();
+  function load(i: number) {
+    const index = (i + photos.length) % photos.length;
+    if (!loaded.has(index)) {
+      const img = new Image();
+      img.className = "lightbox__image";
+      img.draggable = false;
+      img.alt = photos[index].alt;
+      img.style.setProperty("--ratio", String(photos[index].ratio));
+      img.src = photos[index].src;
+      loaded.set(
+        index,
+        img
+          .decode()
+          .catch(() => {})
+          .then(() => img),
+      );
+    }
+    return loaded.get(index)!;
+  }
+
+  /*
+    The transform and clip that make the photo on stage cover exactly what its thumbnail shows.
+    Only used when the thumbnail is fully in view below the sticky header; otherwise a fade looks better.
+  */
+  const header = document.getElementById("site-header");
+  function thumbFrame(img: HTMLImageElement, index: number) {
+    const button = buttons[index];
+    const box = button.getBoundingClientRect();
+    const top = Math.max(box.top, header ? header.getBoundingClientRect().bottom : 0);
+    const bottom = Math.min(box.bottom, innerHeight);
+    if (box.height === 0 || (bottom - top) / box.height < 0.9) return null;
+    // The part of the thumbnail that can be seen
+    const visible = { top, bottom, left: box.left, right: box.right };
+
+    const thumb = button.querySelector("img")!.getBoundingClientRect();
+    const end = img.getBoundingClientRect();
+    const scale = Math.max(thumb.width / end.width, thumb.height / end.height);
+    const w = end.width * scale;
+    const h = end.height * scale;
+    const x = thumb.left + (thumb.width - w) / 2;
+    const y = thumb.top + (thumb.height - h) / 2;
+    const dx = x + w / 2 - (end.left + end.width / 2);
+    const dy = y + h / 2 - (end.top + end.height / 2);
+    // Clip in the photo's own (unscaled) pixels
+    const inset = [
+      (visible.top - y) / scale,
+      (x + w - visible.right) / scale,
+      (y + h - visible.bottom) / scale,
+      (visible.left - x) / scale,
+    ].map((n) => `${Math.max(0, n)}px`);
+    return {
+      transform: `translate(${dx}px, ${dy}px) scale(${scale})`,
+      clipPath: `inset(${inset.join(" ")} round ${12 / scale}px)`,
+    };
+  }
+  const onStage = { transform: "none", clipPath: "inset(0 round 8px)" };
+
+  function fade(elements: HTMLElement[], to: 0 | 1, duration: number) {
+    const keyframes = to === 1 ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }];
+    return elements.map((el) => el.animate(keyframes, { duration, easing: "ease", fill: "forwards" }));
+  }
+
+  function show(i: number, opening = false) {
+    const index = (i + photos.length) % photos.length;
+    const token = ++request;
+    current = index;
+    counter.textContent = `${index + 1} / ${photos.length}`;
+
+    stage.replaceChildren();
+    load(index).then((img) => {
+      if (token !== request || closing) return;
+      img.getAnimations().forEach((a) => a.cancel());
+      stage.replaceChildren(img);
+      const from = opening && thumbFrame(img, index);
+      if (from) {
+        img.animate([from, onStage], { duration: ms(240), easing: EASE_OUT });
+      } else {
+        img.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms(160), easing: "ease" });
+      }
+    });
+
+    // Get the neighbours ready for the arrows and swipes
+    load(index + 1);
+    load(index - 1);
+  }
+
+  function open(index: number) {
+    session++;
+    closing = false;
+    for (const el of [shade, ...chrome]) el.getAnimations().forEach((a) => a.cancel());
+    if (!dialog.open) dialog.showModal();
+    document.body.style.overflow = "hidden";
+    fade([shade], 1, ms(200));
+    fade(chrome, 1, ms(200));
+    show(index, true);
+  }
+
+  async function close() {
+    if (closing || !dialog.open) return;
+    closing = true;
+    const closingSession = session;
+    request++;
+    const img = stage.querySelector("img");
+    const animations = [...fade([shade], 0, ms(200)), ...fade(chrome, 0, ms(120))];
+    if (img) {
+      img.getAnimations().forEach((a) => a.cancel());
+      const to = thumbFrame(img, current);
+      animations.push(
+        to
+          ? img.animate([onStage, to], { duration: ms(200), easing: EASE_IN_OUT, fill: "forwards" })
+          : img.animate([{ opacity: 1, scale: 1 }, { opacity: 0, scale: 0.96 }], { duration: ms(160), easing: "ease", fill: "forwards" }),
+      );
+    }
+    await Promise.all(animations.map((a) => a.finished.catch(() => {})));
+    if (session === closingSession) dialog.close();
+  }
+
+  buttons.forEach((button) => {
+    const index = Number(button.dataset.photo);
+    // Start loading the large photo before the click lands
+    for (const type of ["pointerenter", "pointerdown", "focus"]) {
+      button.addEventListener(type, () => load(index), { once: true, passive: true });
+    }
+    button.addEventListener("click", () => open(index));
+  });
+
+  dialog.addEventListener("close", () => {
+    request++;
+    closing = false;
+    for (const el of [shade, ...chrome, ...stage.children]) el.getAnimations().forEach((a) => a.cancel());
+    stage.replaceChildren();
+    document.body.style.overflow = "";
+    buttons[current].focus({ preventScroll: true });
+  });
+  // Escape: run the closing transition instead of closing at once
+  dialog.addEventListener("cancel", (e) => {
+    e.preventDefault();
+    close();
+  });
+  dialog.querySelector("[data-close]")!.addEventListener("click", close);
+  dialog.querySelector("[data-prev]")!.addEventListener("click", () => show(current - 1));
+  dialog.querySelector("[data-next]")!.addEventListener("click", () => show(current + 1));
+
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog || e.target === stage || e.target === shade) close();
+  });
+
+  dialog.addEventListener("keydown", (e) => {
+    if (closing) return;
+    if (e.key === "ArrowLeft") show(current - 1);
+    if (e.key === "ArrowRight") show(current + 1);
+  });
+
+  // Swipe on touch screens
+  let startX: number | null = null;
+  dialog.addEventListener("touchstart", (e) => (startX = e.touches[0].clientX), { passive: true });
+  dialog.addEventListener("touchend", (e) => {
+    if (startX === null || closing) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+    startX = null;
+  });
+</script>
+
+<style>
+  .lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: visible;
+    /* Quick clicks on the arrows would otherwise select the photo */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lightbox::backdrop {
+    background: transparent;
+  }
+  .lightbox__shade {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 18 48 / 0.97);
+  }
+  .lightbox :global(.lightbox__image) {
+    aspect-ratio: var(--ratio);
+    width: min(100%, calc((100dvh - 9rem) * var(--ratio)));
+    max-height: calc(100dvh - 9rem);
+    border-radius: 0.5rem;
+    object-fit: contain;
+    will-change: transform;
+  }
+  .lightbox__nav {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.12);
+    color: #fff;
+    transition: background-color 0.15s ease;
+  }
+  .lightbox__nav:hover {
+    background: rgb(255 255 255 / 0.22);
+  }
+</style>

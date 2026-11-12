@@ -1,0 +1,686 @@
+---
+/*
+  A row of cards running off the edge of the screen, each acting out one reason with a small graphic.
+  The graphics play once when their card scrolls into view, and again on hover.
+*/
+import Icon from "./Icon.astro";
+import { format, getDictionary, getLocale } from "../i18n";
+
+const locale = getLocale(Astro);
+const t = getDictionary(locale);
+const why = t.home.why;
+
+const PALLETS = 33;
+
+// The timeline runs Mon 08:00 to Wed 14:00 (54 h); the two midnights fall at 16 h and 40 h
+const midnights = [16, 40].map((hour, i) => ({ label: why.onTime.days[i], at: (hour / 54) * 100 }));
+
+const seals = [
+  { id: "gdp", name: "GDP", size: 17, ring: why.certified.gdpRing },
+  { id: "iso", name: "ISO 9001", size: 12.5, ring: why.certified.isoRing },
+];
+---
+
+<section class="band-night" aria-labelledby="why-title">
+  <div
+    class="why py-20 md:py-28"
+    data-why
+    data-locale={locale}
+    data-full-load={why.flexible.fullLoad}
+    data-part-load={why.flexible.partLoad}
+    data-spaces={why.flexible.spaces}
+    data-pallets={PALLETS}
+  >
+    <div class="wrap flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <div class="max-w-xl">
+        <h2 id="why-title" class="text-[2rem] leading-tight md:text-[2.75rem]">{why.title}</h2>
+        <p class="mt-4 text-lg text-blue-200">{why.text}</p>
+      </div>
+      <div class="hidden shrink-0 gap-2 md:flex">
+        <button type="button" class="why-nav" aria-label={why.back} aria-controls="why-cards" data-why-prev disabled>
+          <Icon name="chevron" class="size-5 rotate-90" />
+        </button>
+        <button type="button" class="why-nav" aria-label={why.forward} aria-controls="why-cards" data-why-next>
+          <Icon name="chevron" class="size-5 -rotate-90" />
+        </button>
+      </div>
+    </div>
+
+    <ul id="why-cards" class="why-row mt-12" tabindex="0" aria-label={why.cards} data-why-row>
+      <li class="why-card" data-replay>
+        <div class="why-card__art" aria-hidden="true">
+          <div class="w-full">
+            <div class="flex justify-between text-sm">
+              <div>
+                <span class="block text-blue-200">{why.onTime.pickup}</span>
+                <span class="font-semibold">{why.onTime.pickupTime}</span>
+              </div>
+              <div class="text-right">
+                <span class="block text-blue-200">{why.onTime.delivery}</span>
+                <span class="font-semibold">{why.onTime.deliveryTime}</span>
+              </div>
+            </div>
+            <div class="relative mt-5 h-1.5 rounded-full bg-white/15">
+              <span class="ontime__fill bg-signal absolute inset-0 rounded-full"></span>
+              {midnights.map((m) => <span class="absolute top-1/2 h-3 w-px -translate-y-1/2 bg-white/40" style={`left:${m.at}%`} />)}
+              <span class="ontime__truck absolute top-1/2 left-full size-4 -translate-1/2 rounded-full bg-white"></span>
+            </div>
+            <div class="relative mt-2 h-5 text-xs text-blue-200">
+              {midnights.map((m) => <span class="absolute -translate-x-1/2" style={`left:${m.at}%`}>{m.label}</span>)}
+            </div>
+            <p class="ontime__done mt-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-sm font-medium">
+              <Icon name="check" class="text-signal size-4" />
+              {why.onTime.delivered}
+            </p>
+          </div>
+        </div>
+        <h3 class="why-card__title">{why.onTime.title}</h3>
+        <p class="why-card__text">{why.onTime.text}</p>
+      </li>
+
+      <li class="why-card">
+        <div class="why-card__art">
+          <div class="w-full">
+            <div class="flex items-baseline justify-between gap-4">
+              <label for="why-weight" class="text-sm text-blue-200">{why.flexible.slider}</label>
+              <output for="why-weight" class="text-2xl font-semibold" aria-live="off" data-weight-out>1 kg</output>
+            </div>
+            <input id="why-weight" type="range" min="0" max="1000" value="0" class="why-range mt-3 w-full" data-weight />
+            <div class="mt-5 flex gap-1.5" aria-hidden="true">
+              <div class="grid grow grid-flow-col grid-cols-11 grid-rows-3 gap-1 rounded-md border border-white/25 p-1.5">
+                {Array.from({ length: PALLETS }, (_, i) => <span class="pallet h-3.5 rounded-[3px]" data-pallet={PALLETS - 1 - i} />)}
+              </div>
+              <div class="w-7 rounded-l-sm rounded-r-lg bg-white/25"></div>
+            </div>
+            <div class="mt-3 flex justify-between text-sm">
+              <span class="font-medium" data-load-kind>{why.flexible.partLoad}</span>
+              <span class="text-blue-200" data-load-spaces>{format(why.flexible.spaces, { used: 1, total: PALLETS })}</span>
+            </div>
+          </div>
+        </div>
+        <h3 class="why-card__title">{why.flexible.title}</h3>
+        <p class="why-card__text">{why.flexible.text}</p>
+      </li>
+
+      <li class="why-card" data-replay>
+        <div class="why-card__art justify-center gap-4" aria-hidden="true">
+          {
+            seals.map((s, i) => (
+              <svg viewBox="0 0 100 100" class="seal size-26" style={`--i:${i}`}>
+                <defs>
+                  <path id={`seal-ring-${s.id}`} d="M50 50 m-39 0 a39 39 0 1 1 78 0 a39 39 0 1 1 -78 0" />
+                </defs>
+                <circle cx="50" cy="50" r="48" class="seal__outer" />
+                <circle cx="50" cy="50" r="31" class="seal__inner" />
+                <g class="seal__ring">
+                  <text class="seal__ring-text">
+                    <textPath href={`#seal-ring-${s.id}`} textLength="242" lengthAdjust="spacing">
+                      {s.ring}
+                    </textPath>
+                  </text>
+                </g>
+                <text x="50" y={50 + s.size * 0.36} text-anchor="middle" class="seal__name" font-size={s.size}>
+                  {s.name}
+                </text>
+              </svg>
+            ))
+          }
+        </div>
+        <h3 class="why-card__title">{why.certified.title}</h3>
+        <p class="why-card__text">{why.certified.text}</p>
+      </li>
+
+      <li class="why-card" data-replay>
+        <div class="why-card__art" aria-hidden="true">
+          <ul class="flex w-full flex-col gap-2 text-[0.8125rem]">
+            {
+              why.loop.updates.map((u, i) => (
+                <li class="loop__item flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/7 px-3 py-2" style={`--i:${i}`}>
+                  <span class="bg-signal size-1.5 shrink-0 rounded-full" />
+                  <span class="grow font-medium">{u.text}</span>
+                  <span class="text-blue-200">{u.time}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <h3 class="why-card__title">{why.loop.title}</h3>
+        <p class="why-card__text">{why.loop.text}</p>
+      </li>
+
+      <li class="why-card" data-replay>
+        <div class="why-card__art" aria-hidden="true">
+          <div class="relative flex w-full flex-col gap-2 text-sm leading-snug">
+            <p class="chat__in max-w-[85%] self-start rounded-2xl rounded-bl-md bg-white/10 px-3.5 py-2.5">
+              {why.quick.question}
+            </p>
+            <div class="relative self-end">
+              <span class="chat__typing absolute right-0 bottom-0 flex gap-1 rounded-2xl rounded-br-md bg-white/10 px-3.5 py-3">
+                <span></span><span></span><span></span>
+              </span>
+              <p class="chat__out bg-signal text-ink max-w-52 rounded-2xl rounded-br-md px-3.5 py-2.5 font-medium">
+                {why.quick.answer}
+              </p>
+            </div>
+            <p class="chat__time self-end text-xs text-blue-200">{why.quick.replied}</p>
+          </div>
+        </div>
+        <h3 class="why-card__title">{why.quick.title}</h3>
+        <p class="why-card__text">{why.quick.text}</p>
+      </li>
+
+      <li class="why-card" data-replay>
+        <div class="why-card__art" aria-hidden="true">
+          <div class="w-full rounded-xl border border-white/10 bg-white/6 p-4 text-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-blue-200">{why.equipment.temperature}</span>
+              <span class="flex items-center gap-1.5 text-xs font-medium">
+                <span class="live-dot"></span>
+                {why.equipment.live}
+              </span>
+            </div>
+            <div class="mt-1 flex items-end justify-between gap-3">
+              <span class="text-2xl font-semibold">{why.equipment.reading}</span>
+              <svg viewBox="0 0 96 28" class="h-7 w-24 overflow-visible">
+                <path
+                  d="M0 16 L8 13 L16 15 L24 11 L32 14 L40 12 L48 16 L56 13 L64 15 L72 11 L80 14 L88 12 L96 13"
+                  pathLength="1"
+                  class="spark"
+                />
+              </svg>
+            </div>
+            <div class="mt-3 flex justify-between gap-3 border-t border-white/10 pt-3">
+              <span class="text-blue-200">{why.equipment.position}</span>
+              <span class="font-medium">{why.equipment.location}</span>
+            </div>
+          </div>
+        </div>
+        <h3 class="why-card__title">{why.equipment.title}</h3>
+        <p class="why-card__text">{why.equipment.text}</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  /*
+    One row of cards running off the right edge of the screen. The padding lines the first card
+    up with the page content, and the last one with the right edge of the content when scrolled to the end.
+  */
+  .why-row {
+    --pad: 1.25rem;
+    position: relative;
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-inline: max(var(--pad), calc((100% - 78rem) / 2 + var(--pad)));
+    scroll-padding-inline: max(var(--pad), calc((100% - 78rem) / 2 + var(--pad)));
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .why-row::-webkit-scrollbar {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .why-row {
+      --pad: 2.5rem;
+    }
+  }
+  .why-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1.5px solid rgb(255 255 255 / 0.3);
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      opacity 0.15s ease;
+  }
+  .why-nav:hover {
+    border-color: rgb(255 255 255 / 0.7);
+  }
+  .why-nav:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .why-nav:disabled:hover {
+    border-color: rgb(255 255 255 / 0.3);
+  }
+
+  .why-card {
+    flex: none;
+    width: min(22.5rem, 84vw);
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: 1rem;
+    background: rgb(2 16 46 / 0.35);
+    transition: border-color 0.2s ease;
+  }
+  .why-card:hover {
+    border-color: rgb(255 255 255 / 0.22);
+  }
+  /* The last card snaps to the right edge, so the end of the row can always be reached */
+  .why-card:last-child {
+    scroll-snap-align: end;
+  }
+  .why-card__art {
+    display: flex;
+    align-items: center;
+    min-height: 12.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .why-card__title {
+    font-size: 1.1875rem;
+    line-height: 1.3;
+  }
+  .why-card__text {
+    margin-top: 0.5rem;
+    font-size: 0.9375rem;
+    color: var(--color-blue-200);
+  }
+  /* Desktop: bigger cards, graphics included */
+  @media (min-width: 1024px) {
+    .why-card {
+      width: 27rem;
+      padding: 2rem;
+    }
+    .why-card__art {
+      min-height: 17.5rem;
+      margin-bottom: 2rem;
+    }
+    .why-card__art > :global(*) {
+      zoom: 1.15;
+    }
+    .why-card__title {
+      font-size: 1.375rem;
+    }
+    .why-card__text {
+      font-size: 1rem;
+    }
+  }
+
+  /* Chat typing dots */
+  .chat__typing span {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.7);
+  }
+
+  /* Trailer pallet spaces */
+  .pallet {
+    background: rgb(255 255 255 / 0.1);
+    transition: background-color 0.15s ease;
+  }
+  .pallet.is-full {
+    background: var(--color-signal);
+  }
+
+  /* Weight slider */
+  .why-range {
+    appearance: none;
+    height: 1.5rem;
+    background: transparent;
+    cursor: pointer;
+  }
+  .why-range::-webkit-slider-runnable-track {
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: linear-gradient(var(--color-signal), var(--color-signal)) 0 / var(--fill, 0%) 100% no-repeat,
+      rgb(255 255 255 / 0.15);
+  }
+  .why-range::-moz-range-track {
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: rgb(255 255 255 / 0.15);
+  }
+  .why-range::-moz-range-progress {
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: var(--color-signal);
+  }
+  .why-range::-webkit-slider-thumb {
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: -0.4375rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgb(253 74 1 / 0.35);
+  }
+  .why-range::-moz-range-thumb {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgb(253 74 1 / 0.35);
+  }
+
+  /* Telemetry */
+  .live-dot {
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-signal);
+  }
+  .live-dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--color-signal);
+    animation: why-ping 2s ease-out infinite;
+  }
+  .spark {
+    fill: none;
+    stroke: var(--color-blue-300);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Seals */
+  .seal__outer {
+    fill: rgb(255 255 255 / 0.04);
+    stroke: rgb(255 255 255 / 0.3);
+    stroke-width: 1;
+  }
+  .seal__inner {
+    fill: none;
+    stroke: var(--color-signal);
+    stroke-width: 1.5;
+  }
+  .seal__ring {
+    transform-origin: 50px 50px;
+    transition: transform 1.2s cubic-bezier(0.2, 0, 0, 1);
+  }
+  .why-card:hover .seal__ring {
+    transform: rotate(90deg);
+  }
+  .seal__ring-text {
+    fill: var(--color-blue-200);
+    font-size: 8px;
+    font-weight: 500;
+  }
+  .seal__name {
+    fill: #fff;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  /*
+    Entrances. Without JavaScript everything shows in its final state; the script adds .js-anim
+    so the graphics start hidden, then .is-in on each card as it scrolls into view.
+  */
+  .js-anim .why-card:not(.is-in) :is(.ontime__done, .chat__in, .chat__out, .chat__time, .loop__item, .seal) {
+    opacity: 0;
+  }
+  .js-anim .why-card:not(.is-in) .ontime__fill {
+    transform: scaleX(0);
+  }
+  .js-anim .why-card:not(.is-in) .ontime__truck {
+    left: 0;
+  }
+  .js-anim .why-card:not(.is-in) .spark {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .js-anim .is-in .ontime__fill {
+    transform-origin: left;
+    animation: why-grow 2.4s cubic-bezier(0.45, 0, 0.25, 1) 0.2s both;
+  }
+  .js-anim .is-in .ontime__truck {
+    animation: why-drive 2.4s cubic-bezier(0.45, 0, 0.25, 1) 0.2s both;
+  }
+  .js-anim .is-in .ontime__done {
+    animation: why-pop 0.35s ease 2.6s both;
+  }
+
+  .js-anim .is-in .chat__in {
+    animation: why-pop 0.35s ease 0.2s both;
+  }
+  .js-anim .is-in .chat__typing {
+    animation: why-typing 1.1s ease 0.7s both;
+  }
+  .js-anim .is-in .chat__typing span {
+    animation: why-bounce 0.9s ease-in-out infinite;
+  }
+  .js-anim .is-in .chat__typing span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .js-anim .is-in .chat__typing span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  .js-anim .is-in .chat__out {
+    animation: why-pop 0.35s ease 1.8s both;
+  }
+  .js-anim .is-in .chat__time {
+    animation: why-fade 0.3s ease 2.1s both;
+  }
+
+  .js-anim .is-in .loop__item {
+    animation: why-slide 0.4s cubic-bezier(0.2, 0, 0, 1) calc(0.3s + var(--i) * 0.6s) both;
+  }
+
+  .js-anim .is-in .spark {
+    stroke-dasharray: 1;
+    animation: why-draw 1.6s ease 0.3s both;
+  }
+
+  .js-anim .is-in .seal {
+    animation: why-stamp 0.45s cubic-bezier(0.3, 0, 0.2, 1.4) calc(0.3s + var(--i) * 0.25s) both;
+  }
+
+  @keyframes why-grow {
+    from {
+      transform: scaleX(0);
+    }
+  }
+  @keyframes why-drive {
+    from {
+      left: 0%;
+    }
+  }
+  @keyframes why-pop {
+    from {
+      opacity: 0;
+      transform: translateY(6px) scale(0.96);
+    }
+  }
+  @keyframes why-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes why-slide {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  @keyframes why-typing {
+    0% {
+      opacity: 0;
+    }
+    15%,
+    85% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes why-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateY(-3px);
+      opacity: 1;
+    }
+  }
+  @keyframes why-draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+  }
+  @keyframes why-stamp {
+    from {
+      opacity: 0;
+      transform: scale(1.25);
+    }
+  }
+  @keyframes why-ping {
+    from {
+      transform: scale(1);
+      opacity: 0.6;
+    }
+    to {
+      transform: scale(2.6);
+      opacity: 0;
+    }
+  }
+
+  /* No JS or not yet in view: the typing dots are only part of the animation */
+  .chat__typing {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .why :global(*),
+    .why :global(*)::after {
+      animation-delay: 0s !important;
+    }
+    .chat__typing,
+    .live-dot::after {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { format } from "../i18n/format";
+
+  document.querySelectorAll<HTMLElement>("[data-why]").forEach((root) => {
+    root.classList.add("js-anim");
+    const { locale, fullLoad, partLoad, spaces: spacesTemplate } = root.dataset as Record<string, string>;
+    const total = Number(root.dataset.pallets);
+
+    // Load slider: 1 kg to 24 t on a log scale, filling the trailer from the cab back
+    const range = root.querySelector<HTMLInputElement>("[data-weight]")!;
+    const out = root.querySelector<HTMLOutputElement>("[data-weight-out]")!;
+    const kind = root.querySelector<HTMLElement>("[data-load-kind]")!;
+    const spaces = root.querySelector<HTMLElement>("[data-load-spaces]")!;
+    const pallets = [...root.querySelectorAll<HTMLElement>("[data-pallet]")].sort(
+      (a, b) => Number(a.dataset.pallet) - Number(b.dataset.pallet),
+    );
+    const MAX = 24000;
+    const number = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+
+    function render() {
+      const v = Number(range.value) / 1000;
+      const kg = Math.round(Math.pow(MAX, v));
+      const used = Math.max(1, Math.ceil((kg / MAX) * total));
+      const tonnes = kg < 10000 ? Math.round(kg / 100) / 10 : Math.round(kg / 1000);
+      out.textContent = kg < 1000 ? `${number.format(kg)} kg` : `${number.format(tonnes)} t`;
+      range.setAttribute("aria-valuetext", out.textContent);
+      range.style.setProperty("--fill", `${v * 100}%`);
+      pallets.forEach((p, i) => p.classList.toggle("is-full", i < used));
+      kind.textContent = used >= 30 ? fullLoad : partLoad;
+      spaces.textContent = format(spacesTemplate, { used, total });
+    }
+
+    let sweeping = false;
+    range.addEventListener("input", () => {
+      sweeping = false;
+      render();
+    });
+    render();
+
+    // Once in view, the slider sweeps up to about 8 t on its own, to show it can be moved
+    function sweep() {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        range.value = "890";
+        render();
+        return;
+      }
+      sweeping = true;
+      const start = performance.now();
+      const step = (now: number) => {
+        if (!sweeping) return;
+        const t = Math.min((now - start) / 1600, 1);
+        range.value = String(Math.round(890 * (1 - Math.pow(1 - t, 3))));
+        render();
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+
+    const flexCard = range.closest<HTMLElement>(".why-card")!;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const card = entry.target as HTMLElement;
+          card.classList.add("is-in");
+          if (card === flexCard) window.setTimeout(sweep, 400);
+          io.unobserve(card);
+        });
+      },
+      { threshold: 0.5 },
+    );
+    root.querySelectorAll<HTMLElement>(".why-card").forEach((card) => io.observe(card));
+
+    // Scroll buttons step from card to card, and are disabled at either end
+    const row = root.querySelector<HTMLElement>("[data-why-row]")!;
+    const prev = root.querySelector<HTMLButtonElement>("[data-why-prev]")!;
+    const next = root.querySelector<HTMLButtonElement>("[data-why-next]")!;
+    const cards = [...row.querySelectorAll<HTMLElement>(".why-card")];
+    const updateNav = () => {
+      prev.disabled = row.scrollLeft <= 2;
+      next.disabled = row.scrollLeft >= row.scrollWidth - row.clientWidth - 2;
+    };
+    const scrollByCard = (dir: number) => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const inset = cards[0].offsetLeft;
+      const max = row.scrollWidth - row.clientWidth;
+      const stops = cards.map((c) => Math.min(c.offsetLeft - inset, max));
+      const now = row.scrollLeft;
+      const target =
+        dir > 0 ? (stops.find((x) => x > now + 2) ?? max) : ([...stops].reverse().find((x) => x < now - 2) ?? 0);
+      row.scrollTo({ left: target, behavior: reduce ? "auto" : "smooth" });
+    };
+    prev.addEventListener("click", () => scrollByCard(-1));
+    next.addEventListener("click", () => scrollByCard(1));
+    row.addEventListener("scroll", updateNav, { passive: true });
+    window.addEventListener("resize", updateNav);
+    updateNav();
+
+    // Hovering a card replays its graphic, once the first run has finished
+    root.querySelectorAll<HTMLElement>("[data-replay]").forEach((card) => {
+      card.addEventListener("pointerenter", () => {
+        if (!card.classList.contains("is-in")) return;
+        const runs = card
+          .getAnimations({ subtree: true })
+          .filter((a) => a.effect?.getComputedTiming().iterations !== Infinity);
+        if (runs.some((a) => a.playState === "running")) return;
+        runs.forEach((a) => {
+          a.currentTime = 0;
+          a.play();
+        });
+      });
+    });
+  });
+</script>
