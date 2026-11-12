@@ -3,20 +3,198 @@ import Layout from "../layouts/Layout.astro";
 import { pageUrl } from "../data/site";
 
 const locale = "en";
+
+// Truck in side view, facing right: white refrigerated trailer behind an orange cab (local units, front at x 353)
+const trailerWheels = [30, 64, 98];
+const cabWheels = [236, 302];
+const panels = Array.from({ length: 9 }, (_, i) => 26 + i * 25);
 ---
 
 <Layout locale={locale} title="Page not found">
-  <section class="wrap py-20 md:py-32">
-    <div class="sign-panel max-w-3xl px-8 py-14 md:px-14 md:py-16">
-      <p class="tnum text-blue-300 text-lg">404</p>
-      <h1 class="mt-3 text-[2.5rem] leading-tight md:text-[3.25rem]">This road doesn't go anywhere.</h1>
-      <p class="text-blue-200 mt-4 max-w-lg text-lg">
-        The page may have moved, or the address has a typo. Start again from the home page, or call or email us.
-      </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href={pageUrl(locale)} class="btn btn-signal">Go to the home page</a>
-        <a href={pageUrl(locale, "contact")} class="btn btn-outline-light">Contact us</a>
+  <section class="bg-frost overflow-hidden">
+    <div class="wrap grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+      <div>
+        <p class="text-muted text-lg">Error 404</p>
+        <h1 class="mt-3 text-[2.5rem] leading-[1.05] md:text-[3.5rem]">This road doesn't go anywhere.</h1>
+        <p class="text-muted mt-5 max-w-md text-lg">
+          The page may have moved, or the address has a typo. Start again from the home page, or call or email us.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={pageUrl(locale)} class="btn btn-signal">Go to the home page</a>
+          <a href={pageUrl(locale, "contact")} class="btn btn-outline">Contact us</a>
+        </div>
       </div>
+
+      <!-- The truck rolls in once and stops just before the road runs out -->
+      <svg viewBox="0 0 640 290" class="dead-end block h-auto w-full" aria-hidden="true">
+        <defs>
+          <linearGradient id="road-fade" x1="0" x2="1">
+            <stop offset="0" stop-color="#3f4b63" stop-opacity="0" />
+            <stop offset="0.2" stop-color="#3f4b63" />
+          </linearGradient>
+          <linearGradient id="edge-fade" x1="0" x2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity="0" />
+            <stop offset="0.2" stop-color="#fff" stop-opacity="0.55" />
+          </linearGradient>
+        </defs>
+
+        <!-- Asphalt, fading in from the left and simply stopping -->
+        <path d="M0 222H590L614 272H0Z" fill="url(#road-fade)" />
+        <path d="M0 224H591L592 226H0Z" fill="url(#edge-fade)" />
+        <path d="M0 266H609L610 268H0Z" fill="url(#edge-fade)" />
+        <path d="M70 246H592" class="dead-end__lane" />
+
+        <g class="dead-end__truck">
+          <!-- Trailer: box with panel seams, reefer unit on the front, tail light, side guard and landing leg -->
+          <rect x="0" y="92" width="248" height="114" rx="3" class="dead-end__box" />
+          {panels.map((x) => <path d={`M${x} 95V203`} class="dead-end__seam" />)}
+          <rect x="246" y="104" width="10" height="58" rx="2" class="dead-end__reefer" />
+          <rect x="0" y="190" width="4" height="9" fill="#e0381c" />
+          <rect x="0" y="204" width="248" height="6" class="dead-end__steel" />
+          <rect x="8" y="206" width="112" height="6" rx="1.5" class="dead-end__dark" />
+          <rect x="126" y="214" width="70" height="4" rx="1" class="dead-end__guard" />
+          <path d="M206 210V230M200 230H212" class="dead-end__leg" />
+
+          <!-- Tractor chassis and fuel tank -->
+          <rect x="222" y="208" width="124" height="8" class="dead-end__dark" />
+          <rect x="254" y="212" width="26" height="12" rx="3" class="dead-end__tank" />
+
+          <!--
+            Cab, drawn from a Scania side view: an upright box with a rounded roof deflector rising to the back,
+            the big door window at the front, a small sleeper window behind it, the front wheel under the middle
+          -->
+          <path d="M258 214V111H340Q346 111 346 117V206Q346 214 338 214Z" fill="#fd4a01" />
+          <path d="M262 111V96Q262 92 266 92H300Q323 93 336 111Z" fill="#fd4a01" />
+          <path d="M262 111H337" class="dead-end__seam-dark" />
+          <path d="M307 119H335Q339 119 339 123V160H307Z" class="dead-end__glass" />
+          <path d="M342 116H344Q346 117 346 121V160H342Z" class="dead-end__glass" />
+          <path d="M312 122H322L316 136H312Z" fill="#fff" opacity="0.2" />
+          <rect x="272" y="120" width="20" height="36" rx="2.5" class="dead-end__glass" opacity="0.75" />
+          <path d="M302 114V200H341" class="dead-end__door" />
+          <rect x="317" y="176" width="9" height="2.5" rx="1" fill="#c24100" />
+          <rect x="258" y="204" width="88" height="10" class="dead-end__dark" />
+          <path d="M346 124H350" class="dead-end__mirror-arm" />
+          <rect x="348" y="116" width="5" height="24" rx="2" class="dead-end__dark" />
+          <path d="M328 198H349V211Q349 216 344 216H328Z" class="dead-end__dark" />
+          <rect x="342" y="186" width="5" height="7" rx="1" fill="#fff4d6" />
+
+          <!-- Wheel arches -->
+          {cabWheels.map((x) => <path d={`M${x - 20} 214A20 20 0 0 1 ${x + 20} 214Z`} class="dead-end__dark" />)}
+
+          <!-- Wheels -->
+          {
+            [...trailerWheels, ...cabWheels].map((x) => (
+              <g class="dead-end__wheel" style={`transform-origin: ${x}px 225px`}>
+                <circle cx={x} cy="225" r="15" class="dead-end__tyre" />
+                <circle cx={x} cy="225" r="8.5" class="dead-end__rim" />
+                <circle cx={x} cy="225" r="3" class="dead-end__hub" />
+                {[0, 90, 180, 270].map((a) => (
+                  <circle
+                    cx={x + 5.5 * Math.cos((a * Math.PI) / 180)}
+                    cy={225 + 5.5 * Math.sin((a * Math.PI) / 180)}
+                    r="1.1"
+                    class="dead-end__hub"
+                  />
+                ))}
+              </g>
+            ))
+          }
+        </g>
+      </svg>
     </div>
   </section>
 </Layout>
+
+<style>
+  .dead-end__lane {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 3;
+    stroke-dasharray: 22 16;
+  }
+  .dead-end__box {
+    fill: #fff;
+    stroke: #b9c7da;
+    stroke-width: 1.5;
+  }
+  .dead-end__seam {
+    stroke: #e3e9f2;
+    stroke-width: 1.5;
+  }
+  .dead-end__reefer {
+    fill: #e4ebf5;
+    stroke: #b9c7da;
+    stroke-width: 1.5;
+  }
+  .dead-end__steel {
+    fill: #c9d3e1;
+  }
+  .dead-end__dark {
+    fill: #2b3548;
+  }
+  .dead-end__guard {
+    fill: #8796ad;
+  }
+  .dead-end__leg {
+    fill: none;
+    stroke: #5b6780;
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  .dead-end__tank {
+    fill: #c9d3e1;
+    stroke: #8796ad;
+    stroke-width: 1;
+  }
+  .dead-end__glass {
+    fill: #1d2840;
+  }
+  .dead-end__seam-dark {
+    stroke: #c24100;
+    stroke-width: 1;
+  }
+  .dead-end__door {
+    fill: none;
+    stroke: #c24100;
+    stroke-width: 1.2;
+  }
+  .dead-end__mirror-arm {
+    stroke: #2b3548;
+    stroke-width: 2;
+  }
+  .dead-end__tyre {
+    fill: #1d2840;
+  }
+  .dead-end__rim {
+    fill: #c9d3e1;
+  }
+  .dead-end__hub {
+    fill: #5b6780;
+  }
+
+  /* One entrance: the truck drives in, slows down and stops just before the road runs out */
+  .dead-end__truck {
+    transform: translateX(200px);
+    animation: dead-end-drive 2.2s cubic-bezier(0.25, 0.6, 0.3, 1) 0.3s both;
+  }
+  .dead-end__wheel {
+    animation: dead-end-roll 2.2s cubic-bezier(0.25, 0.6, 0.3, 1) 0.3s both;
+  }
+  @keyframes dead-end-drive {
+    from {
+      transform: translateX(-340px);
+    }
+  }
+  @keyframes dead-end-roll {
+    from {
+      transform: rotate(-1440deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dead-end__truck,
+    .dead-end__wheel {
+      animation: none;
+    }
+  }
+</style>

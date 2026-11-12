@@ -23,22 +23,11 @@ const { locale } = Astro.props;
     {
       services.map((s) => (
         <li class="border-line border-b last:border-b-0 [&:first-child>a]:pt-1 [&:last-child>a]:pb-0">
-          <a
-            href={pageUrl(locale, `services/${s.slug}`)}
-            class="group flex items-start justify-between gap-6 py-7 md:py-8"
-          >
-            <div>
-              <h3 class="decoration-signal text-xl leading-snug decoration-2 underline-offset-4 group-hover:underline md:text-2xl">
-                {s.name}
-              </h3>
-              <p class="text-muted mt-2 max-w-xl">{s.short}</p>
-            </div>
-            <span
-              class="text-signal mt-1 text-xl transition-transform group-hover:translate-x-1"
-              aria-hidden="true"
-            >
-              →
-            </span>
+          <a href={pageUrl(locale, `services/${s.slug}`)} class="group block py-7 md:py-8">
+            <h3 class="decoration-signal text-xl leading-snug decoration-2 underline-offset-4 group-hover:underline md:text-[1.3125rem]">
+              {s.name}
+            </h3>
+            <p class="text-muted mt-2 max-w-xl">{s.short}</p>
           </a>
         </li>
       ))

@@ -29,6 +29,7 @@
   --color-ink: #0a1a36; /* text */
   --color-muted: #475a7a; /* secondary text */
   --color-line: #d6e0ee; /* rules and borders */
+  --color-line-strong: #aebbcf; /* hovered borders, link underlines */
 
   /* Depth: shadows tinted with the brand blue rather than grey */
   --shadow-card: 0 1px 2px rgb(0 36 97 / 0.05), 0 12px 28px -14px rgb(0 36 97 / 0.22);
@@ -36,25 +37,6 @@
 
   --text-body: 1.0625rem;
   --text-body--line-height: 1.65;
-}
-
-/*
-  The −25…+30 °C scale. Stops sit on real temperatures:
-  −25 (0%), −18 (12.7%), 0 (45.5%), +8 (60%), +11 (65.5%), +15 (72.7%), +25 (90.9%), +30 (100%).
-  It passes through white so cool ranges stay blue and warm ranges stay orange.
-*/
-:root {
-  --temp-gradient: linear-gradient(
-    90deg,
-    #2f6fd6 0%,
-    #4c88e2 12.7%,
-    #8fbdee 45.5%,
-    #c4dcf5 60%,
-    #ffffff 65.5%,
-    #ffd2b3 72.7%,
-    #ff7a3d 90.9%,
-    #fd4a01 100%
-  );
 }
 
 @layer base {
@@ -147,8 +129,7 @@
     color: #fff;
   }
   .btn-outline-light:hover {
-    border-color: #fff;
-    background: rgb(255 255 255 / 0.06);
+    border-color: rgb(255 255 255 / 0.75);
   }
   .btn-outline {
     border: 1.5px solid var(--color-line);
@@ -157,32 +138,34 @@
     box-shadow: 0 1px 2px rgb(0 36 97 / 0.06);
   }
   .btn-outline:hover {
-    border-color: var(--color-blue-900);
+    border-color: var(--color-line-strong);
   }
 
-  .link {
-    color: var(--color-blue-900);
-    font-weight: 500;
-    text-decoration: underline;
-    text-decoration-color: var(--color-signal);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.3em;
-  }
-  /* Hover: the text takes the underline's orange (the darker shade, so it stays readable) */
+  /*
+    Text links: ink text on a grey underline, so they read as links without a second colour.
+    The underline turns orange on hover.
+  */
   .link,
   .prose-page a {
-    transition: color 0.15s ease;
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--color-line-strong);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+    transition: text-decoration-color 0.15s ease;
+  }
+  .link {
+    color: var(--color-ink);
   }
   .link:hover,
   .prose-page a:hover {
-    color: var(--color-signal-700);
+    text-decoration-color: var(--color-signal);
   }
   /* On the night and blue bands */
   .link-light {
     color: #fff;
-  }
-  .link-light:hover {
-    color: var(--color-blue-200);
+    text-decoration-color: rgb(255 255 255 / 0.4);
   }
 
   /*
@@ -264,12 +247,6 @@
   }
   .prose-page li::marker {
     color: var(--color-signal);
-  }
-  .prose-page a {
-    color: var(--color-blue-900);
-    text-decoration: underline;
-    text-decoration-color: var(--color-signal);
-    text-underline-offset: 0.25em;
   }
 }
 

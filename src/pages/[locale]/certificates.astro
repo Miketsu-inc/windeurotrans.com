@@ -25,6 +25,7 @@ const locale = Astro.params.locale as Locale;
     lead="Independent auditors check how we work. These are the certificates in force today and what they cover."
   />
 
+  <div class="bg-frost">
   <div class="wrap py-16 md:py-24">
     {
       certificates.map((c, i) => (
@@ -76,6 +77,7 @@ const locale = Astro.params.locale as Locale;
         </section>
       ))
     }
+  </div>
   </div>
 
 </Layout>

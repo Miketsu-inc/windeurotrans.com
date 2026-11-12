@@ -1,5 +1,3 @@
-import type { Range } from "./temperature";
-
 export type Service = {
   slug: string;
   name: string;
@@ -9,8 +7,6 @@ export type Service = {
   tagline: string;
   /** Page intro. */
   lead: string;
-  /** Temperature ranges shown on the range bar. Empty when temperature doesn't apply. */
-  ranges: Range[];
   /** A photo from src/data/fleet.ts, by name. `position` is a CSS object-position for the crop. */
   image: { photo: string; alt: string; position?: string };
   specs: { label: string; value: string }[];
@@ -24,7 +20,6 @@ export const services: Service[] = [
     tagline: "Full and part loads across Europe",
     short: "Full and part loads from 1 kg to 24 tonnes, in Hungary and across Europe.",
     lead: "Whether you fill a whole trailer or send a few pallets, we plan the route, collect on time and deliver to the agreed slot.",
-    ranges: [],
     image: {
       photo: "truck-side",
       alt: "Orange Scania tractor unit with a white refrigerated trailer",
@@ -62,7 +57,6 @@ export const services: Service[] = [
     tagline: "Frozen, chilled and heated loads",
     short: "Refrigerated and heated loads held anywhere from −25 °C to +30 °C.",
     lead: "Frozen, chilled, fresh or frost-sensitive: you set the temperature, and we hold it from loading to unloading.",
-    ranges: [[-25, 30]],
     image: {
       photo: "trailer-rear",
       alt: "Rear corner of a white refrigerated trailer behind an orange Scania",
@@ -103,10 +97,6 @@ export const services: Service[] = [
     tagline: "GDP-certified medicine transport",
     short: "GDP-certified road transport for medicines, at +2 °C to +8 °C or +15 °C to +25 °C.",
     lead: "We are certified for Good Distribution Practice of medicinal products, so medicines travel under the same rules from the warehouse to the pharmacy wholesaler.",
-    ranges: [
-      [2, 8],
-      [15, 25],
-    ],
     image: {
       photo: "trailer-open",
       alt: "Open doors of a clean, empty refrigerated body",
@@ -144,7 +134,6 @@ export const services: Service[] = [
     tagline: "Hazardous goods under ADR",
     short: "Hazardous materials moved under ADR rules, with trained drivers and correct paperwork.",
     lead: "Dangerous goods need the right vehicle equipment, the right documents and a driver trained to handle them. We take care of all three.",
-    ranges: [],
     image: {
       photo: "fleet-close",
       alt: "Orange Scania trucks in a row, with orange hazard plates on the front",
@@ -177,7 +166,6 @@ export const services: Service[] = [
     tagline: "Export and import paperwork",
     short: "Export and import customs paperwork handled for you, so loads don't wait at the border.",
     lead: "When a load leaves or enters the EU, we prepare and handle the customs formalities so it keeps moving.",
-    ranges: [],
     image: {
       photo: "fleet-front-low",
       alt: "Five orange Scania trucks parked side by side",

@@ -4,7 +4,7 @@ import { locales, type Locale } from "../../i18n/utils";
 
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
-import { asset, site, fullAddress, pageUrl } from "../../data/site";
+import { asset, site } from "../../data/site";
 import { photoSrc, photoSrcset } from "../../data/fleet";
 
 export const getStaticPaths = (() => {
@@ -46,6 +46,7 @@ const timeline = [
   />
 
   <!-- Story -->
+  <div class="bg-frost">
   <section class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] lg:items-center lg:gap-20">
     <div class="max-w-xl">
       <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">Why we started</h2>
@@ -74,9 +75,10 @@ const timeline = [
       class="aspect-[4/3] w-full rounded-2xl object-cover"
     />
   </section>
+  </div>
 
   <!-- Principles -->
-  <section class="border-line bg-frost border-y">
+  <section class="border-line border-y">
     <div class="wrap py-16 md:py-24">
       <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">What you can expect from us</h2>
       <ul class="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
@@ -93,6 +95,7 @@ const timeline = [
   </section>
 
   <!-- Timeline -->
+  <div class="bg-frost">
   <section class="wrap grid gap-10 py-16 md:py-24 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
     <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">Since 2010</h2>
     <ol class="border-line relative border-l-2 pl-8">
@@ -107,9 +110,10 @@ const timeline = [
       }
     </ol>
   </section>
+  </div>
 
   <!-- People -->
-  <section class="bg-frost">
+  <section class="border-line border-t">
     <div class="wrap py-16 md:py-24">
       <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">The people behind your loads</h2>
       <div class="mt-12 grid gap-12 md:grid-cols-2 md:gap-14">
@@ -122,8 +126,7 @@ const timeline = [
             <p class="text-xl font-semibold">{site.founder.name}</p>
             <p class="text-muted">{site.founder.role}</p>
             <p class="mt-3 max-w-md">
-              Gergő founded the company in 2010 and still prices and plans loads with customers himself. Call him
-              directly on <a href={site.phoneHref} class="link tnum">{site.phone}</a>.
+              Gergő founded the company in 2010 and still prices and plans loads with customers himself.
             </p>
           </figcaption>
         </figure>
@@ -145,21 +148,6 @@ const timeline = [
           </figcaption>
         </figure>
       </div>
-    </div>
-  </section>
-
-  <!-- Location -->
-  <section class="wrap grid gap-8 py-16 md:grid-cols-2 md:items-end md:py-24">
-    <div>
-      <h2 class="text-[2rem] leading-tight md:text-[2.5rem]">Where to find us</h2>
-      <p class="mt-4 text-lg">
-        {fullAddress}, {site.address.country}. Just north of Budapest, with direct access to the M2 and the M0 ring
-        road.
-      </p>
-    </div>
-    <div class="flex flex-wrap gap-3 md:justify-end">
-      <a href={site.mapsLink} class="btn btn-outline" target="_blank" rel="noopener">Open in Google Maps</a>
-      <a href={pageUrl(locale, "contact")} class="btn btn-blue">Contact us</a>
     </div>
   </section>
 

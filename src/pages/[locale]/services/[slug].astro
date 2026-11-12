@@ -4,12 +4,9 @@ import { locales, type Locale } from "../../../i18n/utils";
 
 import Layout from "../../../layouts/Layout.astro";
 import PageHero from "../../../components/PageHero.astro";
-import RangeBar from "../../../components/RangeBar.astro";
 import ServiceCard from "../../../components/ServiceCard.astro";
-import ContactButtons from "../../../components/ContactButtons.astro";
 import { services, type Service } from "../../../data/services";
-import { formatTemp, SCALE_MIN, SCALE_MAX } from "../../../data/temperature";
-import { site } from "../../../data/site";
+import { pageUrl } from "../../../data/site";
 import { photoSrc, photoSrcset } from "../../../data/fleet";
 
 export const getStaticPaths = (() => {
@@ -25,13 +22,9 @@ const others = services.filter((s) => s.slug !== service.slug);
 ---
 
 <Layout locale={locale} title={service.name} description={service.short}>
-  <PageHero
-    title={service.name}
-    lead={service.lead}
-  >
-    <ContactButtons topic={service.name} class="flex flex-col gap-3 sm:flex-row lg:flex-col" />
-  </PageHero>
+  <PageHero title={service.name} lead={service.lead} />
 
+  <div class="bg-frost">
   <div class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-20">
     <article>
       <img
@@ -68,17 +61,6 @@ const others = services.filter((s) => s.slug !== service.slug);
     <aside class="lg:sticky lg:top-28 lg:self-start">
       <div class="card p-6 md:p-7">
         <h2 class="text-lg">At a glance</h2>
-        {
-          service.ranges.length > 0 && (
-            <div class="mt-5">
-              <RangeBar ranges={service.ranges} />
-              <p class="tnum text-muted mt-2 flex justify-between text-xs">
-                <span>{formatTemp(SCALE_MIN)}</span>
-                <span>{formatTemp(SCALE_MAX)}</span>
-              </p>
-            </div>
-          )
-        }
         <dl class="mt-4">
           {
             service.specs.map((spec) => (
@@ -89,17 +71,17 @@ const others = services.filter((s) => s.slug !== service.slug);
             ))
           }
         </dl>
-        <ContactButtons topic={service.name} tone="light" class="mt-5 flex flex-col gap-3" />
       </div>
       <p class="text-muted mt-5 px-1 text-[0.9375rem]">
-        Questions first? Email
-        <a href={`mailto:${site.email}`} class="link mt-1 block w-fit">{site.email}</a>
+        Want a price for this service?
+        <a href={pageUrl(locale, "contact")} class="link mt-1 block w-fit">Contact us</a>
       </p>
     </aside>
   </div>
+  </div>
 
-  <!-- Other services on a white band, set apart from the article -->
-  <div class="border-line bg-frost border-t">
+  <!-- Other services on the page background, set apart from the article -->
+  <div class="border-line border-t">
     <section class="wrap py-16 md:py-20">
       <h2 class="text-2xl md:text-[1.75rem]">Other services</h2>
       <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

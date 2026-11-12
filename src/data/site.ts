@@ -16,9 +16,9 @@ export const site = {
   },
   hours: "Monday to Friday, 8:00–17:00",
   mapsEmbed:
-    "https://www.google.com/maps?q=2120%20Dunakeszi%2C%20Kolozsv%C3%A1r%20u.%2029&output=embed",
+    "https://www.google.com/maps?q=Wind%20Eurotrans%20Kft.%2C%20Kolozsv%C3%A1r%20u.%2029%2C%202120%20Dunakeszi&output=embed",
   mapsLink:
-    "https://www.google.com/maps/search/?api=1&query=2120%20Dunakeszi%2C%20Kolozsv%C3%A1r%20u.%2029",
+    "https://www.google.com/maps/search/?api=1&query=Wind%20Eurotrans%20Kft.%2C%20Kolozsv%C3%A1r%20u.%2029%2C%202120%20Dunakeszi",
   founder: {
     name: "Széll Gergő",
     role: "Founder and managing director",

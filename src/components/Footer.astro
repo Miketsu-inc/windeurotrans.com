@@ -10,7 +10,7 @@ const { locale } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
-<footer class="bg-night text-blue-200">
+<footer class="bg-blue-950 text-blue-300">
   <div class="wrap grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:py-20">
     <div>
       <!-- The name in text: the logo only works on light backgrounds, and the header already carries it.
@@ -24,7 +24,7 @@ const year = new Date().getFullYear();
     </div>
 
     <div>
-      <h2 class="mb-4 text-base font-medium text-white">Services</h2>
+      <h2 class="mb-4 text-base font-semibold text-white">Services</h2>
       <ul class="space-y-2.5 text-[0.9375rem]">
         {
           services.map((s) => (
@@ -39,7 +39,7 @@ const year = new Date().getFullYear();
     </div>
 
     <div>
-      <h2 class="mb-4 text-base font-medium text-white">Company</h2>
+      <h2 class="mb-4 text-base font-semibold text-white">Company</h2>
       <ul class="space-y-2.5 text-[0.9375rem]">
         <li><a href={pageUrl(locale, "about")} class="hover:text-white">About us</a></li>
         <li><a href={pageUrl(locale, "fleet")} class="hover:text-white">Our fleet</a></li>
@@ -50,7 +50,7 @@ const year = new Date().getFullYear();
     </div>
 
     <div>
-      <h2 class="mb-4 text-base font-medium text-white">Contact</h2>
+      <h2 class="mb-4 text-base font-semibold text-white">Contact</h2>
       <ul class="space-y-2.5 text-[0.9375rem]">
         <li><a href={site.phoneHref} class="tnum hover:text-white">{site.phone}</a></li>
         <li><a href={`mailto:${site.email}`} class="hover:text-white">{emailParts[0]}<wbr />{emailParts[1]}</a></li>

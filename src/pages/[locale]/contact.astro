@@ -5,8 +5,7 @@ import { locales, type Locale } from "../../i18n/utils";
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
 import Icon from "../../components/Icon.astro";
-import ContactCards from "../../components/ContactCards.astro";
-import { site, fullAddress, enquiryChecklist } from "../../data/site";
+import { site, fullAddress, enquiryChecklist, emailParts, mailto } from "../../data/site";
 
 export const getStaticPaths = (() => {
   return locales.map((locale) => ({ params: { locale } }));
@@ -25,18 +24,19 @@ const locale = Astro.params.locale as Locale;
     lead="Call or email us with your load. We reply with a price and a transit time, usually within one working day."
   />
 
-  <div class="wrap grid gap-14 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-20">
-    <div>
-      <!-- The two ways to reach us -->
-      <ContactCards />
-
-      <!-- What to tell us -->
-      <section class="mt-14 md:mt-16">
-        <h2 class="text-2xl md:text-[1.75rem]">What we need to price your load</h2>
-        <p class="text-muted mt-3 max-w-xl text-lg">
-          Have these ready when you call, or put them in your email, so we can price your load without going back and forth.
+  <!-- What to have ready, shown as a filled-in example rather than a checklist -->
+  <section class="bg-frost">
+    <!-- What to have ready -->
+    <div class="wrap grid items-start gap-8 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
+      <div>
+        <h2 class="text-2xl md:text-[2rem]">What we need to price your load</h2>
+        <p class="text-muted mt-4 max-w-lg text-lg">
+          Have these ready when you call, or put them in your email, so we can price your load without going back and
+          forth.
         </p>
-        <ul class="mt-6 grid max-w-2xl gap-x-8 gap-y-3 sm:grid-cols-2">
+      </div>
+      <div>
+        <ul class="space-y-3.5 text-lg">
           {
             enquiryChecklist.map((item) => (
               <li class="flex gap-3">
@@ -46,51 +46,85 @@ const locale = Astro.params.locale as Locale;
             ))
           }
         </ul>
-        <p class="text-muted mt-6 max-w-xl">
-          Shipping dangerous goods? Add the UN number, the class and the packing group.
-        </p>
-      </section>
+        <p class="text-muted mt-6">Shipping dangerous goods? Add the UN number, the class and the packing group.</p>
+      </div>
     </div>
 
-    <aside class="lg:self-start">
-      <div class="sign-panel p-8">
-        <h2 class="text-xl">You'll speak to</h2>
-        <p class="mt-3 text-lg font-medium">{site.founder.name}</p>
-        <p class="text-blue-200">{site.founder.role}</p>
+    <!-- How to reach us: the details on the left, the map beside them -->
+    <div class="wrap grid gap-10 pb-16 md:pb-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
+      <div>
+        <h2 class="text-2xl md:text-[2rem]">Contact details</h2>
+        <ul class="mt-8 space-y-7">
+          <li>
+            <div>
+              <p class="contact-label"><Icon name="phone" class="size-4" />Phone</p>
+              <a href={site.phoneHref} class="contact-link tnum mt-0.5 inline-block text-lg font-semibold">{site.phone}</a>
+            </div>
+          </li>
+          <li>
+            <div>
+              <p class="contact-label"><Icon name="mail" class="size-4" />Email</p>
+              <a href={mailto()} class="contact-link mt-0.5 inline-block text-lg font-semibold">{emailParts[0]}<wbr />{emailParts[1]}</a>
+            </div>
+          </li>
+          <li>
+            <div>
+              <p class="contact-label"><Icon name="clock" class="size-4" />Business hours</p>
+              <p class="mt-0.5 text-lg font-semibold">Monday to Friday, 8:00–17:00</p>
+            </div>
+          </li>
+          <li>
+            <div>
+              <p class="contact-label"><Icon name="pin" class="size-4" />Office</p>
+              <address class="mt-0.5 text-lg font-semibold not-italic">
+                {site.address.street}, {site.address.postcode} {site.address.city}
+              </address>
+              <a href={site.mapsLink} class="link mt-2.5 inline-block text-[0.9375rem]" target="_blank" rel="noopener">Get directions</a>
+            </div>
+          </li>
+        </ul>
+        <p class="text-muted border-line mt-10 border-t pt-5 text-[0.9375rem]">
+          {site.legalName}, company registration number <span class="tnum">{site.registrationNumber}</span>
+        </p>
       </div>
 
-      <dl class="mt-8 space-y-6 px-1">
-        <div class="flex gap-3">
-          <Icon name="pin" class="text-blue-900 mt-0.5 size-5 shrink-0" />
-          <div>
-            <dt class="font-medium">Office</dt>
-            <dd class="text-muted">{site.legalName}</dd>
-            <dd class="text-muted">{fullAddress}, {site.address.country}</dd>
-            <dd class="mt-1">
-              <a href={site.mapsLink} class="link text-[0.9375rem]" target="_blank" rel="noopener">Get directions</a>
-            </dd>
-          </div>
-        </div>
-        <div class="flex gap-3">
-          <Icon name="doc" class="text-blue-900 mt-0.5 size-5 shrink-0" />
-          <div>
-            <dt class="font-medium">Company registration number</dt>
-            <dd class="text-muted tnum">{site.registrationNumber}</dd>
-          </div>
-        </div>
-      </dl>
-    </aside>
-  </div>
-
-  <section aria-label="Map" class="wrap pb-16 md:pb-24">
-    <div class="border-line relative aspect-[4/3] overflow-hidden rounded-2xl border sm:aspect-[21/9]">
-      <iframe
-        title={`Map showing ${site.legalName}, ${fullAddress}`}
-        class="absolute inset-0 h-full w-full"
-        style="border: 0"
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        src={site.mapsEmbed}></iframe>
+      <div class="bg-sky border-line relative h-[24rem] overflow-hidden rounded-xl border lg:h-auto lg:min-h-[30rem]">
+        <iframe
+          title={`Map showing ${site.legalName}, ${fullAddress}`}
+          class="absolute inset-0 h-full w-full"
+          style="border: 0"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src={site.mapsEmbed}></iframe>
+      </div>
     </div>
   </section>
 </Layout>
+
+<style>
+  /* Contact details: a small orange icon in line with each label */
+  .contact-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+    line-height: 1.25rem;
+  }
+  .contact-label :global(svg) {
+    flex-shrink: 0;
+    color: var(--color-signal);
+  }
+
+  /* Phone and email: a quiet underline that turns orange on hover */
+  .contact-link {
+    text-decoration-line: underline;
+    text-decoration-color: var(--color-line-strong);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+    transition: text-decoration-color 0.15s ease;
+  }
+  .contact-link:hover {
+    text-decoration-color: var(--color-signal);
+  }
+</style>

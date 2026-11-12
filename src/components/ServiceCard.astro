@@ -1,11 +1,10 @@
 ---
 /*
-  A service as a clickable card: photo, name, one line and its temperature range.
+  A service as a clickable card: photo, name and one line.
+  Hover: the card lifts (like every card link) and "Read more" takes the orange underline links use.
   The compact version (photo and name only) previews other services under an article.
 */
-import RangeBar from "./RangeBar.astro";
 import type { Service } from "../data/services";
-import { formatRange } from "../data/temperature";
 import { pageUrl } from "../data/site";
 import { photoSrc, photoSrcset } from "../data/fleet";
 
@@ -40,24 +39,15 @@ const Heading = compact ? "h3" : "h2";
   <div class:list={["flex grow flex-col", compact ? "p-5" : "p-6 md:p-7"]}>
     <Heading
       class:list={[
-        "decoration-signal leading-snug decoration-2 underline-offset-4 group-hover:underline",
+        "leading-snug",
         compact ? "text-lg" : "text-xl md:text-[1.375rem]",
       ]}
     >
       {s.name}
     </Heading>
     {!compact && <p class="text-muted mt-2">{s.short}</p>}
-    {
-      !compact && s.ranges.length > 0 && (
-        <div class="mt-5">
-          <RangeBar ranges={s.ranges} />
-          <p class="tnum text-muted mt-2 text-sm">{s.ranges.map(formatRange).join(", ")}</p>
-        </div>
-      )
-    }
-    <span class:list={["text-blue-900 mt-auto inline-flex items-center gap-2 font-medium", compact ? "pt-4" : "pt-6"]}>
-      Read more
-      <span class="text-signal transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
+    <span class:list={["mt-auto self-start", compact ? "pt-4" : "pt-6"]}>
+      <span class="link group-hover:decoration-signal">Read more</span>
     </span>
   </div>
 </a>

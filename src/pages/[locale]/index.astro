@@ -6,8 +6,8 @@ import Layout from "../../layouts/Layout.astro";
 import Icon from "../../components/Icon.astro";
 import HeroMap from "../../components/HeroMap.astro";
 import ServiceScroller from "../../components/ServiceScroller.astro";
-import { certificates } from "../../data/certificates";
-import { photos, photoSrc, photoSrcset } from "../../data/fleet";
+import WhyUs from "../../components/WhyUs.astro";
+import OfficeMap from "../../components/OfficeMap.astro";
 import { site, asset, pageUrl, emailParts } from "../../data/site";
 
 export const getStaticPaths = (() => {
@@ -16,14 +16,13 @@ export const getStaticPaths = (() => {
 
 const locale = Astro.params.locale as Locale;
 
-const proof = [
-  { icon: "shield", title: "GDP certified", text: "Medicines by road, audited by URS" },
-  { icon: "badge", title: "ISO 9001:2015", text: "Quality management, audited by DNV" },
-  { icon: "dispatch", title: "24/7 dispatch", text: "Someone answers while your load is moving" },
+// Key facts under the hero. The qualities (certificates, dispatch and so on) have their own section further down.
+const facts = [
   { icon: "road", title: "On the road since 2010", text: "Based in Dunakeszi, next to Budapest" },
+  { icon: "thermometer", title: "−25 °C to +30 °C", text: "Any temperature your load needs" },
+  { icon: "globe", title: "Across Europe", text: "Door to door, from Hungary" },
+  { icon: "layers", title: "Five services, one team", text: "Transport, cold chain, medicines, ADR, customs" },
 ] as const;
-
-const fleetPreview = ["fleet-angle-near", "truck-side", "trailer-rear"];
 
 const faqs = [
   {
@@ -54,9 +53,9 @@ const faqs = [
 ---
 
 <Layout locale={locale}>
-  <!-- Hero: on white, so it runs on from the header. Headline beside an animated route map; on phones the buttons follow the map. -->
+  <!-- Hero: on white, so it runs on from the header. Headline beside an animated route map; below desktop the map fills the top and the text and buttons sit together at the bottom. -->
   <section class="bg-frost overflow-hidden bg-[radial-gradient(50%_60%_at_78%_48%,#e3edfb_0%,transparent_75%)]">
-    <div class="wrap grid pt-12 pb-12 md:pt-16 md:pb-16 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[1fr_auto_auto_1fr] lg:gap-x-6 lg:pt-10 lg:pb-10">
+    <div class="wrap relative flex min-h-[calc(85svh-4rem)] flex-col justify-end gap-8 pt-16 pb-10 md:pb-14 lg:grid lg:min-h-0 lg:gap-y-0 lg:pt-10 lg:pb-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[1fr_auto_auto_1fr] lg:gap-x-6">
       <div class="relative z-10 lg:col-start-1 lg:row-start-2">
         <h1 class="text-[2.75rem] leading-[1] font-bold tracking-[-0.035em] sm:text-[4rem] xl:text-[4.75rem]">
           Reliability you can count on.
@@ -66,26 +65,26 @@ const faqs = [
           temperature and on the day we agreed with you.
         </p>
       </div>
-      <div class="mx-auto mt-6 w-full max-w-[22rem] sm:max-w-[26rem] lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:-my-6 lg:mr-0 lg:max-w-[44rem] xl:max-w-[48rem] min-[1400px]:-mr-14">
+      <div class="pointer-events-none absolute top-[32%] left-1/2 w-[min(40rem,125%)] -translate-x-1/2 md:w-[min(54rem,115%)] -translate-y-1/2 opacity-60 lg:pointer-events-auto lg:static lg:mx-auto lg:w-full lg:translate-x-0 lg:translate-y-0 lg:opacity-100 lg:col-start-2 lg:row-span-4 lg:row-start-1 lg:-my-6 lg:-ml-16 lg:max-w-none xl:w-[calc(100%+5.5rem)]">
         <HeroMap />
       </div>
-      <div class="relative z-10 mt-4 flex flex-wrap gap-3 lg:col-start-1 lg:row-start-3 lg:mt-8">
+      <div class="relative z-10 flex gap-3 *:flex-1 sm:*:flex-none lg:col-start-1 lg:row-start-3 lg:mt-8">
         <a href={pageUrl(locale, "contact")} class="btn btn-signal">Get in touch</a>
         <a href={pageUrl(locale, "services")} class="btn btn-outline">Our services</a>
       </div>
     </div>
   </section>
 
-  <!-- Proof: the blue band that follows the white hero -->
-  <section aria-label="Why shippers trust us" class="band-night">
-    <ul class="wrap grid gap-x-8 gap-y-8 py-12 sm:grid-cols-2 md:py-16 lg:grid-cols-4">
+  <!-- Key facts: the blue band that follows the white hero. On phones the first two only, titles only: the hero and "What we move" already cover the other two. -->
+  <section aria-label="Key facts" class="band-night">
+    <ul class="wrap grid grid-cols-2 gap-x-5 gap-y-7 py-9 sm:gap-x-8 sm:gap-y-8 sm:py-12 md:py-16 lg:grid-cols-4">
       {
-        proof.map((p) => (
-          <li class="flex gap-4 border-l-2 border-white/20 pl-5 sm:border-l-0 sm:pl-0 sm:even:border-l-2 sm:even:pl-5 lg:[&:not(:first-child)]:border-l-2 lg:[&:not(:first-child)]:pl-5">
-            <Icon name={p.icon} class="text-signal mt-0.5 size-6 shrink-0" />
+        facts.map((f) => (
+          <li class="flex flex-col gap-2 border-white/20 even:border-l-2 [&:nth-child(n+3)]:hidden sm:[&:nth-child(n+3)]:flex even:pl-5 sm:flex-row sm:gap-4 lg:[&:not(:first-child)]:border-l-2 lg:[&:not(:first-child)]:pl-5">
+            <Icon name={f.icon} class="text-signal mt-0.5 size-6 shrink-0" />
             <div>
-              <p class="font-semibold">{p.title}</p>
-              <p class="text-blue-200 text-[0.9375rem] leading-snug">{p.text}</p>
+              <p class="leading-snug font-semibold">{f.title}</p>
+              <p class="text-blue-200 mt-0.5 hidden text-[0.9375rem] leading-snug sm:block">{f.text}</p>
             </div>
           </li>
         ))
@@ -97,47 +96,7 @@ const faqs = [
     <ServiceScroller locale={locale} />
   </div>
 
-  <!-- Fleet: three photos linking to the full gallery -->
-  <section class="bg-sky">
-    <div class="wrap py-20 md:py-28">
-      <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div class="max-w-xl">
-          <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Our fleet</h2>
-          <p class="text-muted mt-4 text-lg">
-            Scania trucks and refrigerated trailers, kept clean and in good repair. These are the trucks that carry
-            your loads.
-          </p>
-        </div>
-        <a href={pageUrl(locale, "fleet")} class="link shrink-0">See the whole fleet</a>
-      </div>
-      <ul class="mt-10 grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-3 lg:grid-rows-2">
-        {
-          fleetPreview.map((name, i) => {
-            const p = photos.find((photo) => photo.name === name)!;
-            return (
-              <li class:list={[i === 0 && "col-span-2 lg:row-span-2"]}>
-                <a href={pageUrl(locale, "fleet")} class="group relative block h-full overflow-hidden rounded-xl" tabindex="-1">
-                  <img
-                    src={photoSrc(p.name)}
-                    srcset={photoSrcset(p.name)}
-                    sizes={i === 0 ? "(min-width: 1280px) 800px, 100vw" : "(min-width: 1280px) 400px, 50vw"}
-                    alt={p.alt}
-                    width={p.width}
-                    height={p.height}
-                    loading="lazy"
-                    class:list={[
-                      "w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]",
-                      i === 0 ? "aspect-[16/9] lg:absolute lg:inset-0 lg:aspect-auto lg:h-full" : "aspect-[4/3]",
-                    ]}
-                  />
-                </a>
-              </li>
-            );
-          })
-        }
-      </ul>
-    </div>
-  </section>
+  <WhyUs locale={locale} />
 
   <!-- Promise -->
   <section class="bg-frost">
@@ -174,59 +133,25 @@ const faqs = [
     </div>
   </section>
 
-  <!-- Certificates -->
+  <!-- FAQ: a night band, so the page keeps alternating white and blue down to the contact section -->
   <section class="band-night">
-    <div class="wrap grid gap-12 py-20 md:py-28 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-20">
-      <div>
-        <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Checked by independent auditors</h2>
-        <p class="text-blue-200 mt-4 max-w-md text-lg">
-          Our quality management and our handling of medicines are certified by outside bodies, so you don't have to
-          take our word for it.
-        </p>
-        <a href={pageUrl(locale, "certificates")} class="link link-light mt-6 inline-block">View the certificates</a>
-      </div>
-      <ul class="grid grid-cols-2 gap-5 sm:gap-8">
-        {
-          certificates.map((c) => (
-            <li>
-              <a href={pageUrl(locale, `certificates#${c.id}`)} class="group block">
-                <img
-                  src={asset(c.thumb)}
-                  alt={`${c.name} certificate of ${site.legalName}`}
-                  width="480"
-                  height="679"
-                  loading="lazy"
-                  class="w-full rounded-md shadow-[0_30px_50px_-22px_rgb(0_0_0/0.6)] transition-transform duration-200 group-hover:-translate-y-1"
-                />
-                <p class="mt-4 font-semibold">{c.name}</p>
-                <p class="text-blue-200 text-[0.9375rem]">Valid until {c.validUntil}</p>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section class="bg-ice">
     <div class="wrap grid gap-10 py-20 md:py-28 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
     <div>
       <h2 class="text-[2rem] leading-tight md:text-[2.75rem]">Questions shippers ask us</h2>
-      <p class="text-muted mt-4 max-w-sm text-lg">
-        Something else on your mind? Call us on <a href={site.phoneHref} class="link tnum">{site.phone}</a>.
+      <p class="mt-4 max-w-sm text-lg text-blue-200">
+        Short answers to what we get asked most. For anything else, our details are just below.
       </p>
     </div>
     <div>
       {
         faqs.map((f) => (
-          <details class="faq border-line border-b last:border-b-0" data-faq>
+          <details class="faq border-b border-white/15 last:border-b-0" data-faq>
             <summary class="flex cursor-pointer list-none items-start justify-between gap-6 py-6 text-lg font-medium">
               {f.q}
-              <Icon name="chevron" class="faq__chevron text-blue-900 mt-1 size-5 shrink-0" />
+              <Icon name="chevron" class="faq__chevron mt-1 size-5 shrink-0" />
             </summary>
             <div class="faq__answer">
-              <p class="text-muted max-w-2xl pb-7">{f.a}</p>
+              <p class="max-w-2xl pb-7 text-blue-200">{f.a}</p>
             </div>
           </details>
         ))
@@ -235,10 +160,7 @@ const faqs = [
     </div>
   </section>
 
-  <!--
-    Contact. Same split as the FAQ above, so the two close the page as a pair.
-    The phone number is the one bold element: it is how most loads get booked.
-  -->
+  <!-- Contact: one panel in two halves, talking to us on white and the office over a crop of the hero map -->
   <section class="bg-frost" aria-labelledby="contact-title">
     <div class="wrap grid gap-10 py-20 md:py-28 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16">
       <div>
@@ -248,58 +170,61 @@ const faqs = [
         </p>
       </div>
 
-      <div>
-        <a
-          href={site.phoneHref}
-          class="contact-phone tnum text-blue-900 inline-block text-[2.75rem] leading-none font-bold tracking-[-0.035em] sm:text-[3.75rem] xl:text-[4.5rem]"
-        >
-          {site.phone}
-        </a>
+      <div class="border-line grid overflow-hidden rounded-xl border sm:grid-cols-2">
+        <div class="bg-frost p-7 md:p-9">
+          <h3 class="text-xl">Talk to us</h3>
+          <dl class="mt-8 space-y-7">
+            <div>
+              <dt class="text-muted text-[0.9375rem]">Phone</dt>
+              <dd class="mt-1 text-[1.0625rem] font-semibold">
+                <a href={site.phoneHref} class="contact-link tnum">{site.phone}</a>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-muted text-[0.9375rem]">Email</dt>
+              <dd class="mt-1 text-[1.0625rem] font-semibold">
+                <a href={`mailto:${site.email}`} class="contact-link">{emailParts[0]}<wbr />{emailParts[1]}</a>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-muted text-[0.9375rem]">Business hours</dt>
+              <dd class="mt-1 text-[1.0625rem] font-semibold">Monday to Friday, 8:00–17:00</dd>
+            </div>
+          </dl>
+        </div>
 
-        <dl class="mt-12 grid gap-8 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-10 md:mt-14 xl:grid-cols-[auto_auto_auto] xl:justify-between">
-          <div>
-            <dt class="text-muted text-[0.9375rem]">Email</dt>
-            <dd class="mt-1.5 text-lg font-medium">
-              <a href={`mailto:${site.email}`} class="contact-link">{emailParts[0]}<wbr />{emailParts[1]}</a>
-            </dd>
+        <div class="bg-ice border-line relative flex min-h-[22rem] flex-col justify-end border-t p-7 sm:border-t-0 sm:border-l md:p-9">
+          <OfficeMap class="contact-map absolute inset-0 h-full w-full" />
+          <div class="relative">
+            <h3 class="text-xl">Visit us</h3>
+            <p class="mt-3 text-[1.0625rem]">
+              {site.address.street}<br />{site.address.postcode} {site.address.city}, {site.address.country}
+            </p>
+            <a href={site.mapsLink} class="link mt-4 inline-block text-[0.9375rem]" target="_blank" rel="noopener">
+              Get directions
+            </a>
           </div>
-          <div>
-            <dt class="text-muted text-[0.9375rem]">Business hours</dt>
-            <dd class="mt-1.5 text-lg font-medium">Monday to Friday<br />8:00–17:00</dd>
-            <dd class="text-muted mt-1 max-w-[13rem] text-[0.9375rem]">Dispatch answers 24/7 for loads on the road.</dd>
-          </div>
-          <div>
-            <dt class="text-muted text-[0.9375rem]">Office</dt>
-            <dd class="mt-1.5 text-lg font-medium">
-              {site.address.street}<br />{site.address.postcode} {site.address.city}<br />{site.address.country}
-            </dd>
-            <dd class="mt-1">
-              <a href={site.mapsLink} class="link text-[0.9375rem]" target="_blank" rel="noopener">Get directions</a>
-            </dd>
-          </div>
-        </dl>
+        </div>
       </div>
     </div>
   </section>
 </Layout>
 
 <style>
-  /* The phone number and email: the site's orange underline, drawn in on hover */
-  .contact-phone,
+  /* Phone and email: a grey underline that turns orange on hover, like the site's other links */
   .contact-link {
     text-decoration: underline;
-    text-decoration-color: transparent;
-    text-decoration-thickness: 0.06em;
-    text-underline-offset: 0.16em;
-    transition: text-decoration-color 0.15s ease;
-  }
-  .contact-link {
+    text-decoration-color: var(--color-line-strong);
     text-decoration-thickness: 2px;
     text-underline-offset: 0.3em;
+    transition: text-decoration-color 0.15s ease;
   }
-  .contact-phone:hover,
   .contact-link:hover {
     text-decoration-color: var(--color-signal);
+  }
+  /* The office map fades out before the address so the text sits on plain ground */
+  :global(.contact-map) {
+    mask-image: linear-gradient(to bottom, #000 35%, transparent 70%);
   }
   .faq summary::-webkit-details-marker {
     display: none;

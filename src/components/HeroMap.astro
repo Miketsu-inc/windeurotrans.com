@@ -8,6 +8,9 @@ import { mapSize, hub, landDots, hungaryDots, borders, hungaryOutline, network, 
 
 const { width: W, height: H } = mapSize;
 
+// The visible frame: the full width of the map but only its middle band, so it is wide rather than square
+const view = { x: 0, y: 55, w: W, h: 885 };
+
 // Routes in the data start on a small ring around the hub; run them into the hub itself
 const fromHub = (d: string) => `M${hub.x} ${hub.y}L${d.slice(1)}`;
 const trunks = [...new Set(Object.values(routes).map((r) => r.d.slice(1).split("L")[0]))];
@@ -33,16 +36,30 @@ const list = Object.values(routes).map((r) => {
 ---
 
 <div class="hero-map" data-hero-map>
-  <svg viewBox={`0 0 ${W} ${H}`} class="block h-auto w-full overflow-visible" aria-hidden="true">
+  <svg viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} class="block h-auto w-full overflow-visible" aria-hidden="true">
     <defs>
-      <radialGradient id="hm-fade" gradientUnits="userSpaceOnUse" cx={W / 2} cy={H / 2} r={W / 2}>
-        <stop offset="0.45" stop-color="#fff" />
-        <stop offset="0.72" stop-color="#b0b0b0" />
-        <stop offset="0.9" stop-color="#3a3a3a" />
+      <!-- The edges fade out along each side rather than in a circle: a horizontal fade multiplied by a vertical one -->
+      <linearGradient id="hm-fade-x">
+        <stop offset="0" stop-color="#000" />
+        <stop offset="0.05" stop-color="#3a3a3a" />
+        <stop offset="0.12" stop-color="#fff" />
+        <stop offset="0.88" stop-color="#fff" />
+        <stop offset="0.95" stop-color="#3a3a3a" />
         <stop offset="1" stop-color="#000" />
-      </radialGradient>
-      <mask id="hm-edge" maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
-        <rect width={W} height={H} fill="url(#hm-fade)" />
+      </linearGradient>
+      <linearGradient id="hm-fade-y" x2="0" y2="1">
+        <stop offset="0" stop-color="#000" />
+        <stop offset="0.07" stop-color="#3a3a3a" />
+        <stop offset="0.18" stop-color="#fff" />
+        <stop offset="0.82" stop-color="#fff" />
+        <stop offset="0.93" stop-color="#3a3a3a" />
+        <stop offset="1" stop-color="#000" />
+      </linearGradient>
+      <mask id="hm-edge-y" maskUnits="userSpaceOnUse" x={view.x} y={view.y} width={view.w} height={view.h}>
+        <rect x={view.x} y={view.y} width={view.w} height={view.h} fill="url(#hm-fade-y)" />
+      </mask>
+      <mask id="hm-edge" maskUnits="userSpaceOnUse" x={view.x} y={view.y} width={view.w} height={view.h}>
+        <rect x={view.x} y={view.y} width={view.w} height={view.h} fill="url(#hm-fade-x)" mask="url(#hm-edge-y)" />
       </mask>
       <radialGradient id="hm-spot">
         <stop offset="0" stop-color="#fff" />
@@ -78,12 +95,20 @@ const list = Object.values(routes).map((r) => {
       ))
     }
 
-    <circle cx={hub.x} cy={hub.y} r="7" class="hero-map__hub" />
+    <circle cx={hub.x} cy={hub.y} r="8" class="hero-map__hub" />
     <text x={hub.x + 22} y={hub.y + 40} class="hero-map__hub-label">{hub.name}</text>
   </svg>
 </div>
 
 <style>
+  /* Roads and destinations in neutral greys; orange is kept for Hungary, the hub, the trucks and a hovered stop */
+  .hero-map {
+    --map-ink: #2b3548;
+    --map-grey: #6b778c;
+    /* It's a picture: no text selection on the city names when clicking or dragging over it */
+    user-select: none;
+    -webkit-user-select: none;
+  }
   .hero-map__land {
     fill: none;
     stroke: #cbd7e8;
@@ -91,7 +116,7 @@ const list = Object.values(routes).map((r) => {
     stroke-linecap: round;
   }
   .hero-map__land--lit {
-    stroke: #a8bddb;
+    stroke: #8ea6cc;
   }
   .hero-map__borders {
     fill: none;
@@ -122,16 +147,16 @@ const list = Object.values(routes).map((r) => {
     stroke-linejoin: round;
   }
   .hero-map__network {
-    stroke: var(--color-blue-900);
+    stroke: var(--map-ink);
     stroke-width: 1.6;
-    stroke-opacity: 0.35;
+    stroke-opacity: 0.4;
     opacity: 0;
     animation: hm-in 1.2s ease 0.2s forwards;
     transition: stroke-opacity 0.3s ease;
   }
   /* Per-route copy, only visible when its destination is hovered */
   .hero-map__road {
-    stroke: var(--color-blue-900);
+    stroke: var(--color-signal);
     stroke-width: 2;
     stroke-opacity: 0;
     transition: stroke-opacity 0.3s ease;
@@ -148,7 +173,7 @@ const list = Object.values(routes).map((r) => {
     animation-delay: calc(1.4s + var(--i) * 0.9s);
   }
   .hero-map__stop {
-    fill: var(--color-blue-900);
+    fill: var(--map-grey);
     stroke: var(--color-frost);
     stroke-width: 2.5;
     opacity: 0;
@@ -159,7 +184,7 @@ const list = Object.values(routes).map((r) => {
   .hero-map__name {
     fill: var(--color-ink);
     fill-opacity: 0.8;
-    font-size: 23px;
+    font-size: 20px;
     font-weight: 500;
     opacity: 0;
     paint-order: stroke;
@@ -189,12 +214,15 @@ const list = Object.values(routes).map((r) => {
   }
 
   /* Hub */
+  /* The hub: orange like the trucks that leave it, with a white ring to lift it off Hungary's dots */
   .hero-map__hub {
-    fill: var(--color-blue-900);
+    fill: var(--color-signal);
+    stroke: #fff;
+    stroke-width: 3.5;
   }
   .hero-map__hub-label {
     fill: var(--color-ink);
-    font-size: 25px;
+    font-size: 22px;
     font-weight: 600;
     paint-order: stroke;
     stroke: var(--color-frost);
@@ -216,9 +244,10 @@ const list = Object.values(routes).map((r) => {
     }
   }
 
-  /* Small screens: city names would be too small to read */
-  @media (max-width: 639px) {
-    .hero-map__name {
+  /* Below desktop the map sits behind the headline as a backdrop, so it carries no names */
+  @media (max-width: 1023px) {
+    .hero-map__name,
+    .hero-map__hub-label {
       display: none;
     }
   }
@@ -264,7 +293,7 @@ const list = Object.values(routes).map((r) => {
         const p = pt.matrixTransform(svg.getScreenCTM()!.inverse());
         spot.setAttribute("cx", String(p.x));
         spot.setAttribute("cy", String(p.y));
-        spot.setAttribute("r", "90");
+        spot.setAttribute("r", "75");
       });
       svg.addEventListener("pointerleave", () => spot.setAttribute("r", "0"));
     });
