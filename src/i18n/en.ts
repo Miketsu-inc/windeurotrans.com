@@ -63,13 +63,6 @@ export default {
       contact: "Get in touch",
       services: "Our services",
     },
-    facts: {
-      label: "Key facts",
-      since: { title: "On the road since 2010", text: "Based in Dunakeszi, next to Budapest" },
-      temperature: { title: "−25 °C to +30 °C", text: "Any temperature your load needs" },
-      europe: { title: "Across Europe", text: "Door to door, from Hungary" },
-      services: { title: "Five services, one team", text: "Transport, cold chain, medicines, ADR, customs" },
-    },
     services: {
       title: "What we move",
       text: "Five services, one team. Most loads combine two or three of them, and you deal with us for all of it.",
@@ -101,9 +94,10 @@ export default {
       },
       certified: {
         title: "Certified quality",
-        text: "GDP and ISO 9001:2015 certified, so the way we work is checked by independent auditors.",
+        text: "GDP and ISO 9001:2015 certified by independent auditors.",
         gdpRing: "Good Distribution Practice • Audited by URS •",
         isoRing: "Quality management • Audited by DNV •",
+        link: "See the certificates",
       },
       loop: {
         title: "Always in the loop",
@@ -137,36 +131,6 @@ export default {
         "We don't accept a job that would put the agreed delivery date at risk. The transit times we agree with you are the ones we keep.",
       more: "More about us",
       imageAlt: "Wind Eurotrans driver standing in front of his truck",
-    },
-    faq: {
-      title: "Questions shippers ask us",
-      text: "Short answers to what we get asked most. For anything else, our details are just below.",
-      items: [
-        {
-          q: "Do you take part loads, or only full trucks?",
-          a: "Both. A full truckload goes straight from pickup to delivery. A part load shares the trailer with other loads going the same way, so it costs less and takes a little longer.",
-        },
-        {
-          q: "What is the smallest and largest load you carry?",
-          a: "Anything from 1 kg up to 24 tonnes.",
-        },
-        {
-          q: "Which countries do you deliver to?",
-          a: "We drive in Hungary and across Europe. Tell us the pickup and delivery address and we confirm the route and transit time with the price.",
-        },
-        {
-          q: "Can you carry medicines at +2 °C to +8 °C?",
-          a: "Yes. We are GDP certified for road transport of medicinal products, and we carry them at +2 °C to +8 °C or +15 °C to +25 °C with a temperature record for every load.",
-        },
-        {
-          q: "Do you handle customs?",
-          a: "Yes. We handle export and import customs clearance, so the truck and the documents are ready at the same time.",
-        },
-        {
-          q: "What happens if something goes wrong on the road?",
-          a: "Our dispatch team works around the clock. If a delay or a problem comes up, we call you straight away with the facts and the fix, so you never have to chase us for news.",
-        },
-      ],
     },
     contact: {
       title: "Get in touch",
@@ -216,11 +180,11 @@ export default {
     },
     people: {
       title: "The people behind your loads",
-      founder: "Gergő founded the company in 2010 and still prices and plans loads with customers himself.",
-      drivers: "Our drivers",
-      driversText:
-        "Experienced, trained for ADR and temperature-controlled loads, and in contact with dispatch for the whole journey. They are the reason your load arrives the way it left.",
-      driverAlt: "Wind Eurotrans driver in front of his truck",
+      roles: {
+        dispatch: "Head of dispatch",
+        forwarding: "Forwarding and customs",
+        office: "Office and accounts",
+      },
     },
   },
 

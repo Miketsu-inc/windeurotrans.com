@@ -27,7 +27,7 @@ const isCurrent = (path: string) => currentPath === path || currentPath.startsWi
       <Image src={logo} alt={format(t.nav.home, { name: site.name })} class="h-11 w-auto lg:h-14" loading="eager" />
     </a>
 
-    <nav aria-label={t.nav.main} class="hidden font-medium lg:block">
+    <nav aria-label={t.nav.main} class="hidden font-medium whitespace-nowrap lg:block">
       <ul class="flex items-center gap-1">
         <li class="relative" data-dropdown>
           <div class="nav-item flex items-center">
@@ -82,10 +82,11 @@ const isCurrent = (path: string) => currentPath === path || currentPath.startsWi
       </ul>
     </nav>
 
-    <div class="ml-auto hidden items-center gap-2 font-medium lg:flex">
+    <div class="ml-auto hidden items-center gap-2 font-medium whitespace-nowrap lg:flex">
+      <!-- Until there is room for the number, only the icon shows -->
       <a href={site.phoneHref} class="nav-item tnum flex items-center gap-2 px-3 py-2">
         <Icon name="phone" class="text-signal size-4.5" />
-        <span class="nav-link">{site.phone}</span>
+        <span class="nav-link sr-only xl:not-sr-only">{site.phone}</span>
       </a>
 
       <div class="relative" data-dropdown>

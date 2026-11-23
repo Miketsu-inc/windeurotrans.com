@@ -4,7 +4,7 @@
   The graphics play once when their card scrolls into view, and again on hover.
 */
 import Icon from "./Icon.astro";
-import { format, getDictionary, getLocale } from "../i18n";
+import { format, getDictionary, getLocale, localizedPath } from "../i18n";
 
 const locale = getLocale(Astro);
 const t = getDictionary(locale);
@@ -102,7 +102,7 @@ const seals = [
         <p class="why-card__text">{why.flexible.text}</p>
       </li>
 
-      <li class="why-card" data-replay>
+      <li class="why-card relative" data-replay>
         <div class="why-card__art justify-center gap-4" aria-hidden="true">
           {
             seals.map((s, i) => (
@@ -127,7 +127,16 @@ const seals = [
           }
         </div>
         <h3 class="why-card__title">{why.certified.title}</h3>
-        <p class="why-card__text">{why.certified.text}</p>
+        <!-- The link covers the whole card, so the seals can be clicked too -->
+        <p class="why-card__text">
+          {why.certified.text}{" "}
+          <a
+            href={localizedPath(locale, "certificates")}
+            class="link hover:decoration-signal font-semibold whitespace-nowrap text-white decoration-white/40 after:absolute after:inset-0 after:rounded-2xl"
+          >
+            {why.certified.link}
+          </a>
+        </p>
       </li>
 
       <li class="why-card" data-replay>
