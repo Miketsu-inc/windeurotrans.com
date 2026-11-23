@@ -1,0 +1,32 @@
+---
+/*
+  A Picture with a tiny blurred copy of the photo as its background, so the photo's colours show
+  straight away while the full image downloads. Only for opaque photos: a transparent image would
+  show the blur through it.
+*/
+import type { ImageMetadata } from "astro";
+import type { ComponentProps } from "astro/types";
+import { Picture } from "astro:assets";
+import { blurredPreview } from "../lib/blurred-preview";
+
+type Props = Omit<ComponentProps<typeof Picture>, "src"> & {
+  src: ImageMetadata;
+  /** CSS object-position for the crop. The preview is lined up the same way. */
+  position?: string;
+};
+
+const { src, position, style, ...props } = Astro.props;
+
+const preview = await blurredPreview(src);
+const styles = [
+  style,
+  position && `object-position: ${position}`,
+  preview && `background-image: url("${preview}"); background-size: cover; background-position: ${position ?? "center"}`,
+]
+  .filter(Boolean)
+  .join("; ");
+// Taking props apart loses the union Picture uses to check them, so put it back
+const pictureProps = { ...props, src, style: styles || undefined } as ComponentProps<typeof Picture>;
+---
+
+<Picture {...pictureProps} />

@@ -1,8 +1,8 @@
 ---
 import type { GetStaticPaths } from "astro";
-import { Picture } from "astro:assets";
 import { render } from "astro:content";
 import Layout from "../../../layouts/Layout.astro";
+import Photo from "../../../components/Photo.astro";
 import PageHero from "../../../components/PageHero.astro";
 import ServiceCard from "../../../components/ServiceCard.astro";
 import { getDictionary, locales, localizedPath, type Locale } from "../../../i18n";
@@ -37,7 +37,7 @@ const others = services.filter((s) => s.slug !== service.slug);
   <div class="bg-frost">
     <div class="wrap grid gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-20">
       <article>
-        <Picture
+        <Photo
           src={image}
           alt={imageAlt}
           formats={["avif"]}
@@ -47,7 +47,7 @@ const others = services.filter((s) => s.slug !== service.slug);
           loading="eager"
           fetchpriority="high"
           class="mb-14 aspect-video w-full rounded-2xl object-cover"
-          style={imagePosition && `object-position: ${imagePosition}`}
+          position={imagePosition}
         />
         <div class="prose-page">
           <Content />

@@ -1,8 +1,9 @@
 ---
-import { getImage, Picture } from "astro:assets";
+import { getImage } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
 import Icon from "../../components/Icon.astro";
+import Photo from "../../components/Photo.astro";
 import { photos } from "../../data/fleet";
 import { format, getDictionary, getLocale, localeStaticPaths } from "../../i18n";
 
@@ -38,7 +39,7 @@ const viewerData = JSON.stringify(
                 data-photo={i}
                 aria-label={format(page.open, { alt: p.alt })}
               >
-                <Picture
+                <Photo
                   src={p.image}
                   alt=""
                   formats={["avif"]}
